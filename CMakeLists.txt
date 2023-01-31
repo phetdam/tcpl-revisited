@@ -11,12 +11,12 @@ cmake_minimum_required(VERSION 3.21)
 #
 
 # project version values and full version
-set(PDCPL_MAJOR_VERSION 0)
-set(PDCPL_MINOR_VERSION 1)
-set(PDCPL_PATCH_VERSION 0)
+set(PDCPL_VERSION_MAJOR 0)
+set(PDCPL_VERSION_MINOR 1)
+set(PDCPL_VERSION_PATCH 0)
 set(
     PDCPL_VERSION
-    ${PDCPL_MAJOR_VERSION}.${PDCPL_MINOR_VERSION}.${PDCPL_PATCH_VERSION}
+    ${PDCPL_VERSION_MAJOR}.${PDCPL_VERSION_MINOR}.${PDCPL_VERSION_PATCH}
 )
 
 # set some system information variables used for the version info
@@ -56,9 +56,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # add version definitions as macro definitions
 add_compile_definitions(
-    PDCPL_MAJOR_VERSION=${PDCPL_MAJOR_VERSION}
-    PDCPL_MINOR_VERSION=${PDCPL_MINOR_VERSION}
-    PDCPL_PATCH_VERSION=${PDCPL_PATCH_VERSION}
+    PDCPL_VERSION_MAJOR=${PDCPL_VERSION_MAJOR}
+    PDCPL_VERSION_MINOR=${PDCPL_VERSION_MINOR}
+    PDCPL_VERSION_PATCH=${PDCPL_VERSION_PATCH}
     # need double quotes for CMake to pass as a string
     PDCPL_BUILD_TYPE="${PDCPL_BUILD_TYPE}"
     PDCPL_SYSTEM_NAME="${PDCPL_SYSTEM_NAME}"
