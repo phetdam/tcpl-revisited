@@ -66,6 +66,13 @@ add_compile_definitions(
     PDCPL_SYSTEM_ARCH="${PDCPL_SYSTEM_ARCH}"
 )
 
+# update CMake module path for our CMake scripts
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+
+# add compiler options and function for "standalone" executables
+include(ConfigCompile)
+include(AddStandalone)
+
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 add_subdirectory(src)
