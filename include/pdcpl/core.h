@@ -5,8 +5,8 @@
  * @copyright MIT License
  */
 
-#ifndef PDCPL_MACROS_H_
-#define PDCPL_MACROS_H_
+#ifndef PDCPL_CORE_H_
+#define PDCPL_CORE_H_
 
 #include <string.h>
 
@@ -64,4 +64,4 @@
   } \
   while (0)
 
-#endif  // PDCPL_MACROS_H_
+#endif  // PDCPL_CORE_H_
