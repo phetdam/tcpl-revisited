@@ -51,13 +51,18 @@
  * If `-V` or `--version` are passed to a program with a `PDCPL_ARG_MAIN`, this
  * macro can be used to print the version info and exit.
  */
-#define PDCPL_HANDLE_OPT_VERSION \
-  PDCPL_GET_PROGNAME(); \
-  for (int i = 1; i < PDCPL_ARGC; i++) { \
-    if (!strcmp(PDCPL_ARGV[i], "-V") || !strcmp(PDCPL_ARGV[i], "--version")) { \
-      PDCPL_PRINT_VERSION_INFO(); \
-      return EXIT_SUCCESS; \
+#define PDCPL_HANDLE_OPT_VERSION() \
+  do { \
+    PDCPL_GET_PROGNAME(); \
+    for (int i = 1; i < PDCPL_ARGC; i++) { \
+      if ( \
+        !strcmp(PDCPL_ARGV[i], "-V") || !strcmp(PDCPL_ARGV[i], "--version") \
+      ) { \
+        PDCPL_PRINT_VERSION_INFO(); \
+        return EXIT_SUCCESS; \
+      } \
     } \
-  }
+  } \
+  while (0)
 
 #endif  // PDCPL_VERSION_H_

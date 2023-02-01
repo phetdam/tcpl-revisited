@@ -19,11 +19,6 @@ set(
     ${PDCPL_VERSION_MAJOR}.${PDCPL_VERSION_MINOR}.${PDCPL_VERSION_PATCH}
 )
 
-# set some system information variables used for the version info
-set(PDCPL_SYSTEM_NAME ${CMAKE_SYSTEM_NAME})
-set(PDCPL_SYSTEM_VERSION ${CMAKE_SYSTEM_VERSION})
-set(PDCPL_SYSTEM_ARCH ${CMAKE_SYSTEM_PROCESSOR})
-
 project(
     tcpl-revisited
     VERSION ${PDCPL_VERSION}
@@ -32,6 +27,12 @@ project(
     # C++ is here preemptively since Google Test might be used for testing
     LANGUAGES C
 )
+
+# set some system information variables used for the version info. note the
+# relevant CMake variables used will be empty if used before project()
+set(PDCPL_SYSTEM_NAME ${CMAKE_SYSTEM_NAME})
+set(PDCPL_SYSTEM_VERSION ${CMAKE_SYSTEM_VERSION})
+set(PDCPL_SYSTEM_ARCH ${CMAKE_SYSTEM_PROCESSOR})
 
 # only Debug and Release builds available
 set(PDCPL_BUILD_CONFIGS Debug Release)
@@ -60,7 +61,7 @@ add_compile_definitions(
     PDCPL_VERSION_MINOR=${PDCPL_VERSION_MINOR}
     PDCPL_VERSION_PATCH=${PDCPL_VERSION_PATCH}
     # need double quotes for CMake to pass as a string
-    PDCPL_BUILD_TYPE="${PDCPL_BUILD_TYPE}"
+    PDCPL_BUILD_TYPE="${CMAKE_BUILD_TYPE}"
     PDCPL_SYSTEM_NAME="${PDCPL_SYSTEM_NAME}"
     PDCPL_SYSTEM_VERSION="${PDCPL_SYSTEM_VERSION}"
     PDCPL_SYSTEM_ARCH="${PDCPL_SYSTEM_ARCH}"

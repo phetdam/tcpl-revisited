@@ -13,7 +13,7 @@
 
 PDCPL_ARG_MAIN
 {
-  PDCPL_HANDLE_OPT_VERSION
+  PDCPL_HANDLE_OPT_VERSION();
   printf("hello, world\n");
   return EXIT_SUCCESS;
 }
