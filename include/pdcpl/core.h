@@ -10,8 +10,6 @@
 
 #include <string.h>
 
-#include "pdcpl/termcolors.h"
-
 // extern "C" scoping macros
 #ifdef __cplusplus
 #define PDCPL_EXTERN_C_BEGIN extern "C" {

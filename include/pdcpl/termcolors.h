@@ -8,14 +8,14 @@
 #ifndef PDCPL_TERMCOLORS_H_
 #define PDCPL_TERMCOLORS_H_
 
+#include <stdio.h>
+
 #ifdef _WIN32
 // try to remove some header bloat
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif  // WIN32_LEAN_AND_MEAN
 #include <Windows.h>
-#else
-#include <stdio.h>
 #endif  // _WIN32
 
 // reset all text attributes to default state
