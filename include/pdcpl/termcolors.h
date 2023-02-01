@@ -14,6 +14,8 @@
 #define WIN32_LEAN_AND_MEAN
 #endif  // WIN32_LEAN_AND_MEAN
 #include <Windows.h>
+#else
+#include <stdio.h>
 #endif  // _WIN32
 
 // reset all text attributes to default state
