@@ -8,13 +8,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define PDCPL_HAS_PROGRAM_USAGE
+#include "pdcpl/cliopts.h"
 #include "pdcpl/core.h"
 #include "pdcpl/termcolors.h"
-#include "pdcpl/version.h"
+
+PDCPL_PROGRAM_USAGE_DEF("Prints \"hello, world\" to the screen in color.")
 
 PDCPL_ARG_MAIN
 {
-  PDCPL_HANDLE_OPT_VERSION();
+  PDCPL_HANDLE_INFO_OPTS();
   PDCPL_PRINTF(
     PDCPL_GREEN_STRING("hello")
     PDCPL_CYAN_STRING(", ")

@@ -40,29 +40,9 @@
 /**
  * Print version information from within a `PDCPL_ARG_MAIN`.
  *
- * If `PDCPL_GET_PROGNAME()` has not been called yet, program name is `NULL`.
+ * If `PDCPL_SET_PROGRAM_NAME()` has not been called, program name is empty.
  */
 #define PDCPL_PRINT_VERSION_INFO() \
-  printf("%s %s\n", PDCPL_PROGNAME, PDCPL_VERSION_STRING)
-
-/**
- * Print version information and exit a `PDCPL_ARG_MAIN` if CLI option is seen.
- *
- * If `-V` or `--version` are passed to a program with a `PDCPL_ARG_MAIN`, this
- * macro can be used to print the version info and exit.
- */
-#define PDCPL_HANDLE_OPT_VERSION() \
-  do { \
-    PDCPL_GET_PROGNAME(); \
-    for (int i = 1; i < PDCPL_ARGC; i++) { \
-      if ( \
-        !strcmp(PDCPL_ARGV[i], "-V") || !strcmp(PDCPL_ARGV[i], "--version") \
-      ) { \
-        PDCPL_PRINT_VERSION_INFO(); \
-        return EXIT_SUCCESS; \
-      } \
-    } \
-  } \
-  while (0)
+  printf("%s %s\n", PDCPL_PROGRAM_NAME, PDCPL_VERSION_STRING)
 
 #endif  // PDCPL_VERSION_H_

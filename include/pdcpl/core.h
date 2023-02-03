@@ -28,14 +28,14 @@
 #define PDCPL_CONCAT(x, y) PDCPL_CONCAT_I(x, y)
 
 // macro for the program name
-#define PDCPL_PROGNAME pdcpl_main_program_name
+#define PDCPL_PROGRAM_NAME pdcpl_main_program_name
 
 // macros for common main() signatures
 #define PDCPL_MAIN int main()
 #define PDCPL_ARGC argc
 #define PDCPL_ARGV argv
 #define PDCPL_ARG_MAIN \
-  static const char *PDCPL_PROGNAME; \
+  static const char *PDCPL_PROGRAM_NAME = ""; \
   int main(int PDCPL_ARGC, char **PDCPL_ARGV)
 
 // path separator macros
@@ -48,19 +48,19 @@
 #endif  // _WIN32
 
 /**
- * Macro to get program name from `PDCPL_ARGC` and initialize `PDCPL_PROGNAME`.
+ * Macro to set `PDCPL_PROGRAM_NAME` from `PDCPL_ARGC`.
  *
- * The body is not run again if `PDCPL_PROGNAME` has already been set.
+ * The body is not run again if `PDCPL_PROGRAM_NAME` has already been set.
  */
-#define PDCPL_GET_PROGNAME() \
+#define PDCPL_SET_PROGRAM_NAME() \
   do { \
-    if (PDCPL_PROGNAME) \
+    if (strlen(PDCPL_PROGRAM_NAME)) \
       break; \
-    PDCPL_PROGNAME = strrchr(PDCPL_ARGV[0], PDCPL_PATH_SEP_CHAR); \
-    if (!PDCPL_PROGNAME) \
-      PDCPL_PROGNAME = PDCPL_ARGV[0]; \
+    PDCPL_PROGRAM_NAME = strrchr(PDCPL_ARGV[0], PDCPL_PATH_SEP_CHAR); \
+    if (!PDCPL_PROGRAM_NAME) \
+      PDCPL_PROGRAM_NAME = PDCPL_ARGV[0]; \
     else \
-      PDCPL_PROGNAME++; \
+      PDCPL_PROGRAM_NAME++; \
   } \
   while (0)
 
