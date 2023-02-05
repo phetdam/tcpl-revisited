@@ -21,8 +21,8 @@
 #include <limits.h>
 #include <stdint.h>
 #endif  // _WIN32
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #define PDCPL_HAS_PROGRAM_USAGE
