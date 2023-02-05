@@ -3,10 +3,10 @@
  * @author Derek Huang
  * @brief The C Programming Language exercise 1-4
  * @copyright MIT License
-*/
+ */
 
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #define PDCPL_HAS_PROGRAM_USAGE
 #include "pdcpl/core.h"
