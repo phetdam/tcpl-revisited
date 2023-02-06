@@ -41,6 +41,12 @@ pdcpl_stresc(int c)
       return "\\t";
     case '\v':
       return "\\v";
+    case '\\':
+      return "\\\\";
+    case '\'':
+      return "\\\'";
+    case '\"':
+      return "\\\"";
     case EOF:
       return "EOF";
     default:
