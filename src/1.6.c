@@ -43,7 +43,7 @@ PDCPL_ARG_MAIN
   do {
     printf("getchar() != EOF (%d) ", neof = ((c = getchar()) != EOF));
     // MSVC complains about assignment in conditional, so we add an explicit
-    // != NULL. for GCC, the extra parenthese are enough to make it happy.
+    // != NULL. for GCC, the extra parentheses are enough to make it happy.
     if ((c_esc = pdcpl_stresc(c)) != NULL)
       printf("'%s'\n", c_esc);
     else
