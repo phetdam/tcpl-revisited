@@ -10,6 +10,10 @@
 
 #include <stdio.h>
 
+#include "pdcpl/core.h"
+
+PDCPL_EXTERN_C_BEGIN
+
 /**
  * Return the string associated with the escaped character.
  *
@@ -54,5 +58,7 @@ pdcpl_stresc(int c)
   }
   return NULL;
 }
+
+PDCPL_EXTERN_C_END
 
 #endif  // PDCPL_STRING_H_
