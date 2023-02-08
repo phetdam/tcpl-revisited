@@ -89,7 +89,7 @@ PDCPL_PROGRAM_EPILOG_DEF("")
       "  -V, --version    Print program version info\n" \
     ); \
     if (strlen(PDCPL_PROGRAM_EPILOG)) \
-      printf("%s\n", PDCPL_PROGRAM_EPILOG); \
+      printf("\n%s\n", PDCPL_PROGRAM_EPILOG); \
   } \
   while (0)
 
