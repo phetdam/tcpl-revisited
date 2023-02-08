@@ -73,7 +73,7 @@ static inline unsigned short
 pdcpl_printpwtd(ptrdiff_t value, unsigned short padding)
 {
   // padding is on both sides + add extra col if value is negative
-  unsigned int pad_width = 2 * padding + ((value < 0) ? 1 : 0);
+  unsigned short pad_width = 2 * padding + ((value < 0) ? 1 : 0);
   // if zero, need 1 column
   if (!value)
     return 1 + pad_width;
