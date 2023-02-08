@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION ${CMAKE_MINIMUM_REQUIRED_VERSION})
 
+# add run-time library first
+add_subdirectory(pdcpl)
+
 pdcpl_add_standalone(1.1)
 pdcpl_add_standalone(1.2)
 pdcpl_add_standalone(1.3)

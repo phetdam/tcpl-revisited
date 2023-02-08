@@ -92,6 +92,25 @@ pdcpl_printwtd(ptrdiff_t value)
   return pdcpl_printpwtd(value, 0);
 }
 
+/**
+ * Struct holding results of a `pdcpl_strwc` call.
+ */
+typedef struct {
+  size_t nw;  // word count
+  size_t nc;  // char count
+  size_t nl;  // line count
+} pdcpl_wcresults;
+
+/**
+ * Count words, chars, and lines in a string and save the results.
+ *
+ * @param s `NULL`-terminated string, can be `NULL`
+ * @param res Pointer to results struct
+ * @returns 0 if no error, nonzero value on error
+ */
+int
+pdcpl_strwc(const char *s, pdcpl_wcresults *res);
+
 PDCPL_EXTERN_C_END
 
 #endif  // PDCPL_STRING_H_
