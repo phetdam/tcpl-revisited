@@ -41,16 +41,8 @@ PDCPL_ARG_MAIN
     }
     else
       got_blank = false;
-    // print the character. exit on error
-    if (putchar(c) == EOF) {
-      fprintf(stderr, "Error: Unable to putchar(%c)\n", c);
-      return EXIT_FAILURE;
-    }
-  }
-  // check for getchar() errors
-  if (ferror(stdin)) {
-    fprintf(stderr, "Error: %s\n", strerror(errno));
-    return EXIT_FAILURE;
+    // print the character as usual
+    putchar(c);
   }
   return EXIT_SUCCESS;
 }

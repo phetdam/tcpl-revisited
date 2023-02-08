@@ -8,6 +8,8 @@
 #ifndef PDCPL_STRING_H_
 #define PDCPL_STRING_H_
 
+#include <math.h>
+#include <stddef.h>
 #include <stdio.h>
 
 #include "pdcpl/core.h"
@@ -57,6 +59,37 @@ pdcpl_stresc(int c)
       break;
   }
   return NULL;
+}
+
+/**
+ * Return columns needed to fit a specified signed int with specified padding.
+ *
+ * Padding is applied on both sides of the printed value.
+ *
+ * @param value Value to get print width for
+ * @param padding Padding to apply on both sides of the print width
+ */
+static inline unsigned short
+pdcpl_printpwtd(ptrdiff_t value, unsigned short padding)
+{
+  // padding is on both sides + add extra col if value is negative
+  unsigned int pad_width = 2 * padding + ((value < 0) ? 1 : 0);
+  // if zero, need 1 column
+  if (!value)
+    return 1 + pad_width;
+  // log10 of PTRDIFF_MAX will never exceed unsigned short max
+  return (unsigned short) round(log10(fabs(value))) + pad_width;
+}
+
+/**
+ * Return columns needed to fit a specified signed int.
+ *
+ * @param value Value to get print width for
+ */
+static inline unsigned short
+pdcpl_printwtd(ptrdiff_t value)
+{
+  return pdcpl_printpwtd(value, 0);
 }
 
 PDCPL_EXTERN_C_END
