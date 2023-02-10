@@ -10,6 +10,8 @@
 #include <stdbool.h>
 #include <stddef.h>
 
+#include "pdcpl/dllexport.h"
+
 /**
  * Count words, chars, and lines in a string and save the results.
  *
@@ -17,6 +19,7 @@
  * @param res Pointer to results struct
  * @returns 0 if no error, -1 if `res` is `NULL`
  */
+PDCPL_PUBLIC
 int
 pdcpl_strwc(const char *s, pdcpl_wcresults *res)
 {
