@@ -15,7 +15,7 @@
  *
  * @param s `NULL`-terminated string, can be `NULL`
  * @param res Pointer to results struct
- * @returns 0 if no error, nonzero value on error
+ * @returns 0 if no error, -1 if `res` is `NULL`
  */
 int
 pdcpl_strwc(const char *s, pdcpl_wcresults *res)
@@ -32,7 +32,7 @@ pdcpl_strwc(const char *s, pdcpl_wcresults *res)
   // indicate if we are in or out of word
   bool in_word = false;
   // until end
-  for (c = *cur; c != 0; cur++) {
+  for (; (c = *cur) != '\0'; cur++) {
     nc++;
     if (c == '\n')
       nl++;

@@ -106,7 +106,7 @@ typedef struct {
  *
  * @param s `NULL`-terminated string, can be `NULL`
  * @param res Pointer to results struct
- * @returns 0 if no error, nonzero value on error
+ * @returns 0 if no error, -1 if `res` is `NULL`
  */
 int
 pdcpl_strwc(const char *s, pdcpl_wcresults *res);
