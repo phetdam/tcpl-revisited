@@ -19,7 +19,7 @@
  * @param c Name holding character being read
  * @param nl Name holding number of lines counted
  */
-#define PDCPL_CHECK_LINE(c, nl) \
+#define PDCPL_WC_CHECK_LINE(c, nl) \
   if (c == '\n') \
       nl++
 
@@ -33,7 +33,7 @@
  * @param in_word `true` if inside a word, `false` otherwise
  * @param nw Name holding number of words counted
  */
-#define PDCPL_CHECK_WORD(c, in_word, nw) \
+#define PDCPL_WC_CHECK_WORD(c, in_word, nw) \
   do { \
     if (!in_word) { \
       in_word = true; \
@@ -69,8 +69,8 @@ pdcpl_strwc(const char *s, pdcpl_wcresults *rp)
   // until end
   for (; (c = *cur) != '\0'; cur++) {
     nc++;
-    PDCPL_CHECK_LINE(c, nl);
-    PDCPL_CHECK_WORD(c, in_word, nw);
+    PDCPL_WC_CHECK_LINE(c, nl);
+    PDCPL_WC_CHECK_WORD(c, in_word, nw);
   }
   // populate results and return
   PDCPL_SET_WCRESULTS(rp, nw, nc, nl);
@@ -100,8 +100,8 @@ pdcpl_fwc(FILE *f, pdcpl_wcresults *rp)
   // until end of stream
   while ((c = fgetc(f)) != EOF) {
     nc++;
-    PDCPL_CHECK_LINE(c, nl);
-    PDCPL_CHECK_WORD(c, in_word, nw);
+    PDCPL_WC_CHECK_LINE(c, nl);
+    PDCPL_WC_CHECK_WORD(c, in_word, nw);
   }
   // populate results and return
   PDCPL_SET_WCRESULTS(rp, nw, nc, nl);
