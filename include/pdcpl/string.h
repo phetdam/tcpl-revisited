@@ -10,6 +10,7 @@
 
 #include <ctype.h>
 #include <math.h>
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdio.h>
 
@@ -61,6 +62,17 @@ pdcpl_stresc(int c)
       break;
   }
   return NULL;
+}
+
+/**
+ * Return `true` if the char is a known escape character, including `EOF`.
+ *
+ * @param c Incoming character
+ */
+static inline bool
+pdcpl_isesc(int c)
+{
+  return (pdcpl_stresc(c)) ? true : false;
 }
 
 /**
