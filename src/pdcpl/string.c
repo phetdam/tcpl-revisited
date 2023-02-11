@@ -14,37 +14,6 @@
 #include "pdcpl/dllexport.h"
 
 /**
- * Check if we should increment the line count.
- *
- * @param c Name holding character being read
- * @param nl Name holding number of lines counted
- */
-#define PDCPL_WC_CHECK_LINE(c, nl) \
-  if (c == '\n') \
-      nl++
-
-/**
- * Check if inside/outside a word, updating state and word count as needed.
- *
- * A word is counted on entry, otherwise a string like "abc" has 0 words. When
- * whitespace is seen, then we are outside a word.
- *
- * @param c Name holding character being read
- * @param in_word `true` if inside a word, `false` otherwise
- * @param nw Name holding number of words counted
- */
-#define PDCPL_WC_CHECK_WORD(c, in_word, nw) \
-  do { \
-    if (!in_word) { \
-      in_word = true; \
-      nw++; \
-    } \
-    else if (c == ' ' || c == '\t' || c == '\n') \
-      in_word = false; \
-  } \
-  while (0)
-
-/**
  * Count words, chars, and lines in a string and save the results.
  *
  * @param s `NULL`-terminated string, can be `NULL`

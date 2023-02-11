@@ -8,6 +8,7 @@
 #ifndef PDCPL_STRING_H_
 #define PDCPL_STRING_H_
 
+#include <ctype.h>
 #include <math.h>
 #include <stddef.h>
 #include <stdio.h>
@@ -124,6 +125,42 @@ typedef struct {
  * @param rp `pdcl_wcresults *` to zero
  */
 #define PDCPL_ZERO_WCRESULTS(rp) PDCPL_SET_WCRESULTS(rp, 0, 0, 0)
+
+/**
+ * Check if we should increment the line count.
+ *
+ * This macro should be used within a character reading loop.
+ *
+ * @param c Name holding character being read
+ * @param nl Name holding number of lines counted
+ */
+#define PDCPL_WC_CHECK_LINE(c, nl) \
+  if (c == '\n') \
+      nl++
+
+/**
+ * Check if inside/outside a word, updating state and word count as needed.
+ *
+ * This macro should be used within a character reading loop.
+ *
+ * A word is counted on entry, otherwise a string like "abc" has 0 words. When
+ * whitespace is seen, then we are outside a word. It's important to check for
+ * whitespace first, as in_word is typically first initialized to `false`.
+ *
+ * @param c Name holding character being read
+ * @param in_word `true` if inside a word, `false` otherwise
+ * @param nw Name holding number of words counted
+ */
+#define PDCPL_WC_CHECK_WORD(c, in_word, nw) \
+  do { \
+    if (isspace(c)) \
+      in_word = false; \
+    else if (!in_word) { \
+      in_word = true; \
+      nw++; \
+    } \
+  } \
+  while (0)
 
 /**
  * Count words, chars, and lines in a string and save the results.
