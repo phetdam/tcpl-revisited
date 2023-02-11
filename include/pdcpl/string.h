@@ -103,15 +103,49 @@ typedef struct {
 } pdcpl_wcresults;
 
 /**
+ * Set the values of the `pdcpl_wcresults`.
+ *
+ * @param rp `pdcl_wcresults *` to set
+ * @param wc Word count to set
+ * @param cc Character count to set
+ * @param lc Line count to set
+ */
+#define PDCPL_SET_WCRESULTS(rp, wc, cc, lc) \
+  do { \
+    rp->nw = wc; \
+    rp->nc = cc; \
+    rp->nl = lc; \
+  } \
+  while (0)
+
+/**
+ * Zero out a `pdcpl_wcresults` struct.
+ *
+ * @param rp `pdcl_wcresults *` to zero
+ */
+#define PDCPL_ZERO_WCRESULTS(rp) PDCPL_SET_WCRESULTS(rp, 0, 0, 0)
+
+/**
  * Count words, chars, and lines in a string and save the results.
  *
  * @param s `NULL`-terminated string, can be `NULL`
- * @param res Pointer to results struct
- * @returns 0 if no error, -1 if `res` is `NULL`
+ * @param rp Pointer to results struct
+ * @returns 0 if no error, -1 if `rp` is `NULL`
  */
 PDCPL_PUBLIC
 int
-pdcpl_strwc(const char *s, pdcpl_wcresults *res);
+pdcpl_strwc(const char *s, pdcpl_wcresults *rp);
+
+/**
+ * Count words, chars, and lines from a `FILE *` stream and save the results.
+ *
+ * @param f `FILE *` stream, can be `NULL`
+ * @param rp Pointer to results struct
+ * @returns 0 if no error, -1 if `rp` is `NULL`
+ */
+PDCPL_PUBLIC
+int
+pdcpl_fwc(FILE *f, pdcpl_wcresults *rp);
 
 PDCPL_EXTERN_C_END
 
