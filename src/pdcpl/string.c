@@ -7,8 +7,10 @@
 
 #include "pdcpl/string.h"
 
+#include <errno.h>
 #include <stdbool.h>
 #include <stddef.h>
+#include <stdlib.h>
 #include <stdio.h>
 
 #include "pdcpl/dllexport.h"
@@ -18,12 +20,14 @@
  *
  * @param s `NULL`-terminated string, can be `NULL`
  * @param rp Pointer to results struct
- * @returns 0 if no error, -1 if `rp` is `NULL`
+ * @returns 0 if no error, -EINVAL if `rp` is `NULL`
  */
 PDCPL_PUBLIC
 int
 pdcpl_strwc(const char *s, pdcpl_wcresults *rp)
 {
+  if (!rp)
+    return -EINVAL;
   // allow valid result even with NULL string
   if (!s) {
     PDCPL_ZERO_WCRESULTS(rp);
@@ -51,12 +55,14 @@ pdcpl_strwc(const char *s, pdcpl_wcresults *rp)
  *
  * @param f `FILE *` stream, can be `NULL`
  * @param rp Pointer to results struct
- * @returns 0 if no error, -1 if `rp` is `NULL`
+ * @returns 0 if no error, -EINVAL if `rp` is `NULL`
  */
 PDCPL_PUBLIC
 int
 pdcpl_fwc(FILE *f, pdcpl_wcresults *rp)
 {
+  if (!rp)
+    return -EINVAL;
   if (!f) {
     PDCPL_ZERO_WCRESULTS(rp);
     return 0;
@@ -74,5 +80,64 @@ pdcpl_fwc(FILE *f, pdcpl_wcresults *rp)
   }
   // populate results and return
   PDCPL_SET_WCRESULTS(rp, nw, nc, nl);
+  return 0;
+}
+
+/**
+ * Read an arbitrary line from a `FILE *` stream to a buffer.
+ *
+ * On success, `*sp` will point to a `NULL`-terminated `char` buffer containing
+ * the contents of the line, excluding the `\n`, read from `f`. If `ncp` is not
+ * `NULL`, it contains the length of the buffer - 1, i.e. the line length.
+ *
+ * @param f `FILE *` stream to read line from
+ * @param sp Address of a `char *` for pointing to the line buffer
+ * @param ncp Address of `size_t` to store line length (can be `NULL`)
+ * @returns 0 if no error, -EINVAL if `f` or `sp` are `NULL`, -ERANGE if the
+ *  line being read exceeds `SIZE_MAX`, -ENOMEM if buffer `(m|re)alloc` fails
+ */
+PDCPL_PUBLIC
+int
+pdcpl_getline(FILE *f, char **sp, size_t *ncp)
+{
+  // we allow ncp to be NULL
+  if (!f || !sp)
+    return -EINVAL;
+  // current buffer size, number of chars read, allocated buffer
+  size_t buf_size = BUFSIZ, nc = 0;
+  char *buf = malloc(buf_size * sizeof *buf);
+  if (!buf)
+    return -ENOMEM;
+  // fgetc() value
+  int c;
+  // loop until we hit a newline
+  for (; c = fgetc(f), (c != '\n' && c != EOF); nc++) {
+    // if the buffer is full, realloc it (might fail)
+    if (nc == buf_size) {
+      // if it's too big, free the buffer and error out
+      if (buf_size + BUFSIZ < buf_size) {
+        free(buf);
+        return -ERANGE;
+      }
+      buf_size += BUFSIZ;
+      buf = realloc(buf, buf_size);
+      if (!buf)
+        return -ENOMEM;
+    }
+    // otherwise, keep going
+    buf[nc] = (char) c;
+  }
+  // done, so update buf_size + realloc (unless size is perfect)
+  if (nc != buf_size - 1) {
+    buf_size = nc + 1;
+    buf = realloc(buf, buf_size);
+    if (!buf)
+      return -ENOMEM;
+  }
+  // write '\0', update sp, optionally update ncp
+  buf[nc] = '\0';
+  *sp = buf;
+  if (ncp)
+    *ncp = nc;
   return 0;
 }

@@ -179,7 +179,7 @@ typedef struct {
  *
  * @param s `NULL`-terminated string, can be `NULL`
  * @param rp Pointer to results struct
- * @returns 0 if no error, -1 if `rp` is `NULL`
+ * @returns 0 if no error, -EINVAL if `rp` is `NULL`
  */
 PDCPL_PUBLIC
 int
@@ -190,11 +190,28 @@ pdcpl_strwc(const char *s, pdcpl_wcresults *rp);
  *
  * @param f `FILE *` stream, can be `NULL`
  * @param rp Pointer to results struct
- * @returns 0 if no error, -1 if `rp` is `NULL`
+ * @returns 0 if no error, -EINVAL if `rp` is `NULL`
  */
 PDCPL_PUBLIC
 int
 pdcpl_fwc(FILE *f, pdcpl_wcresults *rp);
+
+/**
+ * Read an arbitrary line from a `FILE *` stream to a buffer.
+ *
+ * On success, `*sp` will point to a `NULL`-terminated `char` buffer containing
+ * the contents of the line, excluding the `\n`, read from `f`. If `ncp` is not
+ * `NULL`, `*ncp` contains the length of the buffer - 1, i.e. the line length.
+ *
+ * @param f `FILE *` stream to read line from
+ * @param sp Address of a `char *` for pointing to the line buffer
+ * @param ncp Address of `size_t` to store line length (can be `NULL`)
+ * @returns 0 if no error, -EINVAL if `f` or `sp` are `NULL`, -ERANGE if the
+ *  line being read exceeds `SIZE_MAX`, -ENOMEM if buffer `(m|re)alloc` fails
+ */
+PDCPL_PUBLIC
+int
+pdcpl_getline(FILE *f, char **sp, size_t *ncp);
 
 PDCPL_EXTERN_C_END
 
