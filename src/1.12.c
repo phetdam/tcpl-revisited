@@ -8,6 +8,7 @@
 #include <ctype.h>
 #include <stdbool.h>
 #include <stddef.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 #define PDCPL_HAS_PROGRAM_USAGE
