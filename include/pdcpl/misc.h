@@ -17,7 +17,7 @@ PDCPL_EXTERN_C_BEGIN
  *
  * @param temp Temperature in Fahrenheit
  */
-static inline double
+PDCPL_INLINE double
 pdcpl_f2ctemp(double temp) { return 5 * (temp - 32) / 9; }
 
 /**
@@ -25,7 +25,7 @@ pdcpl_f2ctemp(double temp) { return 5 * (temp - 32) / 9; }
  *
  * @param temp Temperature in Celsius
  */
-static inline double
+PDCPL_INLINE double
 pdcpl_c2ftemp(double temp) { return 9 * temp / 5 + 32; }
 
 PDCPL_EXTERN_C_END

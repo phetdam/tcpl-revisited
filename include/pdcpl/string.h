@@ -27,7 +27,7 @@ PDCPL_EXTERN_C_BEGIN
  *
  * @param c Incoming character
  */
-static inline const char *
+PDCPL_INLINE const char *
 pdcpl_stresc(int c)
 {
   switch (c) {
@@ -69,7 +69,7 @@ pdcpl_stresc(int c)
  *
  * @param c Incoming character
  */
-static inline bool
+PDCPL_INLINE bool
 pdcpl_isesc(int c)
 {
   return (pdcpl_stresc(c)) ? true : false;
@@ -83,7 +83,7 @@ pdcpl_isesc(int c)
  * @param value Value to get print width for
  * @param padding Padding to apply on both sides of the print width
  */
-static inline unsigned short
+PDCPL_INLINE unsigned short
 pdcpl_printpwtd(ptrdiff_t value, unsigned short padding)
 {
   // padding is on both sides + add extra col if value is negative
@@ -100,7 +100,7 @@ pdcpl_printpwtd(ptrdiff_t value, unsigned short padding)
  *
  * @param value Value to get print width for
  */
-static inline unsigned short
+PDCPL_INLINE unsigned short
 pdcpl_printwtd(ptrdiff_t value)
 {
   return pdcpl_printpwtd(value, 0);

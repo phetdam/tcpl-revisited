@@ -27,6 +27,16 @@
 #define PDCPL_CONCAT_I(x, y) x ## y
 #define PDCPL_CONCAT(x, y) PDCPL_CONCAT_I(x, y)
 
+// allow C++-like use of inline in C code
+#ifdef __cplusplus
+#define PDCPL_INLINE inline
+#else
+#define PDCPL_INLINE static inline
+#endif  // __cplusplus
+
+// macro to indicate extern inline, i.e. never static inline
+#define PDCPL_EXTERN_INLINE inline
+
 // macro for the program name
 #define PDCPL_PROGRAM_NAME pdcpl_main_program_name
 
