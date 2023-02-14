@@ -141,3 +141,39 @@ pdcpl_getline(FILE *f, char **sp, size_t *ncp)
     *ncp = nc;
   return 0;
 }
+
+/**
+ * Write a reversed copy of a string `s` to a buffer.
+ *
+ * Behavior is undefined if `s` is not `NULL`-terminated.
+ *
+ * @param s Byte string to reverse, if `NULL` function is a no-op
+ * @param srp Address of a `char *` pointing to the reversed string
+ * @param ncp Address of a `size_t` giving the string length (can be `NULL`)
+ * @returns 0 if no error, -EINVAL if `srp` is `NULL`, -ENOMEM if malloc fails
+ */
+PDCPL_PUBLIC
+int
+pdcpl_strrev(const char *s, char **srp, size_t *ncp)
+{
+  // allow no-op if input string is NULL
+  if (!s)
+    return 0;
+  // target must be valid, although we also allow ncp to be NULL
+  if (!srp)
+    return -EINVAL;
+  // get length of string first + allocate new buffer (don't forget +1)
+  size_t len = strlen(s);
+  char *rev = malloc((len + 1) * sizeof *rev);
+  if (!rev)
+    return -ENOMEM;
+  // fill in reverse, write '\0', and set *srp
+  for (size_t i = 0; i < len; i++)
+    rev[len - i - 1] = s[i];
+  rev[len] = '\0';
+  *srp = rev;
+  // if ncp is not NULL, also write the string length written
+  if (ncp)
+    *ncp = len;
+  return 0;
+}

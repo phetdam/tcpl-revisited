@@ -213,6 +213,20 @@ PDCPL_PUBLIC
 int
 pdcpl_getline(FILE *f, char **sp, size_t *ncp);
 
+/**
+ * Write a reversed copy of a string `s` to a buffer.
+ *
+ * Behavior is undefined if `s` is not `NULL`-terminated.
+ *
+ * @param s Byte string to reverse, if `NULL` function is a no-op
+ * @param srp Address of a `char *` pointing to the reversed string
+ * @param ncp Address of a `size_t` giving the string length (can be `NULL`)
+ * @returns 0 if no error, -EINVAL if `srp` is `NULL`, -ENOMEM if malloc fails
+ */
+PDCPL_PUBLIC
+int
+pdcpl_strrev(const char *s, char **srp, size_t *ncp);
+
 PDCPL_EXTERN_C_END
 
 #endif  // PDCPL_STRING_H_
