@@ -201,13 +201,13 @@ pdcpl_fwc(FILE *f, pdcpl_wcresults *rp);
  *
  * On success, `*sp` will point to a `NULL`-terminated `char` buffer containing
  * the contents of the line, excluding the `\n`, read from `f`. If `ncp` is not
- * `NULL`, `*ncp` contains the length of the buffer - 1, i.e. the line length.
+ * `NULL`, it contains the length of the buffer - 1, i.e. the line length.
  *
  * @param f `FILE *` stream to read line from
  * @param sp Address of a `char *` for pointing to the line buffer
  * @param ncp Address of `size_t` to store line length (can be `NULL`)
  * @returns 0 if no error, -EINVAL if `f` or `sp` are `NULL`, -ERANGE if the
- *  line being read exceeds `SIZE_MAX`, -ENOMEM if buffer `(m|re)alloc` fails
+ *  line read exceeds `SIZE_MAX - 1`, -ENOMEM if buffer `(m|re)alloc` fails
  */
 PDCPL_PUBLIC
 int
