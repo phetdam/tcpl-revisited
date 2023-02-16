@@ -20,7 +20,7 @@ PDCPL_PROGRAM_USAGE_DEF
   "Lines up to SIZE_MAX - 1 in length can be read as we need space for the\n"
   "null terminator. However, if a line longer than SIZE_MAX - 1 is in fact\n"
   "encountered, the function used to read the lines, pdcpl_getline, will\n"
-  "correctly return -ERANGE and clean up after itself.\n"
+  "correctly return -ERANGE and clean up after itself before program exit.\n"
   "\n"
   "To provide an example of program output, if the top-level CMakeLists.txt\n"
   "was used as input to this program, the output would be\n"

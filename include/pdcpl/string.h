@@ -216,7 +216,8 @@ pdcpl_getline(FILE *f, char **sp, size_t *ncp);
 /**
  * Write a reversed copy of a string `s` to a buffer.
  *
- * Behavior is undefined if `s` is not `NULL`-terminated.
+ * Behavior is undefined if `s` is not `NULL`-terminated. If the length of `s`
+ * exceeds `SIZE_MAX - 1`, then it may be missing its trailing characters.
  *
  * @param s Byte string to reverse, if `NULL` function is a no-op
  * @param srp Address of a `char *` pointing to the reversed string
