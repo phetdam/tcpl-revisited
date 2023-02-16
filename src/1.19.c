@@ -33,7 +33,7 @@ PDCPL_ARG_MAIN
   // buffer for current and reversed current lines
   char *line = NULL, *line_r = NULL;
   // keep going until we reach EOF
-  do {
+  while (!feof(stdin)) {
     // read line from stdin + reverse it (don't set line lengths)
     if (pdcpl_getline(stdin, &line, NULL) || pdcpl_strrev(line, &line_r, NULL))
       return EXIT_FAILURE;
@@ -42,6 +42,5 @@ PDCPL_ARG_MAIN
     printf("%s\n", line_r);
     free(line_r);
   }
-  while (!feof(stdin));
   return EXIT_SUCCESS;
 }

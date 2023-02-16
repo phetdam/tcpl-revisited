@@ -38,7 +38,7 @@ PDCPL_ARG_MAIN
   // buffer for current and max line
   char *cur_line, *max_line = NULL;
   // keep going until we reach EOF
-  do {
+  while (!feof(stdin)) {
     // read line from stdin, setting buffer address and line length
     if (pdcpl_getline(stdin, &cur_line, &cur_len))
       return EXIT_FAILURE;
@@ -52,7 +52,6 @@ PDCPL_ARG_MAIN
     // free current line, otherwise we leak (no-op if cur_line NULL)
     free(cur_line);
   }
-  while (!feof(stdin));
   // print out the max line (max_line NULL otherwise), free out of habit
   if (max_line)
     printf("%s\n%zu chars\n", max_line, max_len);
