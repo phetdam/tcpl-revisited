@@ -178,3 +178,52 @@ pdcpl_strrev(const char *s, char **srp, size_t *ncp)
     *ncp = len;
   return 0;
 }
+
+/**
+ * Detab characters read from one stream when writing to another.
+ *
+ * Each tab character is replaced with the a specified nonnegative number of
+ * spaces. The number of chars read and written can also be optionally stored.
+ *
+ * @param in `FILE *` stream to read from
+ * @param out `FILE *` stream to write to
+ * @param spaces Number of spaces to replace a tab with
+ * @param nrp Address to write number of chars read (can be `NULL`)
+ * @param nwp Address to write number of chars written (can be `NULL`)
+ * @returns 0 on success, -errno if there is a stream error
+ */
+PDCPL_PUBLIC
+int
+pdcpl_detab(FILE *in, FILE *out, unsigned int spaces, size_t *nrp, size_t *nwp)
+{
+  // we allow ncp, nwp to be optional and for spaces to be zero
+  if (!in || !out)
+    return -EINVAL;
+  // fgetc() output, counter for spaces, number of chars read + written
+  int c;
+  unsigned int i;
+  size_t n_read = 0, n_write = 0;
+  // simple per-character replacement, updating read/written char counts
+  while ((c = fgetc(in)) != EOF) {
+    if (c == '\t') {
+      for (i = 0; i < spaces; i++) {
+        fputc(' ', out);
+        n_write++;
+      }
+    }
+    else {
+      fputc(c, out);
+      n_write++;
+    }
+    n_read++;
+  }
+  // check errors using errno
+  if (ferror(in) || ferror(out))
+    return -errno;
+  // set read/written char counts individually if they are not NULL
+  if (nrp)
+    *nrp = n_read;
+  if (nwp)
+    *nwp = n_write;
+  return 0;
+}

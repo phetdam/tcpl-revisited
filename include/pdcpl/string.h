@@ -228,6 +228,23 @@ PDCPL_PUBLIC
 int
 pdcpl_strrev(const char *s, char **srp, size_t *ncp);
 
+/**
+ * Detab characters read from one stream when writing to another.
+ *
+ * Each tab character is replaced with the a specified nonnegative number of
+ * spaces. The number of chars read and written can also be optionally stored.
+ *
+ * @param in `FILE *` stream to read from
+ * @param out `FILE *` stream to write to
+ * @param spaces Number of spaces to replace a tab with
+ * @param nrp Address to write number of chars read (can be `NULL`)
+ * @param nwp Address to write number of chars written (can be `NULL`)
+ * @returns 0 on success, -errno if there is a stream error
+ */
+PDCPL_PUBLIC
+int
+pdcpl_detab(FILE *in, FILE *out, unsigned int spaces, size_t *nrp, size_t *nwp);
+
 PDCPL_EXTERN_C_END
 
 #endif  // PDCPL_STRING_H_
