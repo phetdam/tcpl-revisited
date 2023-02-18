@@ -16,6 +16,13 @@
 #include "pdcpl/core.h"
 
 /**
+ * Return the min value of an unsigned integral type.
+ *
+ * @param type C type
+ */
+#define PDCPL_UNSIGNED_MIN(type) ((type) 0)
+
+/**
  * Return the max value of an unsigned integral type.
  *
  * @param type C type
@@ -46,7 +53,7 @@
   printf( \
     "%16s : [%ju, %ju]\n", \
     PDCPL_STRINGIFY(type), \
-    (uintmax_t) 0, \
+    (uintmax_t) PDCPL_UNSIGNED_MIN(type), \
     (uintmax_t) PDCPL_UNSIGNED_MAX(type) \
   )
 
