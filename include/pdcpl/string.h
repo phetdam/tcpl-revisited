@@ -231,7 +231,7 @@ pdcpl_strrev(const char *s, char **srp, size_t *ncp);
 /**
  * Detab characters read from one stream when writing to another.
  *
- * Each tab character is replaced with the a specified nonnegative number of
+ * Each tab character is replaced with the specified nonnegative number of
  * spaces. The number of chars read and written can also be optionally stored.
  *
  * @param in `FILE *` stream to read from
