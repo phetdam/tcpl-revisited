@@ -14,8 +14,7 @@
 #include "pdcpl/cliopts.h"
 #include "pdcpl/core.h"
 
-// cast is to satisfy the compiler since we use %zu as the printf specifier
-#define CHAR_LIMIT (size_t) 10
+#define CHAR_LIMIT 10
 
 PDCPL_PROGRAM_USAGE_DEF
 (
@@ -50,9 +49,10 @@ PDCPL_ARG_MAIN
       break;
     if (c == EOF)
       break;
-    s[i] = c;
+    s[i] = (char) c;
   }
-  printf("Read %s (%zu chars, maximum %zu)\n", s, strlen(s), CHAR_LIMIT);
+  // use %d specifier since CHAR_LIMIT is an int
+  printf("Read %s (%zu chars, maximum %d)\n", s, strlen(s), CHAR_LIMIT);
   free(s);\
   // check for stream error before exiting
   return (ferror(stdin)) ? EXIT_FAILURE : EXIT_SUCCESS;
