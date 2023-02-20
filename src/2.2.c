@@ -53,7 +53,7 @@ PDCPL_ARG_MAIN
   }
   // use %d specifier since CHAR_LIMIT is an int
   printf("Read %s (%zu chars, maximum %d)\n", s, strlen(s), CHAR_LIMIT);
-  free(s);\
+  free(s);
   // check for stream error before exiting
   return (ferror(stdin)) ? EXIT_FAILURE : EXIT_SUCCESS;
 }
