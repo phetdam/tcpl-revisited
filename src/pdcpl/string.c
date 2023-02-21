@@ -182,13 +182,13 @@ pdcpl_strrev(const char *s, char **srp, size_t *ncp)
 /**
  * Detab characters read from one stream when writing to another.
  *
- * Each tab character is replaced with an appropriate nonnegative number of
- * spaces until the next tab stop. The number of chars read and written can
- * also be optionally stored if the appropriate pointers are not `NULL`.
+ * Each tab character is replaced with an appropriate number of spaces until
+ * the next tab stop. The number of chars read and written can also be
+ * optionally stored if the appropriate pointers are not `NULL`.
  *
  * @param in `FILE *` stream to read from
  * @param out `FILE *` stream to write to
- * @param spaces Number of spaces per tab stop
+ * @param spaces Number of spaces per tab stop, must be positive
  * @param nrp Address to write number of chars read (can be `NULL`)
  * @param nwp Address to write number of chars written (can be `NULL`)
  * @returns 0 on success, -errno if there is a stream error
