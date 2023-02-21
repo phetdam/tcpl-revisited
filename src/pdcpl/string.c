@@ -182,12 +182,13 @@ pdcpl_strrev(const char *s, char **srp, size_t *ncp)
 /**
  * Detab characters read from one stream when writing to another.
  *
- * Each tab character is replaced with the specified nonnegative number of
- * spaces. The number of chars read and written can also be optionally stored.
+ * Each tab character is replaced with an appropriate nonnegative number of
+ * spaces until the next tab stop. The number of chars read and written can
+ * also be optionally stored if the appropriate pointers are not `NULL`.
  *
  * @param in `FILE *` stream to read from
  * @param out `FILE *` stream to write to
- * @param spaces Number of spaces to replace a tab with
+ * @param spaces Number of spaces per tab stop
  * @param nrp Address to write number of chars read (can be `NULL`)
  * @param nwp Address to write number of chars written (can be `NULL`)
  * @returns 0 on success, -errno if there is a stream error
@@ -196,23 +197,35 @@ PDCPL_PUBLIC
 int
 pdcpl_detab(FILE *in, FILE *out, unsigned int spaces, size_t *nrp, size_t *nwp)
 {
-  // we allow ncp, nwp to be optional and for spaces to be zero
-  if (!in || !out)
+  // we allow ncp, nwp to be optional
+  if (!in || !out || !spaces)
     return -EINVAL;
   // fgetc() output, counter for spaces, number of chars read + written
   int c;
   unsigned int i;
   size_t n_read = 0, n_write = 0;
+  // current column number of current line, first column is 0
+  size_t line_col = 0;
+  // number of spaces to next tab stop
+  unsigned int to_next;
   // simple per-character replacement, updating read/written char counts
   while ((c = fgetc(in)) != EOF) {
+    if (c == '\n')
+      line_col = 0;
     if (c == '\t') {
-      for (i = 0; i < spaces; i++) {
+      to_next = pdcpl_next_tab_size(line_col, spaces);
+      for (i = 0; i < to_next; i++) {
         fputc(' ', out);
+        // need to advance the current column as we write spaces
+        line_col++;
         n_write++;
       }
     }
     else {
       fputc(c, out);
+      // goes inside the else to prevent double-increment when we read a tab
+      // as we already increment line_col enough inside the for loop
+      line_col++;
       n_write++;
     }
     n_read++;

@@ -229,14 +229,41 @@ int
 pdcpl_strrev(const char *s, char **srp, size_t *ncp);
 
 /**
+ * Compute the next tab stop from the current column position.
+ *
+ * @param col Current column, first column is 0
+ * @param tab_size Tab size
+ */
+static inline size_t
+pdcpl_next_tab_stop(size_t col, unsigned int tab_size)
+{
+  return (col % tab_size == 0) ? col : (col / tab_size + 1) * tab_size;
+}
+
+/**
+ * Return the number of columns advanced by the next tab from `col`.
+ *
+ * For example, if `col` was 13 and `tab_size` was 8, function returns 3.
+ *
+ * @param col Current column, first column is 0
+ * @param tab_size Tab size
+ */
+static inline unsigned int
+pdcpl_next_tab_size(size_t col, unsigned int tab_size)
+{
+  return (unsigned int) (pdcpl_next_tab_stop(col, tab_size) - col);
+}
+
+/**
  * Detab characters read from one stream when writing to another.
  *
- * Each tab character is replaced with the specified nonnegative number of
- * spaces. The number of chars read and written can also be optionally stored.
+ * Each tab character is replaced with an appropriate nonnegative number of
+ * spaces until the next tab stop. The number of chars read and written can
+ * also be optionally stored if the appropriate pointers are not `NULL`.
  *
  * @param in `FILE *` stream to read from
  * @param out `FILE *` stream to write to
- * @param spaces Number of spaces to replace a tab with
+ * @param spaces Number of spaces per tab stop
  * @param nrp Address to write number of chars read (can be `NULL`)
  * @param nwp Address to write number of chars written (can be `NULL`)
  * @returns 0 on success, -errno if there is a stream error

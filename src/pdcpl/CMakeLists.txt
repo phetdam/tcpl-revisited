@@ -6,3 +6,7 @@ add_library(pdcpl SHARED histogram.c "string.c")
 # handling by using set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON), but we opt not to
 # do this to make our code build-system neutral.
 target_compile_definitions(pdcpl PRIVATE PDCPL_BUILD_DLL)
+# need math library for *nix-like systems (not needed yet, so commented)
+# if(UNIX)
+#     target_link_libraries(pdcpl PRIVATE m)
+# endif()
