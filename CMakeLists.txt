@@ -24,8 +24,8 @@ project(
     VERSION ${PDCPL_VERSION}
     DESCRIPTION "Exercises from The C Programming Language, 2nd ed."
     HOMEPAGE_URL https://github.com/phetdam/tcpl-revisited
-    # C++ is here preemptively since Google Test might be used for testing
-    LANGUAGES C
+    # C++ is here since we use Google Test for testing
+    LANGUAGES C CXX
 )
 
 # set some system information variables used for the version info. note the
@@ -76,4 +76,18 @@ include(AddStandalone)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
+set(GTEST_MIN_VERSION 1.10)
+find_package(GTest ${GTEST_MIN_VERSION})
+
 add_subdirectory(src)
+
+# only add tests if Google Test was found
+if(GTest_FOUND)
+    enable_testing()
+    add_subdirectory(test)
+else()
+    message(
+        WARNING
+        "Google Test >=${GTEST_MIN_VERSION} not found. No tests will be built."
+    )
+endif()
