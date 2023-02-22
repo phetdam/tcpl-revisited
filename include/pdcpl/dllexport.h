@@ -15,7 +15,7 @@
 #define PDCPL_PUBLIC __declspec(dllexport)
 #else
 #define PDCPL_PUBLIC __declspec(dllimport)
-#endif  // _WIN32
+#endif  // PDCPL_BUILD_DLL
 #else
 #define PDCPL_PUBLIC
 #endif  // _WIN32
