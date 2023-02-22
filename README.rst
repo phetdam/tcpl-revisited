@@ -58,7 +58,7 @@ project will use the release VC++ shared C runtime.
 For those who aren't aware that there are multiple ABI-incompatible C runtime
 libraries on Windows, please read `the Microsoft article on them`__. Lots of
 annoying build and runtime issues can happen if you link against the wrong
-VC++ runtime, as just consider this quote from the article:
+VC++ runtime, as unlike on \*nix systems, the article notes that
 
    Every executable image (EXE or DLL) can have its own statically linked CRT,
    or can dynamically link to a CRT.
