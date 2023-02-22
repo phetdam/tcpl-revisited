@@ -10,11 +10,61 @@ A long belated return to the book that first introduced me to programming.
 About
 -----
 
-TBA.
+TBA. I wanted to pay homage to my programming roots, as my first language was
+C, while also using my current knowledge of modern [#]_ C, CMake_, and
+cross-platform development to holistically scratch my C itch.
+
+.. [#] By modern C, I mean C11+, although I've never used ``_Generic`` before.
 
 Building from source
 --------------------
 
-TBA, but likely will require CMake_.
+Use CMake_. On x86-64 \*nix systems, the CMake release build command is
+
+.. code:: bash
+
+   cmake -S . -B build -DCMAKE_BUILD_TYPE=Release && cmake --build build -j
+
+For Windows, the CMake release build command is
+
+.. code:: shell
+
+   cmake -S . -B build_windows -G Ninja -DCMAKE_BUILD_TYPE=Release && ^
+   cmake --build build_windows -j
+
+Here the bitness of the build artifacts depends on the command prompt used,
+i.e. the "normal" Developer Command Prompt will produce 32-bit objects while
+the x64 Native Tools Command prompt will produce 64-bit objects.
+
+Building unit tests
+-------------------
+
+TBA, but will use `Google Test`_. Somewhat going against Google's own
+recommendations, the CMake build will look for an existing Google Test
+installation, and if not found, will print a message and skip building tests.
+You can build Google Test yourself and then add to the CMake configure command
+
+.. code:: bash
+
+   -DGTEST_ROOT=/path/to/googletest
+
+The ``/path/to/googletest`` directory should have ``include``, ``lib``, and on
+Windows, ``bin``. It's recommended to just build Google Test as a static
+library using CMake, and on Windows, ``-Dgtest_force_shared_crt=1`` must be
+specified to force linking against the shared VC++ runtime. Please build Google
+Test in release mode, as for ease of dependency management, on Windows this
+project will use the release VC++ shared C runtime.
+
+For those who aren't aware that there are multiple ABI-incompatible C runtime
+libraries on Windows, please read `the Microsoft article on them`__. Lots of
+annoying build and runtime issues can happen if you link against the wrong
+VC++ runtime, as just consider this quote from the article:
+
+   Every executable image (EXE or DLL) can have its own statically linked CRT,
+   or can dynamically link to a CRT.
+
+.. __: https://learn.microsoft.com/en-us/cpp/c-runtime-library/crt-library-features
 
 .. _CMake: https://cmake.org/cmake/help/latest/
+
+.. _Google Test: http://google.github.io/googletest/
