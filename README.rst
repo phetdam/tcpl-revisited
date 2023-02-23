@@ -39,10 +39,11 @@ the x64 Native Tools Command prompt will produce 64-bit objects.
 Building unit tests
 -------------------
 
-To build the unit tests, `Google Test`_ is required. The CMake build will look
-for an existing Google Test installation, and if not found, will print a
-message and skip building tests. You can build Google Test yourself and then
-add to the CMake configure command
+To build the unit tests, `Google Test`_ is required. Somewhat going against
+Google's own recommendations, the CMake build will look for an existing Google
+Test installation, and if not found, will print a message and skip building
+tests. You can build Google Test yourself and then add to the CMake configure
+command
 
 .. code:: bash
 
