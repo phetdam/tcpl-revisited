@@ -39,10 +39,10 @@ the x64 Native Tools Command prompt will produce 64-bit objects.
 Building unit tests
 -------------------
 
-TBA, but will use `Google Test`_. Somewhat going against Google's own
-recommendations, the CMake build will look for an existing Google Test
-installation, and if not found, will print a message and skip building tests.
-You can build Google Test yourself and then add to the CMake configure command
+To build the unit tests, `Google Test`_ is required. The CMake build will look
+for an existing Google Test installation, and if not found, will print a
+message and skip building tests. You can build Google Test yourself and then
+add to the CMake configure command
 
 .. code:: bash
 
@@ -51,10 +51,11 @@ You can build Google Test yourself and then add to the CMake configure command
 The ``/path/to/googletest`` directory should have ``include``, ``lib``, and on
 Windows, ``bin``. It's recommended to just build Google Test as a static
 library using CMake, and on Windows, ``-Dgtest_force_shared_crt=1`` must be
-specified to force linking against the shared VC++ C runtime. Note that you
-should have both debug and release builds for Google Test, as by default, debug
-builds cause Google Test libraries to link against the debug VC++ C runtime,
-release builds cause linking against the release VC++ C runtime [#]_.
+specified to force linking against the shared VC++ C runtime. Note that on
+Windows, you should have both debug and release builds for Google Test, as by
+default, debug builds cause Google Test libraries to link against the debug
+VC++ C runtime, release builds cause linking against the release VC++ C
+runtime [#]_.
 
 For those who aren't aware that there are multiple ABI-incompatible C runtime
 libraries on Windows, please read `the Microsoft article on them`__. Lots of
