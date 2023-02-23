@@ -12,6 +12,8 @@ if(WIN32)
         /wd4625 /wd4626 /wd5026 /wd5027
         # Spectre mitigation, winbase.h macro expansion issue
         /wd5045 /wd5105
+        # MSVC doesn't define __cplusplus correctly unless this is specified
+        /Zc:__cplusplus
     )
     if(NOT CMAKE_BUILD_TYPE STREQUAL Release)
         add_compile_options(/Od /DEBUG)
