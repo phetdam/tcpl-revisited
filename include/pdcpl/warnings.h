@@ -46,26 +46,26 @@
  *
  * @param option Warning option, e.g. "-Wuninitialized"
  */
-#define PDCPL_GCC_WARNING_DISABLE(option) \
+#define PDCPL_GNU_WARNING_DISABLE(option) \
   _Pragma("GCC diagnostic push") \
   _Pragma(PDCPL_STRINGIFY(GCC diagnostic ignored option))
 
 /**
  * Pop warning state.
  */
-#define PDCPL_GCC_WARNING_ENABLE() _Pragma("GCC diagnostic pop")
+#define PDCPL_GNU_WARNING_ENABLE() _Pragma("GCC diagnostic pop")
 #else
 /**
  * Push warning state and disable warning option.
  *
  * @param option Warning option, e.g. "-Wuninitialized"
  */
-#define PDCPL_GCC_WARNING_DISABLE(option)
+#define PDCPL_GNU_WARNING_DISABLE(option)
 
 /**
  * Pop warning state.
  */
-#define PDCPL_GCC_WARNING_ENABLE()
+#define PDCPL_GNU_WARNING_ENABLE()
 #endif  // __GNUC__
 
 #endif  // PDCPL_WARNINGS_H_
