@@ -56,9 +56,6 @@ should have both debug and release builds for Google Test, as by default, debug
 builds cause Google Test libraries to link against the debug VC++ C runtime,
 release builds cause linking against the release VC++ C runtime [#]_.
 
- as for ease of dependency management, on Windows this
-project will use the release VC++ shared C runtime.
-
 For those who aren't aware that there are multiple ABI-incompatible C runtime
 libraries on Windows, please read `the Microsoft article on them`__. Lots of
 annoying build and runtime issues can happen if you link against the wrong
@@ -73,7 +70,7 @@ VC++ runtime, as unlike on \*nix systems, the article notes that
    ``VCRUNTIME[toolset].dll``, not the debug C runtime, i.e.
    ``VCRUNTIME[toolset]D.dll``. In a real, large software project, dependency
    management would be simplified on Windows, as there would be no need to
-   vendor separate debug DLLs.
+   vendor separate debug DLLs that need the debug VC++ C runtime.
 
 .. __: https://learn.microsoft.com/en-us/cpp/c-runtime-library/crt-library-features
 
