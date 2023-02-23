@@ -51,8 +51,12 @@ You can build Google Test yourself and then add to the CMake configure command
 The ``/path/to/googletest`` directory should have ``include``, ``lib``, and on
 Windows, ``bin``. It's recommended to just build Google Test as a static
 library using CMake, and on Windows, ``-Dgtest_force_shared_crt=1`` must be
-specified to force linking against the shared VC++ runtime. Please build Google
-Test in release mode, as for ease of dependency management, on Windows this
+specified to force linking against the shared VC++ C runtime. Note that you
+should have both debug and release builds for Google Test, as by default, debug
+builds cause Google Test libraries to link against the debug VC++ C runtime,
+release builds cause linking against the release VC++ C runtime [#]_.
+
+ as for ease of dependency management, on Windows this
 project will use the release VC++ shared C runtime.
 
 For those who aren't aware that there are multiple ABI-incompatible C runtime
@@ -62,6 +66,14 @@ VC++ runtime, as unlike on \*nix systems, the article notes that
 
    Every executable image (EXE or DLL) can have its own statically linked CRT,
    or can dynamically link to a CRT.
+
+.. [#] Thus foiled was my attempt to set ``CMAKE_MSVC_RUNTIME_LIBRARY`` to
+   ``MultiThreadedDLL`` in CMake, which would mean that all Windows builds
+   would link against the release VC++ C runtime, i.e.
+   ``VCRUNTIME[toolset].dll``, not the debug C runtime, i.e.
+   ``VCRUNTIME[toolset]D.dll``. In a real, large software project, dependency
+   management would be simplified on Windows, as there would be no need to
+   vendor separate debug DLLs.
 
 .. __: https://learn.microsoft.com/en-us/cpp/c-runtime-library/crt-library-features
 
