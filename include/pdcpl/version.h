@@ -12,6 +12,7 @@
 #include <string.h>
 
 #include "pdcpl/core.h"
+#include "pdcpl/platform.h"
 
 // major, minor, patch versions
 #ifndef PDCPL_VERSION_MAJOR
@@ -37,12 +38,25 @@
   )
 #define PDCPL_VERSION_STRING PDCPL_STRINGIFY(PDCPL_VERSION)
 
+// build type, real build defines as lowercase CMake CMAKE_BUILD_TYPE
+#ifndef PDCPL_BUILD_TYPE
+#define PDCPL_BUILD_TYPE "debug"
+#endif  // PDXKA_BUILD_TYPE
+
 /**
  * Print version information from within a `PDCPL_ARG_MAIN`.
  *
  * If `PDCPL_SET_PROGRAM_NAME()` has not been called, program name is empty.
  */
 #define PDCPL_PRINT_VERSION_INFO() \
-  printf("%s %s\n", PDCPL_PROGRAM_NAME, PDCPL_VERSION_STRING)
+  printf( \
+    "%s %s (%s, %s %s %s)\n", \
+    PDCPL_PROGRAM_NAME, \
+    PDCPL_VERSION_STRING, \
+    PDCPL_BUILD_TYPE, \
+    PDCPL_SYSTEM_ARCH, \
+    PDCPL_SYSTEM_NAME, \
+    PDCPL_SYSTEM_VERSION \
+  )
 
 #endif  // PDCPL_VERSION_H_

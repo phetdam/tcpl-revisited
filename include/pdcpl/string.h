@@ -9,6 +9,7 @@
 #define PDCPL_STRING_H_
 
 #include <ctype.h>
+#include <errno.h>
 #include <math.h>
 #include <stdbool.h>
 #include <stddef.h>
@@ -271,6 +272,25 @@ pdcpl_next_tab_size(size_t col, unsigned int tab_size)
 PDCPL_PUBLIC
 int
 pdcpl_detab(FILE *in, FILE *out, unsigned int spaces, size_t *nrp, size_t *nwp);
+
+/**
+ * Return the hex value if valid hex character, -EINVAL otherwise.
+ *
+ * `c` must match `[0-9a-fA-F]{1}` to be a valid hex character.
+ *
+ * @param c Character to examine
+ */
+PDCPL_INLINE int
+pdcpl_hexval(char c)
+{
+  if (c >= '0' && c <= '9')
+    return c - '0';
+  if (c >= 'a' && c <= 'f')
+    return c - 'a' + 10;
+  if (c >= 'A' && c <= 'F')
+    return c - 'A' + 10;
+  return -EINVAL;
+}
 
 PDCPL_EXTERN_C_END
 
