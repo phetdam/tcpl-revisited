@@ -93,7 +93,7 @@ pdcpl_printpwtd(ptrdiff_t value, unsigned short padding)
   if (!value)
     return 1 + pad_width;
   // log10 of PTRDIFF_MAX will never exceed unsigned short max
-  return (unsigned short) round(log10(fabs(value))) + pad_width;
+  return (unsigned short) ceil(log10(fabs(value))) + pad_width;
 }
 
 /**
