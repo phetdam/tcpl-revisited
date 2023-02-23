@@ -7,13 +7,15 @@ if(WIN32)
     # set(CMAKE_MSVC_RUNTIME_LIBRARY MultiThreadedDLL)
     add_compile_options(
         /Wall
+        # MSVC doesn't define __cplusplus correctly unless this is specified
+        /Zc:__cplusplus
         # implicit definition of copy, move ctor/operator= as deleted. MSVC
         # tends to emit this whenenever one uses Google Test.
         /wd4625 /wd4626 /wd5026 /wd5027
         # Spectre mitigation, winbase.h macro expansion issue
         /wd5045 /wd5105
-        # MSVC doesn't define __cplusplus correctly unless this is specified
-        /Zc:__cplusplus
+        # unreferenced inline function removed
+        /wd4514
     )
     if(NOT CMAKE_BUILD_TYPE STREQUAL Release)
         add_compile_options(/Od /DEBUG)
