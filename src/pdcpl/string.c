@@ -10,8 +10,8 @@
 #include <errno.h>
 #include <stdbool.h>
 #include <stddef.h>
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "pdcpl/dllexport.h"
 
@@ -45,6 +45,9 @@ pdcpl_strwc(const char *s, pdcpl_wcresults *rp)
     PDCPL_WC_CHECK_LINE(c, nl);
     PDCPL_WC_CHECK_WORD(c, in_word, nw);
   }
+  // at least one line if nc >= 1, so increment nl to avoid undercount
+  if (nc)
+    nl++;
   // populate results and return
   PDCPL_SET_WCRESULTS(rp, nw, nc, nl);
   return 0;
@@ -78,6 +81,9 @@ pdcpl_fwc(FILE *f, pdcpl_wcresults *rp)
     PDCPL_WC_CHECK_LINE(c, nl);
     PDCPL_WC_CHECK_WORD(c, in_word, nw);
   }
+  // at least one line if nc >= 1, so increment nl to avoid undercount
+  if (nc)
+    nl++;
   // populate results and return
   PDCPL_SET_WCRESULTS(rp, nw, nc, nl);
   return 0;
