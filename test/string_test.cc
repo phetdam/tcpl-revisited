@@ -18,6 +18,38 @@
 namespace {
 
 /**
+ * Define a pair of static inline const hex string and value.
+ *
+ * The corresponding value will be named `[name]_val_` and is `constexpr` while
+ * the string will be `PDCPL_CXX20_CONSTEXPR`.
+ *
+ * @param name Name to bind string to
+ * @param value Hex value
+ */
+#define PDCPL_HEX_STRING_TEST_PAIR(name, value) \
+  static inline PDCPL_CXX_20_CONSTEXPR std::string name{ \
+    PDCPL_STRINGIFY(value) \
+  }; \
+  static inline constexpr std::intmax_t PDCPL_CONCAT(name, val_) = value
+
+/**
+ * Define a pair of static inline const nonnegative hex string and value.
+ *
+ * The corresponding value will be named `[name]_val_` and is `constexpr` while
+ * the string will be `PDCPL_CXX20_CONSTEXPR`. Since a hex value without a
+ * prefix is accepted, due to hex literal rules it must not be negative.
+ *
+ * @param name Name to bind string to
+ * @param nn_value Non-negative hex value with the 0x or 0X prefix
+ */
+#define PDCPL_HEX_STRING_TEST_PAIR_NO_PREFIX(name, nn_value) \
+  static inline PDCPL_CXX_20_CONSTEXPR std::string name{ \
+    PDCPL_STRINGIFY(nn_value) \
+  }; \
+  static inline constexpr std::intmax_t \
+  PDCPL_CONCAT(name, val_) = PDCPL_CONCAT(0x, nn_value)
+
+/**
  * Test fixture class for string tests.
  */
 class StringTest : public ::testing::Test {
@@ -55,10 +87,16 @@ protected:
 #endif  // __cplusplus < PDCPL_CXX20
   static inline constexpr std::size_t wc_lines_ = 6;
 
-  // string to reverse + actual reversed string
+  // string to reverse
   static inline PDCPL_CXX_20_CONSTEXPR std::string rev_string_{
     "hello nice to meet you"
   };
+
+  // strings to convert to integer hex values and their corresponding values
+  PDCPL_HEX_STRING_TEST_PAIR(hex_beef_, 0xdeadbeef);
+  PDCPL_HEX_STRING_TEST_PAIR(hex_neg_, -0xAFE12);
+  PDCPL_HEX_STRING_TEST_PAIR(hex_mess_, -0XaE098FbD0);
+  PDCPL_HEX_STRING_TEST_PAIR_NO_PREFIX(hex_nop_, 34343dae);
 };
 
 /**
@@ -85,7 +123,8 @@ TEST_F(StringTest, TabStopTest)
 TEST_F(StringTest, WordCountTest)
 {
   pdcpl_wcresults res;
-  pdcpl_strwc(wc_string_.c_str(), &res);
+  // if something goes wrong, the test will abort
+  ASSERT_FALSE(pdcpl_strwc(wc_string_.c_str(), &res));
   EXPECT_EQ(res.nc, wc_chars_);
   EXPECT_EQ(res.nl, wc_lines_);
   EXPECT_EQ(res.nw, wc_words_);
@@ -99,12 +138,32 @@ TEST_F(StringTest, StringReverseTest)
   // actual reversed string + its size
   char *act_rev;
   std::size_t n_act_rev;
-  pdcpl_strrev(rev_string_.c_str(), &act_rev, &n_act_rev);
+  ASSERT_FALSE(pdcpl_strrev(rev_string_.c_str(), &act_rev, &n_act_rev));
   // expected reversed string
   std::string exp_rev{rev_string_.rbegin(), rev_string_.rend()};
   // contents/size should match
   EXPECT_EQ(exp_rev, std::string{act_rev});
   EXPECT_EQ(exp_rev.size(), n_act_rev);
+}
+
+/**
+ * Test that `pdcpl_htoj` works as expected.
+ */
+TEST_F(StringTest, HexConvertTest)
+{
+  intmax_t value;
+  // 0xdeadbeef
+  ASSERT_FALSE(pdcpl_htoj(hex_beef_.c_str(), &value));
+  EXPECT_EQ(hex_beef_val_, value);
+  // -0xafe12
+  ASSERT_FALSE(pdcpl_htoj(hex_neg_.c_str(), &value));
+  EXPECT_EQ(hex_neg_val_, value);
+  // -0xae098fbd0
+  ASSERT_FALSE(pdcpl_htoj(hex_mess_.c_str(), &value));
+  EXPECT_EQ(hex_mess_val_, value);
+  // 0x34343dae
+  ASSERT_FALSE(pdcpl_htoj(hex_nop_.c_str(), &value));
+  EXPECT_EQ(hex_nop_val_, value);
 }
 
 }  // namespace

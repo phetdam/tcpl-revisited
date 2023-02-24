@@ -10,6 +10,7 @@
 #include <errno.h>
 #include <stdbool.h>
 #include <stddef.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -244,5 +245,59 @@ pdcpl_detab(FILE *in, FILE *out, unsigned int spaces, size_t *nrp, size_t *nwp)
     *nrp = n_read;
   if (nwp)
     *nwp = n_write;
+  return 0;
+}
+
+/**
+ * Convert a string of hex digits into the equivalent integer value.
+ *
+ * The string must match `-{0,1}(0x|0X){0,1}[0-9a-fA-F]+`.
+ *
+ * @param s Non-empty string to conver
+ * @param out Address to `intmax_t` to store converted value
+ * @returns 0 on success, -EINVAL if `out` or `s` are `NULL` as well as if
+ *  `s` is empty or misspecified (not a valid hex string).
+ */
+PDCPL_PUBLIC
+int
+pdcpl_htoj(const char *s, intmax_t *out)
+{
+  if (!s || !out)
+    return -EINVAL;
+  // current hex multipler, length of s
+  intmax_t mult = 1;
+  size_t s_len = strlen(s);
+  // we don't allow empty strings
+  if (!s_len)
+    return -EINVAL;
+  // non-const convenience pointer to s + number of start chars to skip
+  char *t = (char *) s;
+  unsigned short skip_chars = 0;
+  // check for negative sign + increase skip
+  if (*t == '-') {
+    mult = -mult;
+    t++;
+    skip_chars++;
+  }
+  // check if there is a "0x" or "0X" + increase skip. note that we must ensure
+  // that s_len - skip_chars is >= 2, otherwise we will be out of bounds. there
+  // is no more need to increment t, so we just don't do that
+  if (s_len - skip_chars >= 2 && *t == '0' && (t[1] == 'x' || t[1] == 'X'))
+    skip_chars += 2;
+  // current hex char value, local value to update
+  int hex_c;
+  intmax_t value = 0;
+  // loop backwards so we go from lowest to highest digit
+  for (size_t i = 0; i < s_len - skip_chars; i++) {
+    // get hex value of current char; is < 0 on error
+    hex_c = pdcpl_hexval(s[s_len - i - 1]);
+    if (hex_c < 0)
+      return -EINVAL;
+    // update hex value and advance multiplier
+    value += mult * hex_c;
+    mult *= 16;
+  }
+  // done, so write the value and return 0
+  *out = value;
   return 0;
 }

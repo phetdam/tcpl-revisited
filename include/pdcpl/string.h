@@ -13,6 +13,7 @@
 #include <math.h>
 #include <stdbool.h>
 #include <stddef.h>
+#include <stdint.h>
 #include <stdio.h>
 
 #include "pdcpl/core.h"
@@ -299,6 +300,43 @@ pdcpl_hexval(char c)
   if (c >= 'A' && c <= 'F')
     return c - 'A' + 10;
   return -EINVAL;
+}
+
+/**
+ * Convert a string of hex digits into the equivalent integer value.
+ *
+ * The string must match `-{0,1}(0x|0X){0,1}[0-9a-fA-F]+`.
+ *
+ * @param s Non-empty string to conver
+ * @param out Address to `intmax_t` to store converted value
+ * @returns 0 on success, -EINVAL if `out` or `s` are `NULL` as well as if
+ *  `s` is empty or misspecified (not a valid hex string).
+ */
+PDCPL_PUBLIC
+int
+pdcpl_htoj(const char *s, intmax_t *out);
+
+/**
+ * Convert a string of hex digits into the equivalent integer value.
+ *
+ * The string must match `-{0,1}(0x|0X){0,1}[0-9a-fA-F]+`.
+ *
+ * @param s Non-empty string to conver
+ * @param out Address to `int` to store converted value
+ * @returns 0 on success, -EINVAL if `out` or `s` are `NULL` as well as if
+ *  `s` is empty or misspecified (not a valid hex string).
+ */
+PDCPL_INLINE int
+pdcpl_htoi(const char *s, int *out)
+{
+  if (!out)
+    return -EINVAL;
+  // use pdcpl_htoj and just cast the value
+  intmax_t value;
+  if (pdcpl_htoj(s, &value))
+    return -EINVAL;
+  *out = (int) value;
+  return 0;
 }
 
 PDCPL_EXTERN_C_END
