@@ -305,6 +305,8 @@ pdcpl_htoj(const char *s, intmax_t *out)
 /**
  * Get a copy of `s` with all chars matching those in `ds` removed.
  *
+ * Naive implementation that has time complexity of `O(strlen(s)strlen(ds))`.
+ *
  * @param s Original source string
  * @param op Address to `char *` pointing to the squeezed string
  * @param ds String of chars to remove from the original, can be empty
