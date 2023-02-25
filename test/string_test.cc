@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <cstdlib>
 #include <string>
 
 #include <gtest/gtest.h>
@@ -18,9 +19,9 @@
 namespace {
 
 /**
- * Define a pair of static inline const hex string and value.
+ * Define a pair of static inline const[expr] hex string and value.
  *
- * The corresponding value will be named `[name]_val_` and is `constexpr` while
+ * The corresponding value will be named `[name]val_` and is `constexpr` while
  * the string will be `PDCPL_CXX20_CONSTEXPR`.
  *
  * @param name Name to bind string to
@@ -33,9 +34,9 @@ namespace {
   static inline constexpr std::intmax_t PDCPL_CONCAT(name, val_) = value
 
 /**
- * Define a pair of static inline const nonnegative hex string and value.
+ * Define a pair of static inline const[expr] nonnegative hex string and value.
  *
- * The corresponding value will be named `[name]_val_` and is `constexpr` while
+ * The corresponding value will be named `[name]val_` and is `constexpr` while
  * the string will be `PDCPL_CXX20_CONSTEXPR`. Since a hex value without a
  * prefix is accepted, due to hex literal rules it must not be negative.
  *
@@ -48,6 +49,25 @@ namespace {
   }; \
   static inline constexpr std::intmax_t \
   PDCPL_CONCAT(name, val_) = PDCPL_CONCAT(0x, nn_value)
+
+/**
+ * Define static inline const[expr] strings for testing string squeezing.
+ *
+ * The strings are `PDCPL_CXX20_CONSTEXPR`, with the original string bound to
+ * `name`, `delete_chars` being bound to `[name]ds_`, and the expected
+ * `squeezed` being bound to `[name]sq_`.
+ *
+ * @param name Base name for the strings
+ * @param orig Original string
+ * @param delete_chars String with chars to remove from original string
+ * @param squeezed Expected squeezed string, i.e. w/o chars from `delete_chars`
+ */
+#define PDCPL_SQUEEZE_STRING_TEST_PARAMS(name, orig, delete_chars, squeezed) \
+  static inline PDCPL_CXX_20_CONSTEXPR std::string name{orig}; \
+  static inline PDCPL_CXX_20_CONSTEXPR std::string \
+  PDCPL_CONCAT(name, ds_){delete_chars}; \
+  static inline PDCPL_CXX_20_CONSTEXPR std::string \
+  PDCPL_CONCAT(name, sq_){squeezed}
 
 /**
  * Test fixture class for string tests.
@@ -79,12 +99,7 @@ protected:
   };
   // number of words, chars, lines
   static inline constexpr std::size_t wc_words_ = 14;
-// in C++20, use constexpr size() for this
-#if __cplusplus >= PDCPL_CXX_20
-  static inline constexpr std::size_t wc_chars_ = wc_string_.size() - 1;
-#else
-  static inline constexpr std::size_t wc_chars_ = 70;
-#endif  // __cplusplus < PDCPL_CXX20
+  static inline PDCPL_CXX_20_CONSTEXPR std::size_t wc_chars_ = wc_string_.size();
   static inline constexpr std::size_t wc_lines_ = 6;
 
   // string to reverse
@@ -97,6 +112,11 @@ protected:
   PDCPL_HEX_STRING_TEST_PAIR(hex_neg_, -0xAFE12);
   PDCPL_HEX_STRING_TEST_PAIR(hex_mess_, -0XaE098FbD0);
   PDCPL_HEX_STRING_TEST_PAIR_NO_PREFIX(hex_nop_, 34343dae);
+
+  // strings to squeeze, chars to delete, and their squeezed values
+  PDCPL_SQUEEZE_STRING_TEST_PARAMS(strsq_1_, "totally", "holy", "tta");
+  PDCPL_SQUEEZE_STRING_TEST_PARAMS(strsq_2_, "normally", "", "normally");
+  PDCPL_SQUEEZE_STRING_TEST_PARAMS(strsq_3_, "Veronica", "acinoVer", "");
 };
 
 /**
@@ -164,6 +184,27 @@ TEST_F(StringTest, HexConvertTest)
   // 0x34343dae
   ASSERT_FALSE(pdcpl_htoj(hex_nop_.c_str(), &value));
   EXPECT_EQ(hex_nop_val_, value);
+}
+
+/**
+ * Test that `pdcpl_strsqueeze` works as expected.
+ */
+TEST_F(StringTest, SqueezeTest)
+{
+  // must be freed after every successful call
+  char *res;
+  // normal case
+  ASSERT_FALSE(pdcpl_strsq(strsq_1_.c_str(), &res, strsq_1_ds_.c_str()));
+  EXPECT_EQ(strsq_1_sq_, std::string{res});
+  std::free(res);
+  // no chars to strip out
+  ASSERT_FALSE(pdcpl_strsq(strsq_2_.c_str(), &res, strsq_2_ds_.c_str()));
+  EXPECT_EQ(strsq_2_sq_, std::string{res});
+  std::free(res);
+  // strip all chars out
+  ASSERT_FALSE(pdcpl_strsq(strsq_3_.c_str(), &res, strsq_3_ds_.c_str()));
+  EXPECT_EQ(strsq_3_sq_, std::string{res});
+  std::free(res);
 }
 
 }  // namespace

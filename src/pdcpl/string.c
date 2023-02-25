@@ -315,7 +315,7 @@ pdcpl_htoj(const char *s, intmax_t *out)
  */
 PDCPL_PUBLIC
 int
-pdcpl_strsqueeze(const char *s, char **op, const char *ds)
+pdcpl_strsq(const char *s, char **op, const char *ds)
 {
   if (!s || !op || !ds)
     return -EINVAL;

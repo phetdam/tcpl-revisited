@@ -352,7 +352,7 @@ pdcpl_htoi(const char *s, int *out)
  */
 PDCPL_PUBLIC
 int
-pdcpl_strsqueeze(const char *s, char **op, const char *ds);
+pdcpl_strsq(const char *s, char **op, const char *ds);
 
 PDCPL_EXTERN_C_END
 
