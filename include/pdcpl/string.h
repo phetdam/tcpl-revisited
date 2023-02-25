@@ -307,7 +307,7 @@ pdcpl_hexval(char c)
  *
  * The string must match `-{0,1}(0x|0X){0,1}[0-9a-fA-F]+`.
  *
- * @param s Non-empty string to conver
+ * @param s Non-empty string to convert
  * @param out Address to `intmax_t` to store converted value
  * @returns 0 on success, -EINVAL if `out` or `s` are `NULL` as well as if
  *  `s` is empty or misspecified (not a valid hex string).
@@ -321,7 +321,7 @@ pdcpl_htoj(const char *s, intmax_t *out);
  *
  * The string must match `-{0,1}(0x|0X){0,1}[0-9a-fA-F]+`.
  *
- * @param s Non-empty string to conver
+ * @param s Non-empty string to convert
  * @param out Address to `int` to store converted value
  * @returns 0 on success, -EINVAL if `out` or `s` are `NULL` as well as if
  *  `s` is empty or misspecified (not a valid hex string).
@@ -338,6 +338,19 @@ pdcpl_htoi(const char *s, int *out)
   *out = (int) value;
   return 0;
 }
+
+/**
+ * Get a copy of `s` with all chars matching those in `ds` removed.
+ *
+ * @param s Original source string
+ * @param op Address to `char *` pointing to the squeezed string
+ * @param ds String of chars to remove from the original, can be empty
+ * @returns 0 on success, -EINVAL if any parameters are `NULL`, -ENOMEM if any
+ *  of the memory allocation operations fails
+ */
+PDCPL_PUBLIC
+int
+pdcpl_strsqueeze(const char *s, char **op, const char *ds);
 
 PDCPL_EXTERN_C_END
 

@@ -253,7 +253,7 @@ pdcpl_detab(FILE *in, FILE *out, unsigned int spaces, size_t *nrp, size_t *nwp)
  *
  * The string must match `-{0,1}(0x|0X){0,1}[0-9a-fA-F]+`.
  *
- * @param s Non-empty string to conver
+ * @param s Non-empty string to convert
  * @param out Address to `intmax_t` to store converted value
  * @returns 0 on success, -EINVAL if `out` or `s` are `NULL` as well as if
  *  `s` is empty or misspecified (not a valid hex string).
@@ -299,5 +299,64 @@ pdcpl_htoj(const char *s, intmax_t *out)
   }
   // done, so write the value and return 0
   *out = value;
+  return 0;
+}
+
+/**
+ * Get a copy of `s` with all chars matching those in `ds` removed.
+ *
+ * @param s Original source string
+ * @param op Address to `char *` pointing to the squeezed string
+ * @param ds String of chars to remove from the original, can be empty
+ * @returns 0 on success, -EINVAL if any parameters are `NULL`, -ENOMEM if any
+ *  of the memory allocation operations fails
+ */
+PDCPL_PUBLIC
+int
+pdcpl_strsqueeze(const char *s, char **op, const char *ds)
+{
+  if (!s || !op || !ds)
+    return -EINVAL;
+  // length of s, ds. both can be empty, i.e. only contain '\0'
+  size_t s_len = strlen(s), ds_len = strlen(ds);
+  // stripped string to copy contents to
+  char *ss;
+  // if s is empty, just copy the empty string
+  if (!s_len) {
+    ss = calloc(1, sizeof *ss);
+    if (!ss)
+      return -ENOMEM;
+    *op = ss;
+    return 0;
+  }
+  // otherwise, allocate memory for ss
+  ss = malloc((s_len + 1) * sizeof *ss);
+  // if ds is empty, no chars to strip, so just copy
+  if (!ds) {
+    *op = strcpy(ss, s);
+    return 0;
+  }
+  // otherwise, strip chars. use cursor so we don't need another loop index
+  char *ss_cur = ss;
+  for (size_t i = 0; i < s_len; i++) {
+    // true if char should not be copied; skip if we have a match
+    bool no_copy = false;
+    for (size_t j = 0; j < ds_len; j++) {
+      // match, so skip and stop inner loop
+      if (s[i] == ds[j]) {
+        no_copy = true;
+        break;
+      }
+    }
+    // only copy if no match
+    if (!no_copy)
+      *ss_cur++ = s[i];
+  }
+  // done copying, so write '\0', realloc, update *op, done
+  *ss_cur = '\0';
+  ss = realloc(ss, (strlen(ss) + 1) * sizeof *ss);
+  if (!ss)
+    return -ENOMEM;
+  *op = ss;
   return 0;
 }
