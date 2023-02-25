@@ -8,7 +8,7 @@
 #ifndef PDCPL_MISC_H_
 #define PDCPL_MISC_H_
 
-#include "pdcpl/core.h"
+#include "pdcpl/common.h"
 
 PDCPL_EXTERN_C_BEGIN
 

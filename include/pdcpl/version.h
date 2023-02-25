@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "pdcpl/core.h"
+#include "pdcpl/common.h"
 #include "pdcpl/platform.h"
 
 // major, minor, patch versions

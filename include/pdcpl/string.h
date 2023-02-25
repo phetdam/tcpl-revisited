@@ -16,7 +16,7 @@
 #include <stdint.h>
 #include <stdio.h>
 
-#include "pdcpl/core.h"
+#include "pdcpl/common.h"
 #include "pdcpl/dllexport.h"
 #include "pdcpl/warnings.h"
 
