@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION ${CMAKE_MINIMUM_REQUIRED_VERSION})
 
 if(WIN32)
+    # stop MSVC from warning about unsafe functions, C is unsafe by nature
+    add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
     # always use release VC++ C runtime for ease of dependency management.
     # note: turned this off since this makes Google Test integration difficult.
     # Google Test uses debug VC++ C runtime for debug, release for release.
