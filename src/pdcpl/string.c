@@ -311,7 +311,7 @@ pdcpl_htoj(const char *s, intmax_t *out)
  * @param op Address to `char *` pointing to the squeezed string
  * @param ds String of chars to remove from the original, can be empty
  * @returns 0 on success, -EINVAL if any parameters are `NULL`, -ENOMEM if any
- *  of the memory allocation operations fails
+ *  of the memory allocation operations fail
  */
 PDCPL_PUBLIC
 int
