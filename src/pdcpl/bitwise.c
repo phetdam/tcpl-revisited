@@ -16,7 +16,7 @@
  * Count the number of 1-bits in a value.
  *
  * By noting that `x &= (x - 1)` deletes the rightmost 1-bit, we can reduce the
- * number of loop iterations since we no longer have to go bit-by-bit.
+ * number of loop iterations since we no longer have to go bit by bit.
  *
  * @param x Value to count 1-bits for
  */
