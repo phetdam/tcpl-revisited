@@ -29,7 +29,7 @@ TEST_F(BitwiseTest, BitCountTest)
 /**
  * Test that `pdcpl_getbits` works as expected.
  */
-TEST_F(BitwiseTest, SetBitsTest)
+TEST_F(BitwiseTest, GetBitsTest)
 {
   unsigned int value;
   ASSERT_FALSE(pdcpl_getbits(0b110101001, &value, 5, 4));
@@ -39,7 +39,7 @@ TEST_F(BitwiseTest, SetBitsTest)
 /**
  * Test that `pdcpl_setbits` works as expected.
  */
-TEST_F(BitwiseTest, GetBitsTest)
+TEST_F(BitwiseTest, SetBitsTest)
 {
   unsigned int value;
   ASSERT_FALSE(pdcpl_setbits(0b1010100010101, &value, 6, 4, 0b0101001110));
