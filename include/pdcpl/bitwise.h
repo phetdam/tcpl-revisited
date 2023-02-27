@@ -120,6 +120,16 @@ pdcpl_invbits(
   return pdcpl_setbits(in, out, pos, n, ~in_bits);
 }
 
+/**
+ * Return `x` rotated to the right by `n` bits.
+ *
+ * @param x Value to rotate
+ * @param n Number of bits to rotate by
+ */
+PDCPL_PUBLIC
+unsigned int
+pdcpl_rrotbits(unsigned int x, unsigned short n);
+
 PDCPL_EXTERN_C_END
 
 #endif  // PDCPL_BITWISE_H_

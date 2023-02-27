@@ -30,3 +30,23 @@ pdcpl_bitcount(unsigned int x)
     n_bits++;
   return n_bits;
 }
+
+/**
+ * Return `x` rotated to the right by `n` bits.
+ *
+ * @param x Value to rotate
+ * @param n Number of bits to rotate by
+ */
+PDCPL_PUBLIC
+unsigned int
+pdcpl_rrotbits(unsigned int x, unsigned short n)
+{
+  // number of bits x the incoming value
+  unsigned short n_inbits = 8 * (sizeof x);
+  // only rotate the minimum amount necessary
+  while (n > n_inbits)
+    n -= n_inbits;
+  // save the rotated bits, right shift, and paste the rotated bits back
+  unsigned int rotbits = PDCPL_GETBITS(x, n - 1, n);
+  return (x >> n) + (rotbits << (n_inbits - n));
+}

@@ -7,6 +7,9 @@
 
 #include "pdcpl/bitwise.h"
 
+#include <climits>
+#include <type_traits>
+
 #include <gtest/gtest.h>
 
 namespace {
@@ -54,6 +57,18 @@ TEST_F(BitwiseTest, InvBitsTest)
   unsigned int value;
   ASSERT_FALSE(pdcpl_invbits(0b010110101, &value, 5, 4));
   EXPECT_EQ(0b010001001, value);
+}
+
+/**
+ * Test that `pdcpl_rrotbits` works as expected.
+ */
+TEST_F(BitwiseTest, RRotBitsTest)
+{
+  auto value = pdcpl_rrotbits(0b1011101, 5);
+  // bits to shift rotated bits left by to put them at most significant bits.
+  // this lets us avoid explicitly relying on the size of unsigned int.
+  auto shift = static_cast<unsigned short>(CHAR_BIT * sizeof(value) - 5);
+  EXPECT_EQ((0b11101 << shift) + 0b10, value);
 }
 
 }  // namespace
