@@ -7,7 +7,6 @@
 
 #include "pdcpl/bitwise.h"
 
-#include <errno.h>
 #include <stdint.h>
 
 #include "pdcpl/common.h"

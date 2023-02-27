@@ -8,7 +8,6 @@
 #include "pdcpl/bitwise.h"
 
 #include <climits>
-#include <type_traits>
 
 #include <gtest/gtest.h>
 
