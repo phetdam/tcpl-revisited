@@ -30,25 +30,3 @@ pdcpl_bitcount(unsigned int x)
     n_bits++;
   return n_bits;
 }
-
-/**
- * Get the `n` bits `pos + 1 - n` through `pos` from `in`.
- *
- * @param in Value to get bits from
- * @param out Address to `uintmax_t` to write bits to
- * @param pos Index of first bit to get, where `0` is index of rightmost bit
- * @param n Number of bits to get
- * @returns 0 on success, -EINVAL if `out` is `NULL` or `n > (pos + 1)`
- */
-PDCPL_PUBLIC
-int
-pdcpl_getbits(
-  unsigned int in, unsigned int *out, unsigned short pos, unsigned short n)
-{
-  // cannot ask for bits past the rightmost bit
-  if (!out || n > (pos + 1))
-    return -EINVAL;
-  // extra parentheses around shift is for clarity but not necessary
-  *out = (in >> (pos + 1 - n)) & PDCPL_BITMASK(n);
-  return 0;
-}

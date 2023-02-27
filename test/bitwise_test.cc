@@ -27,13 +27,23 @@ TEST_F(BitwiseTest, BitCountTest)
 }
 
 /**
- * Test that `pdcpl_bitget_r` works as expected.
+ * Test that `pdcpl_getbits` works as expected.
  */
 TEST_F(BitwiseTest, SetBitsTest)
 {
   unsigned int value;
   ASSERT_FALSE(pdcpl_getbits(0b110101001, &value, 5, 4));
   EXPECT_EQ(0b1010, value);
+}
+
+/**
+ * Test that `pdcpl_setbits` works as expected.
+ */
+TEST_F(BitwiseTest, GetBitsTest)
+{
+  unsigned int value;
+  ASSERT_FALSE(pdcpl_setbits(0b1010100010101, &value, 6, 4, 0b0101001110));
+  EXPECT_EQ(0b1010101110101, value);
 }
 
 }  // namespace
