@@ -354,6 +354,19 @@ PDCPL_PUBLIC
 int
 pdcpl_strsq(const char *s, char **op, const char *ds);
 
+/**
+ * Return lowercase equivalent to an uppercase ASCII character.
+ *
+ * If the input is not an uppercase ASCII character, it is returned verbatim.
+ *
+ * @param c ASCII char
+ */
+PDCPL_INLINE char
+pdcpl_tolower(char c)
+{
+  return (c >= 'A' && c <= 'Z') ? c - 'A' + 'a' : c;
+}
+
 PDCPL_EXTERN_C_END
 
 #endif  // PDCPL_STRING_H_

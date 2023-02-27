@@ -8,6 +8,7 @@
 #include "pdcpl/string.h"
 
 #include <algorithm>
+#include <cctype>
 #include <cstdint>
 #include <cstdlib>
 #include <string>
@@ -205,6 +206,28 @@ TEST_F(StringTest, SqueezeTest)
   ASSERT_FALSE(pdcpl_strsq(strsq_3_.c_str(), &res, strsq_3_ds_.c_str()));
   EXPECT_EQ(strsq_3_sq_, std::string{res});
   std::free(res);
+}
+
+/**
+ * Test that `pdcpl_tolower` works as expected.
+ */
+TEST_F(StringTest, ToLowerTest)
+{
+  std::string orig_string{"STOP the SHOUTING!"};
+  std::string lower_string = orig_string;
+  // std::tolower
+  std::for_each(
+    lower_string.begin(),
+    lower_string.end(),
+    [](auto c) { return static_cast<decltype(c)>(std::tolower(c)); }
+  );
+  // pdcpl_tolower
+  std::for_each(
+    orig_string.begin(),
+    orig_string.end(),
+    [](auto c) { return pdcpl_tolower(c); }
+  );
+  EXPECT_EQ(lower_string, orig_string);
 }
 
 }  // namespace
