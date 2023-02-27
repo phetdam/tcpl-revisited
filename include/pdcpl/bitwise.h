@@ -23,7 +23,7 @@ PDCPL_EXTERN_C_BEGIN
  *
  * @param n Width of mask for rightmost bits
  */
-#define PDCPL_BITMASK(n) ~(~0 << n)
+#define PDCPL_BITMASK(n) ~(~0 << (n))
 
 /**
  * Count the number of 1-bits in a value.
@@ -46,7 +46,7 @@ pdcpl_bitcount(unsigned int x);
  * @param pos Index of first bit to get, where `0` is index of rightmost bit
  * @param n Number of bits to get
  */
-#define PDCPL_GETBITS(in, pos, n) ((in >> (pos + 1 - n)) & PDCPL_BITMASK(n))
+#define PDCPL_GETBITS(in, pos, n) (((in) >> (pos + 1 - n)) & PDCPL_BITMASK(n))
 
 /**
  * Get the `n` bits `pos + 1 - n` through `pos` from `in`.
@@ -71,9 +71,9 @@ pdcpl_getbits(
 }
 
 /**
- * Set the `n` bits `pos + 1 - n`through `pos` from `in`.
+ * Set the `n` bits `pos + 1 - n` through `pos` from `in`.
  *
- * @param in Value to get bits from
+ * @param in Value to set bits for
  * @param out Address to `unsigned int` to write updated value to
  * @param pos Index of first bit to get, where `0` is index of rightmost bit
  * @param n Number of bits to get
@@ -89,12 +89,35 @@ pdcpl_setbits(
 {
   if (!out || n > (pos + 1))
     return -EINVAL;
+  // rightmost index of bits to set (also bits to shift to reach target field)
+  unsigned short rpos = (unsigned short) (pos + 1 - n);
   // zero out the rightmost bits pos + 1 - n through pos of in and then set
   // the zero bits using the n rightmost bits from src
-  in &= ~PDCPL_GETBITS(in, pos, n);
-  in |= (src & PDCPL_BITMASK(n)) << (pos + 1 - n);
+  in &= (~PDCPL_GETBITS(in, pos, n) << rpos) + PDCPL_GETBITS(in, rpos - 1, rpos);
+  in |= (src & PDCPL_BITMASK(n)) << rpos;
   *out = in;
   return 0;
+}
+
+/**
+ * Invert the `n` bits `pos + 1 - n` through `pos` from `in`.
+ *
+ * @param in Value to invert bits for
+ * @param out Address to `unsigned int` to write updated value to
+ * @param pos Index of first bit to get, where `0` is index of rightmost bit
+ * @param n Number of bits to get
+ * @returns 0 on success, -EINVAL if `out` is `NULL` or `n > (pos + 1)`
+ */
+PDCPL_INLINE int
+pdcpl_invbits(
+  unsigned int in, unsigned int *out, unsigned short pos, unsigned short n)
+{
+  // get the bits that we want to invert + set using the inverted bits
+  unsigned int in_bits;
+  if (pdcpl_getbits(in, &in_bits, pos, n))
+    return -EINVAL;
+  // no need to mask as only the n rightmost bits are used
+  return pdcpl_setbits(in, out, pos, n, ~in_bits);
 }
 
 PDCPL_EXTERN_C_END

@@ -42,8 +42,18 @@ TEST_F(BitwiseTest, GetBitsTest)
 TEST_F(BitwiseTest, SetBitsTest)
 {
   unsigned int value;
-  ASSERT_FALSE(pdcpl_setbits(0b1010100010101, &value, 6, 4, 0b0101001110));
-  EXPECT_EQ(0b1010101110101, value);
+  ASSERT_FALSE(pdcpl_setbits(0b1010100010101, &value, 6, 4, 0b0101001101));
+  EXPECT_EQ(0b1010101101101, value);
+}
+
+/**
+ * Test that `pdcpl_invbits` works as expected.
+ */
+TEST_F(BitwiseTest, InvBitsTest)
+{
+  unsigned int value;
+  ASSERT_FALSE(pdcpl_invbits(0b010110101, &value, 5, 4));
+  EXPECT_EQ(0b010001001, value);
 }
 
 }  // namespace
