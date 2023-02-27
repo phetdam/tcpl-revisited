@@ -49,6 +49,6 @@ pdcpl_getbits(
   if (!out || n > (pos + 1))
     return -EINVAL;
   // extra parentheses around shift is for clarity but not necessary
-  *out = (in >> (pos + 1 - n)) & PDCPL_BITMASK_R(n);
+  *out = (in >> (pos + 1 - n)) & PDCPL_BITMASK(n);
   return 0;
 }

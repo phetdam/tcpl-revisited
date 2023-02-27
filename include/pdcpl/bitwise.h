@@ -22,7 +22,7 @@ PDCPL_EXTERN_C_BEGIN
  *
  * @param n Width of mask for rightmost bits
  */
-#define PDCPL_BITMASK_R(n) ~(~0 << n)
+#define PDCPL_BITMASK(n) ~(~0 << n)
 
 /**
  * Count the number of 1-bits in a value.
