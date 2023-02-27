@@ -24,7 +24,7 @@
  * of a conditional, which makes it the slower implementation.
  */
 static unsigned short
-bitcount(uintmax_t x)
+bitcount(unsigned int x)
 {
   unsigned short b;
   for (b = 0; x != 0; x >>= 1)
@@ -41,7 +41,7 @@ bitcount(uintmax_t x)
  * @param n Number of iterations to run
  */
 static double
-bitcount_us(unsigned short (*f)(uintmax_t), uintmax_t x, size_t n)
+bitcount_us(unsigned short (*f)(unsigned int), unsigned int x, size_t n)
 {
   clock_t clock_start = clock();
   for (size_t i = 0; i < n; i++)
