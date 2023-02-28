@@ -9,12 +9,15 @@
 #define PDCPL_MEMORY_H_
 
 #include <errno.h>
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 
 #include "pdcpl/common.h"
 #include "pdcpl/dllexport.h"
+
+PDCPL_EXTERN_C_BEGIN
 
 /**
  * Simple struct for a memory buffer.
@@ -46,6 +49,19 @@ pdcpl_buffer_new(size_t buf_size)
 }
 
 /**
+ * Check that a buffer is ready for use.
+ *
+ * Simply checks if data pointer is not `NULL` and if size is positive.
+ *
+ * @param buf Address to buffer
+ */
+PDCPL_INLINE bool
+pdcpl_buffer_ready(const pdcpl_buffer* buf)
+{
+  return (buf->data && buf->size) ? true : false;
+}
+
+/**
  * Free the memory held by the buffer, set data to `NULL`, reset size to 0.
  *
  * If the buffer `data` is `NULL`, `size` is still set to 0 anyways.
@@ -59,6 +75,7 @@ pdcpl_buffer_clear(pdcpl_buffer *buf)
   if (!buf)
     return -EINVAL;
   free(buf->data);
+  buf->data = NULL;
   buf->size = 0;
   return 0;
 }
@@ -155,5 +172,7 @@ pdcpl_buffer_dynexpand_exact(
 PDCPL_PUBLIC
 int
 pdcpl_buffer_dynexpand(pdcpl_buffer *buf, const void *pos, size_t write_size);
+
+PDCPL_EXTERN_C_END
 
 #endif  // PDCPL_MEMORY_H_

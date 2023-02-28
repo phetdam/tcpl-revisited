@@ -131,6 +131,16 @@ pdcpl_buffer_dynexpand_exact(
   );
 }
 
+/**
+ * Compute min bytes as multiple of `BUFSIZ` needed to accommodate write.
+ *
+ * Same assumptions as `pdcpl_compute_expansion_exact` on parameters.
+ *
+ * @param buf Address to buffer
+ * @param pos Position in data buffer to write to
+ * @param write_size Number of bytes to write
+ * @param data Data needed for computation (unused)
+ */
 static inline ptrdiff_t
 pdcpl_compute_expansion_default(
   pdcpl_buffer *buf, const void *pos, size_t write_size, void *data)
