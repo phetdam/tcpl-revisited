@@ -138,7 +138,7 @@ pdcpl_buffer_dynexpand_ex(
   const void *pos,
   size_t write_size,
   pdcpl_buffer_expansion_computer compute_expansion,
-  void *compute_data);
+  void *data);
 
 /**
  * Expand buffer if writing `write_size` bytes at `pos` exceeds capacity.

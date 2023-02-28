@@ -60,7 +60,7 @@ pdcpl_buffer_dynexpand_ex(
   const void *pos,
   size_t write_size,
   pdcpl_buffer_expansion_computer compute_expansion,
-  void *compute_data)
+  void *data)
 {
   // can't have pointers be NULL, pos be outside the buffer
   if (
@@ -75,7 +75,7 @@ pdcpl_buffer_dynexpand_ex(
   // if pos + write_size - 1 exceeds the buffer boundary, realloc
   if ((char *) pos + write_size > (char *) buf->data + buf->size) {
     // compute desired expansion size. if negative, return as error
-    ptrdiff_t ex_size = compute_expansion(buf, pos, write_size, compute_data);
+    ptrdiff_t ex_size = compute_expansion(buf, pos, write_size, data);
     if (ex_size < 0)
       return (int) ex_size;
     // attempt realloc, and if successful, update buf struct
