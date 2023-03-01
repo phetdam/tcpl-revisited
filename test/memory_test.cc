@@ -54,15 +54,37 @@ TEST_F(MemoryTest, BufferClearTest)
 }
 
 /**
+ * Macro for asserting that the new `pdcpl_buffer` is ready for use.
+ *
+ * @param buf New `pdcpl_buffer` to check
+ */
+#define PDCPL_ASSERT_BUFFER_READY(buf) \
+  ASSERT_TRUE(pdcpl_buffer_ready(&buf)) << "buffer is not ready for use"
+
+/**
  * Test that `pdcpl_buffer_expand_exact` works as expected.
  */
 TEST_F(MemoryTest, BufferExpandExactTest)
 {
   auto buffer = pdcpl_buffer_new(buf_size_);
-  ASSERT_TRUE(pdcpl_buffer_ready(&buffer)) << "buffer is not ready for use";
+  PDCPL_ASSERT_BUFFER_READY(buffer);
   ASSERT_FALSE(pdcpl_buffer_expand_exact(&buffer, buf_size_));
   EXPECT_TRUE(buffer.data) << "buffer.data is NULL";
   EXPECT_EQ(2 * buf_size_, buffer.size);
+}
+
+/**
+ * Test that `pdcpl_buffer_dynexpand_exact` works as expected.
+ */
+TEST_F(MemoryTest, BufferDynExpandExactTest)
+{
+  auto buffer = pdcpl_buffer_new(buf_size_);
+  PDCPL_ASSERT_BUFFER_READY(buffer);
+  auto pos = static_cast<void*>(PDCPL_PTR_SHIFT(buffer.data, +, buf_size_ / 2));
+  ASSERT_FALSE(pdcpl_buffer_dynexpand_exact(&buffer, pos, buf_size_));
+  EXPECT_TRUE(buffer.data) << "buffer.data is NULL";
+  // buffer size was buf_size_ and should now be buf_size_ + buf_size_ / 2
+  EXPECT_EQ(buf_size_ + buf_size_ / 2, buffer.size);
 }
 
 }  // namespace

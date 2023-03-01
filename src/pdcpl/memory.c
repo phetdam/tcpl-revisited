@@ -73,13 +73,16 @@ pdcpl_buffer_dynexpand_ex(
   )
     return -EINVAL;
   // if pos + write_size - 1 exceeds the buffer boundary, realloc
-  if ((char *) pos + write_size > (char *) buf->data + buf->size) {
+  if (
+    PDCPL_PTR_SHIFT(pos, +, write_size) >
+    PDCPL_PTR_SHIFT(buf->data, +, buf->size)
+  ) {
     // compute desired expansion size. if negative, return as error
     ptrdiff_t ex_size = compute_expansion(buf, pos, write_size, data);
     if (ex_size < 0)
       return (int) ex_size;
     // attempt realloc, and if successful, update buf struct
-    void *new_data = realloc(buf, buf->size + ex_size);
+    void *new_data = realloc(buf->data, buf->size + ex_size);
     if (!new_data)
       return -ENOMEM;
     buf->data = new_data;
