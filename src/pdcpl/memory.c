@@ -55,7 +55,7 @@ pdcpl_buffer_expand_exact(pdcpl_buffer *buf, size_t expand_size)
  */
 PDCPL_PUBLIC
 int
-pdcpl_buffer_dynexpand_ex(
+pdcpl_buffer_dynexpand_custom(
   pdcpl_buffer *buf,
   const void *pos,
   size_t write_size,
@@ -129,7 +129,7 @@ int
 pdcpl_buffer_dynexpand_exact(
   pdcpl_buffer *buf, const void *pos, size_t write_size)
 {
-  return pdcpl_buffer_dynexpand_ex(
+  return pdcpl_buffer_dynexpand_custom(
     buf, pos, write_size, pdcpl_compute_expansion_exact, NULL
   );
 }
@@ -170,7 +170,7 @@ PDCPL_PUBLIC
 int
 pdcpl_buffer_dynexpand(pdcpl_buffer *buf, const void *pos, size_t write_size)
 {
-  return pdcpl_buffer_dynexpand_ex(
+  return pdcpl_buffer_dynexpand_custom(
     buf, pos, write_size, pdcpl_compute_expansion_default, NULL
   );
 }

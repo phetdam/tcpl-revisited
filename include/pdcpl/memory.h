@@ -181,7 +181,7 @@ typedef ptrdiff_t
  */
 PDCPL_PUBLIC
 int
-pdcpl_buffer_dynexpand_ex(
+pdcpl_buffer_dynexpand_custom(
   pdcpl_buffer *buf,
   const void *pos,
   size_t write_size,
