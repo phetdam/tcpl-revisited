@@ -68,8 +68,8 @@ pdcpl_buffer_dynexpand_ex(
     !buf->data ||
     !pos ||
     !compute_expansion ||
-    (char *) pos < (char *) buf->data ||
-    (char *) pos > (char *) buf->data + buf->size - 1
+    PDCPL_PTR_LT(pos, buf->data) ||
+    PDCPL_PTR_GT(pos, PDCPL_PTR_SHIFT(buf->data, +, buf->size - 1))
   )
     return -EINVAL;
   // if pos + write_size - 1 exceeds the buffer boundary, realloc
@@ -94,7 +94,7 @@ pdcpl_buffer_dynexpand_ex(
  * Assumes that `buf->data` <= `pos` <= `buf->data + buf->size - 1`, i.e. we
  * are writing within the relevant buffer, and that `pos + write_size` >
  * `buf->data + buf->size`, i.e. the address last byte to be written will fall
- * outside the bounds of the available buffer's memory.
+ * outside the bounds of the available buffer's memory (-1 removed).
  *
  * @param buf Address to buffer
  * @param pos Position in data buffer to write to
@@ -106,7 +106,7 @@ pdcpl_compute_expansion_exact(
   pdcpl_buffer *buf, const void *pos, size_t write_size, void *data)
 {
   (void) data;  // silence compiler warning
-  return (char *) pos + write_size - (char *) buf->data - buf->size;
+  return PDCPL_PTR_OP(pos, -, buf->data) + write_size - buf->size;
 }
 
 /**

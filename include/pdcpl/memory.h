@@ -20,6 +20,54 @@
 PDCPL_EXTERN_C_BEGIN
 
 /**
+ * Perform a binary operation on two pointers cast to a specific pointer type.
+ *
+ * @param type Type used in pointer cast, i.e. `p1`, `p2` cast to `type *`
+ * @param p1 Pointer one
+ * @param op Binary operator, e.g. `-`, `+`, `<`
+ * @param p2 Pointer two
+ */
+#define PDCPL_TYPED_PTR_OP(type, p1, op, p2) ((type *) (p1) op (type *) (p2))
+
+/**
+ * Perform a binary operation on two pointers.
+ *
+ * Both are cast to `char *` for arithmetic operations to be in units of bytes.
+ *
+ * @param p1 Pointer one
+ * @param op Binary operator, e.g. `-`, `+`, `<`
+ * @param p2 Pointer two
+ */
+#define PDCPL_PTR_OP(p1, op, p2) PDCPL_TYPED_PTR_OP(char, p1, op, p2)
+
+// helpers for evaluating expressions involving pointer address comparison
+#define PDCPL_PTR_GT(p1, p2) PDCPL_PTR_OP(p1, >, p2)
+#define PDCPL_PTR_GE(p1, p2) PDCPL_PTR_OP(p1, >=, p2)
+#define PDCPL_PTR_LT(p1, p2) PDCPL_PTR_OP(p1, <, p2)
+#define PDCPL_PTR_LE(p1, p2) PDCPL_PTR_OP(p1, <=, p2)
+
+/**
+ * Add or subtract a quantity to a pointer cast to a specific pointer type.
+ *
+ * @param type Type used in pointer cast, i.e. `p` cast to `type *`
+ * @param p Pointer
+ * @param op Binary operator, either `+` or `-`
+ * @param value Integral value to add or subtract to pointer
+ */
+#define PDCPL_TYPED_PTR_SHIFT(type, p, op, value) ((type *) (p) op (value))
+
+/**
+ * Add or subtract a quantity to a pointer.
+ *
+ * Pointer is cast to `char *` for the shift to be in units of byyes.
+ *
+ * @param p Pointer
+ * @param op Binary operator, either `+` or `-`
+ * @param value Integral value to add or subtract to pointer
+ */
+#define PDCPL_PTR_SHIFT(p, op, value) PDCPL_TYPED_PTR_SHIFT(char, p, op, value)
+
+/**
  * Simple struct for a memory buffer.
  *
  * @param data Pointer to beginning of buffer
