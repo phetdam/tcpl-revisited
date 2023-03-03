@@ -7,6 +7,7 @@
 
 #include "pdcpl/string.h"
 
+#include <ctype.h>
 #include <errno.h>
 #include <stdbool.h>
 #include <stddef.h>
@@ -16,6 +17,7 @@
 #include <string.h>
 
 #include "pdcpl/dllexport.h"
+#include "pdcpl/memory.h"
 
 /**
  * Count words, chars, and lines in a string and save the results.
@@ -362,4 +364,78 @@ pdcpl_strsq(const char *s, char **op, const char *ds)
     return -ENOMEM;
   *op = ss;
   return 0;
+}
+
+/**
+ * Return a new string that expands any char ranges into the actual characters.
+ *
+ * For example, regex-like ranges `0-9` and `a-z` would be expanded into the
+ * full set of characters that would be contained. If an invalid range is
+ * specified, e.g. `h-a`, the function will return an error.
+ *
+ * @param in Input string
+ * @param op Address to `char *` pointing to the expanded string
+ * @param nwp Address to `size_t` given length of new string, can be `NULL`
+ */
+PDCPL_PUBLIC
+int
+pdcpl_strexpand(const char *in, char **op, size_t *nwp)
+{
+  if (!in || !op)
+    return -EINVAL;
+  // shared error status code to be returned
+  int ret = 0;
+  // output index + length of input string
+  size_t j = 0, in_len = strlen(in);
+  // lower and upper range chars, output buffer
+  char lower, upper;
+  pdcpl_buffer buf = pdcpl_buffer_new(BUFSIZ * sizeof *in);
+  if (!pdcpl_buffer_ready(&buf))
+    return -ENOMEM;
+  // number of chars to write in the range
+  unsigned short r_len;
+  // proceed through string
+  for (size_t i = 0; i < in_len; i++) {
+    // if we see '-' and have an alphanumeric char behind and in front, we can
+    // define our range. lower < upper in order for it to be valid
+    if (
+      in[i] == '-' &&
+      i > 0 && i < in_len - 1 &&
+      isalnum(in[i - 1]) && isalnum(in[i + 1])
+    ) {
+      lower = in[i - 1];
+      upper = in[i + 1];
+      if (lower >= upper) {
+        ret = -EINVAL;
+        goto clear_buffer;
+      }
+      // figure out how long the range is, realloc if need be, and write range
+      r_len = upper - lower + 1;
+      ret = pdcpl_buffer_dynexpand(&buf, PDCPL_PTR_SHIFT(buf.data, +, j), r_len);
+      if (ret)
+        goto clear_buffer;
+      for (unsigned short k = 0; k < r_len; k++)
+        PDCPL_INDEX_CHAR(buf.data, j++) = (char) (lower + k);
+      // advance one extra index in input to skip char after current '-'
+      i++;
+    }
+    // otherwise, just copy verbatim
+    else {
+      PDCPL_INDEX_CHAR(buf.data, j++) = in[i];
+    }
+  }
+  // done writing, so realloc to j + 1, write '\0'
+  void *out = realloc(buf.data, j + 1);
+  if (!out)
+    return -ENOMEM;
+  buf.data = out;
+  buf.size = j + 1;
+  // done, so assign data pointer to *op, written chars to nwp if not NULL
+  *op = buf.data;
+  if (nwp)
+    *nwp = j;
+clear_buffer:
+  // no need to check return value as buf will not have NULL data
+  pdcpl_buffer_clear(&buf);
+  return ret;
 }

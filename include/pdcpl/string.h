@@ -367,6 +367,21 @@ pdcpl_tolower(char c)
   return (c >= 'A' && c <= 'Z') ? c - 'A' + 'a' : c;
 }
 
+/**
+ * Return a new string that expands any char ranges into the actual characters.
+ *
+ * For example, regex-like ranges `0-9` and `a-z` would be expanded into the
+ * full set of characters that would be contained. If an invalid range is
+ * specified, e.g. `h-a`, the function will return an error.
+ *
+ * @param in Input string
+ * @param op Address to `char *` pointing to the expanded string
+ * @param nwp Address to `size_t` given length of new string, can be `NULL`
+ */
+PDCPL_PUBLIC
+int
+pdcpl_strexpand(const char *in, char **op, size_t *nwp);
+
 PDCPL_EXTERN_C_END
 
 #endif  // PDCPL_STRING_H_
