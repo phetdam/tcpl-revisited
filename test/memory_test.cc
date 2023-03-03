@@ -65,6 +65,18 @@ TEST_F(MemoryTest, BufferNewTest)
 }
 
 /**
+ * Test that `pdcpl_buffer_realloc` works as expected.
+ */
+TEST_F(MemoryTest, BufferReallocTest)
+{
+  pdcpl_buffer buffer = pdcpl_buffer_new(buf_size_);
+  PDCPL_ASSERT_BUFFER_READY(buffer);
+  ASSERT_FALSE(pdcpl_buffer_realloc(&buffer, 2 * buf_size_));
+  PDCPL_EXPECT_BUFFER_DATA(buffer);
+  EXPECT_EQ(2 * buf_size_, buffer.size);
+}
+
+/**
  * Test that `pdcpl_buffer_clear` works as expected.
  */
 TEST_F(MemoryTest, BufferClearTest)

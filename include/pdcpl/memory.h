@@ -122,9 +122,33 @@ pdcpl_buffer_new(size_t buf_size)
  * @param buf Address to buffer
  */
 PDCPL_INLINE bool
-pdcpl_buffer_ready(const pdcpl_buffer* buf)
+pdcpl_buffer_ready(const pdcpl_buffer *buf)
 {
   return (buf->data && buf->size) ? true : false;
+}
+
+/**
+ * Realloc the buffer's memory and update the buffer size.
+ *
+ * The buffer is allowed to have `NULL` data pointer.
+ *
+ * @param buf Address to buffer
+ * @param new_size Number of bytes to allocate
+ * @returns 0 on success, -EINVAL if `buf` is `NULL` or if `new_size` is zero,
+ *  -ENOMEM if `realloc` fails due to lack of heap space
+ */
+PDCPL_INLINE int
+pdcpl_buffer_realloc(pdcpl_buffer *buf, size_t new_size)
+{
+  // don't allow zero size reallocs
+  if (!buf || !new_size)
+    return -EINVAL;
+  void *new_data = realloc(buf->data, new_size);
+  if (!new_data)
+    return -ENOMEM;
+  buf->data = new_data;
+  buf->size = new_size;
+  return 0;
 }
 
 /**
