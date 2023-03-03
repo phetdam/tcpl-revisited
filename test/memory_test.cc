@@ -74,6 +74,7 @@ TEST_F(MemoryTest, BufferReallocTest)
   ASSERT_FALSE(pdcpl_buffer_realloc(&buffer, 2 * buf_size_));
   PDCPL_EXPECT_BUFFER_DATA(buffer);
   EXPECT_EQ(2 * buf_size_, buffer.size);
+  ASSERT_FALSE(pdcpl_buffer_clear(&buffer));
 }
 
 /**
@@ -100,6 +101,7 @@ TEST_F(MemoryTest, BufferExpandExactTest)
   ASSERT_FALSE(pdcpl_buffer_expand_exact(&buffer, buf_size_));
   PDCPL_EXPECT_BUFFER_DATA(buffer);
   EXPECT_EQ(2 * buf_size_, buffer.size);
+  ASSERT_FALSE(pdcpl_buffer_clear(&buffer));
 }
 
 /**
@@ -115,6 +117,7 @@ TEST_F(MemoryTest, BufferDynExpandExactTest)
   PDCPL_EXPECT_BUFFER_DATA(buffer);
   // buffer size was buf_size_ and should now be buf_size_ + buf_size_ / 2
   EXPECT_EQ(buf_size_ + buf_size_ / 2, buffer.size);
+  ASSERT_FALSE(pdcpl_buffer_clear(&buffer));
 }
 
 /**
@@ -130,6 +133,7 @@ TEST_F(MemoryTest, BufferDynExpandTest)
   PDCPL_EXPECT_BUFFER_DATA(buffer);
   // buffer size was buf_size_ and should now be buf_size_ + BUFSIZ
   EXPECT_EQ(buf_size_ + BUFSIZ, buffer.size);
+  ASSERT_FALSE(pdcpl_buffer_clear(&buffer));
 }
 
 }  // namespace

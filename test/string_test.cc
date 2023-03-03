@@ -165,6 +165,8 @@ TEST_F(StringTest, StringReverseTest)
   // contents/size should match
   EXPECT_EQ(exp_rev, std::string{act_rev});
   EXPECT_EQ(exp_rev.size(), n_act_rev);
+  // string is on heap, clean up
+  std::free(act_rev);
 }
 
 /**
@@ -228,6 +230,32 @@ TEST_F(StringTest, ToLowerTest)
     [](auto c) { return pdcpl_tolower(c); }
   );
   EXPECT_EQ(lower_string, orig_string);
+}
+
+/**
+ * Test that `pdcpl_strexpand` works as expected.
+ */
+TEST_F(StringTest, StringExpandTest)
+{
+  std::string orig{"-hello a-z0-9A-Zb-d what's up-"};
+  // broken into chunks so each range is more easily delineated
+  std::string expanded{
+    "-hello "
+    "abcdefghijklmnopqrstuvwxyz"
+    "0123456789"
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    "bcd"
+    " what's up-"
+  };
+  // expected string and number of chars written
+  char* res;
+  std::size_t res_size;
+  ASSERT_FALSE(pdcpl_strexpand(orig.c_str(), &res, &res_size));
+  // contents and reported length should match
+  EXPECT_EQ(expanded, std::string{res});
+  EXPECT_EQ(expanded.size(), res_size);
+  // string is on heap, clean up
+  std::free(res);
 }
 
 }  // namespace

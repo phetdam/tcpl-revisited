@@ -407,14 +407,15 @@ pdcpl_strexpand(const char *in, char **op, size_t *nwp)
       upper = in[i + 1];
       if (lower >= upper) {
         ret = -EINVAL;
-        goto clear_buffer;
+        goto error;
       }
       // figure out how long the range is, realloc if need be, and write range
       r_len = upper - lower + 1;
       ret = pdcpl_buffer_dynexpand(&buf, PDCPL_PTR_SHIFT(buf.data, +, j), r_len);
       if (ret)
-        goto clear_buffer;
-      for (unsigned short k = 0; k < r_len; k++)
+        goto error;
+      // don't start from k = 0 since we already wrote the lower range char
+      for (unsigned short k = 1; k < r_len; k++)
         PDCPL_INDEX_CHAR(buf.data, j++) = (char) (lower + k);
       // advance one extra index in input to skip char after current '-'
       i++;
@@ -425,17 +426,18 @@ pdcpl_strexpand(const char *in, char **op, size_t *nwp)
     }
   }
   // done writing, so realloc to j + 1, write '\0'
-  void *out = realloc(buf.data, j + 1);
-  if (!out)
+  ret = pdcpl_buffer_realloc(&buf, j + 1);
+  if (ret)
     return -ENOMEM;
-  buf.data = out;
-  buf.size = j + 1;
+  PDCPL_INDEX_CHAR(buf.data, j) = '\0';
   // done, so assign data pointer to *op, written chars to nwp if not NULL
   *op = buf.data;
   if (nwp)
     *nwp = j;
-clear_buffer:
-  // no need to check return value as buf will not have NULL data
+  return 0;
+// only clear buffer contents on error. no need to check pdcpl_buffer_clear
+// return value as buf will not have NULL data
+error:
   pdcpl_buffer_clear(&buf);
   return ret;
 }
