@@ -68,6 +68,24 @@ PDCPL_EXTERN_C_BEGIN
 #define PDCPL_PTR_SHIFT(p, op, value) PDCPL_TYPED_PTR_SHIFT(char, p, op, value)
 
 /**
+ * Index into a pointer like it is an array.
+ *
+ * Saves some typing of parentheses if `p` needs to be cast.
+ *
+ * @param p Pointer, can be cast to whatever type is necessary
+ * @param i Index value
+ */
+#define PDCPL_INDEX(p, i) (p)[i]
+
+/**
+ * Index into a pointer like it is a `char` array.
+ *
+ * @param p Pointer to cast to `char *`
+ * @param i Index value
+ */
+#define PDCPL_INDEX_CHAR(p, i) PDCPL_INDEX((char *) (p), i)
+
+/**
  * Simple struct for a memory buffer.
  *
  * @param data Pointer to beginning of buffer
