@@ -18,6 +18,36 @@
 
 #include "pdcpl/dllexport.h"
 #include "pdcpl/memory.h"
+#include "pdcpl/warnings.h"
+
+/**
+ * Return columns needed to fit a specified signed int with specified padding.
+ *
+ * Padding is applied on both sides of the printed value.
+ *
+ * @param value Value to get print width for
+ * @param padding Padding to apply on both sides of the print width
+ */
+PDCPL_PUBLIC
+unsigned short
+pdcpl_printpwtd(ptrdiff_t value, unsigned short padding)
+{
+  // padding is on both sides + add extra col if value is negative
+// MSVC complains about initialization from int to unsigned short in C++
+PDCPL_MSVC_WARNING_DISABLE(4365)
+  unsigned short pad_width = 2 * padding + ((value < 0) ? 1 : 0);
+PDCPL_MSVC_WARNING_ENABLE()
+  // if zero, need 1 column
+// MSVC complains about return conversion from int to unsigned short in C++
+PDCPL_MSVC_WARNING_DISABLE(4365)
+  if (!value)
+    return 1 + pad_width;
+PDCPL_MSVC_WARNING_ENABLE()
+  // log10 of PTRDIFF_MAX will never exceed unsigned short max
+PDCPL_MSVC_WARNING_DISABLE(4365)
+  return (unsigned short) ceil(log10(fabs(value))) + pad_width;
+PDCPL_MSVC_WARNING_ENABLE()
+}
 
 /**
  * Count words, chars, and lines in a string and save the results.
