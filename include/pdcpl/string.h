@@ -365,6 +365,36 @@ PDCPL_PUBLIC
 int
 pdcpl_strexpand(const char *in, char **op, size_t *nwp);
 
+/**
+ * Convert a signed integral value to a character string.
+ *
+ * Includes an extra space for the negative sign for any negative values.
+ *
+ * @param x Value to convert tos trin
+ * @param sp Address of `char *` to write string to
+ * @param ncp Address of `size_t` to write string length to (can be `NULL`)
+ * @returns 0 on succes, -EINVAL if `sp` is `NULL`, -ENOMEM if `malloc` fails
+ */
+PDCPL_PUBLIC
+int
+pdcpl_jtoa(ptrdiff_t x, char **sp, size_t *ncp);
+
+/**
+ * Convert a signed integral value to a character string.
+ *
+ * Includes an extra space for the negative sign for any negative values.
+ *
+ * @param x Value to convert tos trin
+ * @param sp Address of `char *` to write string to
+ * @param ncp Address of `size_t` to write string length to (can be `NULL`)
+ * @returns 0 on succes, -EINVAL if `sp` is `NULL`, -ENOMEM if `malloc` fails
+ */
+PDCPL_INLINE int
+pdcpl_itoa(int x, char **sp, size_t *ncp)
+{
+  return (int) pdcpl_jtoa(x, sp, ncp);
+}
+
 PDCPL_EXTERN_C_END
 
 #endif  // PDCPL_STRING_H_

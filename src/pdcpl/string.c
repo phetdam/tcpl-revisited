@@ -470,3 +470,42 @@ error:
   pdcpl_buffer_clear(&buf);
   return ret;
 }
+
+/**
+ * Convert a signed integral value to a character string.
+ *
+ * Includes an extra space for the negative sign for any negative values.
+ *
+ * @param x Value to convert tos trin
+ * @param sp Address of `char *` to write string to
+ * @param ncp Address of `size_t` to write string length to (can be `NULL`)
+ * @returns 0 on succes, -EINVAL if `sp` is `NULL`, -ENOMEM if `malloc` fails
+ */
+PDCPL_PUBLIC
+int
+pdcpl_jtoa(ptrdiff_t x, char **sp, size_t *ncp)
+{
+  if (!sp)
+    return -EINVAL;
+  // sign of x, chars needed to fit all of x (including sign)
+  short sign = (x < 0) ? -1 : 1;
+  unsigned short x_len = pdcpl_printwtd(x);
+  // number of digits to write
+  unsigned short n_digits = (x < 0) ? x_len - 1 : x_len;
+  // buffer to write our digits to
+  char *out = malloc((x_len + 1) * sizeof *out);
+  if (!out)
+    return -ENOMEM;
+  // write digits going backwards along string
+  out[x_len] = '\0';
+  for (size_t i = 0; i < n_digits; x /= 10, i++)
+    out[x_len - 1 - i] = (char) (sign * (x % 10) + '0');
+  // handle sign if necessary + update sp
+  if (sign < 0)
+    out[0] = '-';
+  *sp = out;
+  // if ncp is not NULL, record length of the string
+  if (ncp)
+    *ncp = x_len;
+  return 0;
+}

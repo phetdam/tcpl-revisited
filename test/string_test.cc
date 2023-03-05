@@ -258,4 +258,22 @@ TEST_F(StringTest, StringExpandTest)
   std::free(res);
 }
 
+/**
+ * Test that `pdcpl_htoj` works as expected.
+ */
+TEST_F(StringTest, IntToCharConvertTest)
+{
+  // int to convert and expected result
+  int x = -282813239;
+  std::string x_str{std::to_string(x)};
+  // pdcpl_jtoa result and result length
+  char *res;
+  std::size_t res_size;
+  ASSERT_FALSE(pdcpl_jtoa(x, &res, &res_size));
+  // compare + clean up
+  EXPECT_EQ(x_str, std::string{res});
+  EXPECT_EQ(x_str.size(), res_size);
+  std::free(res);
+}
+
 }  // namespace
