@@ -451,9 +451,8 @@ pdcpl_strexpand(const char *in, char **op, size_t *nwp)
       i++;
     }
     // otherwise, just copy verbatim
-    else {
+    else
       PDCPL_INDEX_CHAR(buf.data, j++) = in[i];
-    }
   }
   // done writing, so realloc to j + 1, write '\0'
   ret = pdcpl_buffer_realloc(&buf, j + 1);
