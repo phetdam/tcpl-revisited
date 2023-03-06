@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <cctype>
+#include <climits>
 #include <cstdint>
 #include <cstdlib>
 #include <string>
@@ -276,4 +277,22 @@ TEST_F(StringTest, IntToCharConvertTest)
   std::free(res);
 }
 
+/**
+ * Test that `pdcpl_strfind` works as expected.
+ */
+TEST_F(StringTest, StringFindTest)
+{
+  // original string, string to search for
+  std::string s{"hello there was a man"};
+  std::string ss{"re was"};
+  // expected index location + actual index location
+  auto exp_loc = s.find(ss);
+  std::size_t act_loc;
+  ASSERT_FALSE(pdcpl_strfind(s.c_str(), ss.c_str(), &act_loc));
+  // exp_loc and act_loc should match
+  EXPECT_EQ(exp_loc, act_loc);
+  // now we try with a string that is not in s, act_loc should be SIZE_MAX
+  ASSERT_FALSE(pdcpl_strfind(s.c_str(), "unfindable", &act_loc));
+  EXPECT_EQ(SIZE_MAX, act_loc);
+}
 }  // namespace

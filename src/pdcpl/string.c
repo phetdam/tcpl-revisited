@@ -9,6 +9,7 @@
 
 #include <ctype.h>
 #include <errno.h>
+#include <limits.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -476,7 +477,7 @@ error:
  *
  * Includes an extra space for the negative sign for any negative values.
  *
- * @param x Value to convert tos trin
+ * @param x Value to convert to string
  * @param sp Address of `char *` to write string to
  * @param ncp Address of `size_t` to write string length to (can be `NULL`)
  * @returns 0 on succes, -EINVAL if `sp` is `NULL`, -ENOMEM if `malloc` fails
@@ -507,5 +508,46 @@ pdcpl_jtoa(ptrdiff_t x, char **sp, size_t *ncp)
   // if ncp is not NULL, record length of the string
   if (ncp)
     *ncp = x_len;
+  return 0;
+}
+
+/**
+ * Get the index of the leftmost occurrence of `ss` in `s`.
+ *
+ * If there are no occurrences, the reported index is `SIZE_MAX`.
+ *
+ * @param s String to be searched for `ss`
+ * @param ss String to search for within `s`
+ * @param pp Address of `size_t` to write leftmost occurrence index to
+ */
+PDCPL_PUBLIC
+int
+pdcpl_strfind(const char *s, const char *ss, size_t *pp)
+{
+  if (!s || !ss || !pp)
+    return -EINVAL;
+  // length of original string and search string
+  size_t s_len = strlen(s), ss_len = strlen(ss);
+  // obviously ss doesn't fit in s if it is longer or if it's empty
+  if (!ss_len || ss_len > s_len)
+    goto no_match;
+  // otherwise, search. we match first char of ss first to reduce comparisons
+  for (size_t i = 0; i < s_len; i++) {
+    // first chars match, now check that ss fits in s
+    if (s[i] == ss[0]) {
+      size_t j;
+      for (j = i; j < s_len && j - i < ss_len && s[j] == ss[j - i]; j++)
+        ;
+      // if j - i == ss_len, we matched all chars and write i
+      if (j - i == ss_len) {
+        *pp = i;
+        return 0;
+      }
+      // otherwise, keep going
+    }
+  }
+  // search failure still counts as success, but *pp set to SIZE_MAX
+no_match:
+  *pp = SIZE_MAX;
   return 0;
 }

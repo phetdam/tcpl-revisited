@@ -370,7 +370,7 @@ pdcpl_strexpand(const char *in, char **op, size_t *nwp);
  *
  * Includes an extra space for the negative sign for any negative values.
  *
- * @param x Value to convert tos trin
+ * @param x Value to convert to string
  * @param sp Address of `char *` to write string to
  * @param ncp Address of `size_t` to write string length to (can be `NULL`)
  * @returns 0 on succes, -EINVAL if `sp` is `NULL`, -ENOMEM if `malloc` fails
@@ -384,7 +384,7 @@ pdcpl_jtoa(ptrdiff_t x, char **sp, size_t *ncp);
  *
  * Includes an extra space for the negative sign for any negative values.
  *
- * @param x Value to convert tos trin
+ * @param x Value to convert to string
  * @param sp Address of `char *` to write string to
  * @param ncp Address of `size_t` to write string length to (can be `NULL`)
  * @returns 0 on succes, -EINVAL if `sp` is `NULL`, -ENOMEM if `malloc` fails
@@ -394,6 +394,19 @@ pdcpl_itoa(int x, char **sp, size_t *ncp)
 {
   return (int) pdcpl_jtoa(x, sp, ncp);
 }
+
+/**
+ * Get the index of the leftmost occurrence of `ss` in `s`.
+ *
+ * If there are no occurrences, the reported index is `SIZE_MAX`.
+ *
+ * @param s String to be searched for `ss`
+ * @param ss String to search for within `s`
+ * @param pp Address of `size_t` to write leftmost occurrence index to
+ */
+PDCPL_PUBLIC
+int
+pdcpl_strfind(const char *s, const char *ss, size_t *pp);
 
 PDCPL_EXTERN_C_END
 
