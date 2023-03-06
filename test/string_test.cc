@@ -295,4 +295,23 @@ TEST_F(StringTest, StringFindTest)
   ASSERT_FALSE(pdcpl_strfind(s.c_str(), "unfindable", &act_loc));
   EXPECT_EQ(SIZE_MAX, act_loc);
 }
+
+/**
+ * Test that `pdcpl_strrfind` works as expected.
+ */
+TEST_F(StringTest, StringRevFindTest)
+{
+  // original string, string to search for
+  std::string s{"something to search in to search from the right"};
+  std::string ss{"search "};
+  // expected index location + actual index location
+  auto exp_loc = s.rfind(ss);
+  std::size_t act_loc;
+  ASSERT_FALSE(pdcpl_strrfind(s.c_str(), ss.c_str(), &act_loc));
+  // exp_loc and act_loc should match
+  EXPECT_EQ(exp_loc, act_loc);
+  // now we try with a string that is not in s, act_loc should be SIZE_MAX
+  ASSERT_FALSE(pdcpl_strrfind(s.c_str(), "unfindable", &act_loc));
+  EXPECT_EQ(SIZE_MAX, act_loc);
+}
 }  // namespace

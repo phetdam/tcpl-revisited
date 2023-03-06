@@ -551,3 +551,51 @@ no_match:
   *pp = SIZE_MAX;
   return 0;
 }
+
+/**
+ * Get the index of the rightmost occurrence of `ss` in `s`.
+ *
+ * If there are no occurrences, the reported index is `SIZE_MAX`.
+ *
+ * @param s String to be searched for `ss`
+ * @param ss String to search for within `s`
+ * @param pp Address of `size_t` to write rightmost occurrence index to
+ */
+PDCPL_PUBLIC
+int
+pdcpl_strrfind(const char *s, const char *ss, size_t *pp)
+{
+  if (!s || !ss || !pp)
+    return -EINVAL;
+  // length of original string and search string
+  size_t s_len = strlen(s), ss_len = strlen(ss);
+  // obviously ss doesn't fit in s if it is longer or if it's empty
+  if (!ss_len || ss_len > s_len)
+    goto no_match;
+  // otherwise, search. we match last char of ss first to reduce comparisons
+  for (size_t i = 0; i < s_len; i++) {
+    // last chars match, now check that ss fits in s by going backwards
+    if (s[s_len - i - 1] == ss[ss_len - 1]) {
+      size_t j;
+      for (
+        j = i;
+        j < s_len &&
+        j - i < ss_len &&
+        s[s_len - j - 1] == ss[ss_len - (j - i) - 1];
+        j++
+      )
+        ;
+      // if j - i == ss_len, we matched all chars and write the position of the
+      // first char of the rightmost ss_len, i.e. s_len - i - ss_len
+      if (j - i == ss_len) {
+        *pp = s_len - i - ss_len;
+        return 0;
+      }
+      // otherwise, keep going
+    }
+  }
+  // search failure still counts as success, but *pp set to SIZE_MAX
+no_match:
+  *pp = SIZE_MAX;
+  return 0;
+}

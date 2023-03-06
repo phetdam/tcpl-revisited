@@ -408,6 +408,19 @@ PDCPL_PUBLIC
 int
 pdcpl_strfind(const char *s, const char *ss, size_t *pp);
 
+/**
+ * Get the index of the rightmost occurrence of `ss` in `s`.
+ *
+ * If there are no occurrences, the reported index is `SIZE_MAX`.
+ *
+ * @param s String to be searched for `ss`
+ * @param ss String to search for within `s`
+ * @param pp Address of `size_t` to write rightmost occurrence index to
+ */
+PDCPL_PUBLIC
+int
+pdcpl_strrfind(const char *s, const char *ss, size_t *pp);
+
 PDCPL_EXTERN_C_END
 
 #endif  // PDCPL_STRING_H_
