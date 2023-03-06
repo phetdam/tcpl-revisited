@@ -421,6 +421,18 @@ PDCPL_PUBLIC
 int
 pdcpl_strrfind(const char *s, const char *ss, size_t *pp);
 
+/**
+ * Concatenate two strings together into a new string.
+ *
+ * @param s1 First string
+ * @param s2 Second string
+ * @param op Address to `char *` to write the output string
+ * @param ncp Address to `size_t` to write output string length (can be `NULL`)
+ */
+PDCPL_PUBLIC
+int
+pdcpl_strcat(const char *s1, const char *s2, char **op, size_t *ncp);
+
 PDCPL_EXTERN_C_END
 
 #endif  // PDCPL_STRING_H_

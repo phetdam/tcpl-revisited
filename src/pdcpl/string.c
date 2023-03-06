@@ -599,3 +599,36 @@ no_match:
   *pp = SIZE_MAX;
   return 0;
 }
+
+/**
+ * Concatenate two strings together into a new string.
+ *
+ * @param s1 First string
+ * @param s2 Second string
+ * @param op Address to `char *` to write the output string
+ * @param ncp Address to `size_t` to write output string length (can be `NULL`)
+ */
+PDCPL_PUBLIC
+int
+pdcpl_strcat(const char *s1, const char *s2, char **op, size_t *ncp)
+{
+  if (!s1 || !s2)
+    return -EINVAL;
+  // s1, s2 lengths (both can be zero), output string length, output buffer
+  size_t s1_len = strlen(s1), s2_len = strlen(s2);
+  size_t out_len = s1_len + s2_len;
+  char *buf = malloc((out_len + 1) * sizeof *buf);
+  if (!buf)
+    return -ENOMEM;
+  // copy s1 + s2 + write '\0'
+  for (size_t i = 0; i < s1_len; i++)
+    buf[i] = s1[i];
+  for (size_t i = 0; i < s2_len; i++)
+    buf[s1_len + i] = s2[i];
+  buf[out_len] = '\0';
+  // update *op and *ncp (if not NULL)
+  *op = buf;
+  if (ncp)
+    *ncp = out_len;
+  return 0;
+}

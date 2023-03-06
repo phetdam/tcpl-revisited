@@ -314,4 +314,23 @@ TEST_F(StringTest, StringRevFindTest)
   ASSERT_FALSE(pdcpl_strrfind(s.c_str(), "unfindable", &act_loc));
   EXPECT_EQ(SIZE_MAX, act_loc);
 }
+
+/**
+ * Test that `pdcpl_concat` works as expected.
+ */
+TEST_F(StringTest, ConcatTest)
+{
+  // strings to concatenate + expected result
+  std::string s1{"first string"};
+  std::string s2{"second string"};
+  std::string expected = s1 + s2;
+  // actual result + length
+  char *res;
+  std::size_t res_size;
+  ASSERT_FALSE(pdcpl_strcat(s1.c_str(), s2.c_str(), &res, &res_size));
+  // compare + free
+  EXPECT_EQ(expected, std::string{res});
+  EXPECT_EQ(expected.size(), res_size);
+  std::free(res);
+}
 }  // namespace
