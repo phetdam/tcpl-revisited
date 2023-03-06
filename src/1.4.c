@@ -9,8 +9,8 @@
 #include <stdlib.h>
 
 #define PDCPL_HAS_PROGRAM_USAGE
-#include "pdcpl/core.h"
 #include "pdcpl/cliopts.h"
+#include "pdcpl/core.h"
 #include "pdcpl/misc.h"
 
 // lower, upper, and step for celenheit values

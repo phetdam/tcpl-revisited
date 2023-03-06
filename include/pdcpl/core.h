@@ -12,16 +12,20 @@
 
 #include "pdcpl/common.h"
 
+PDCPL_EXTERN_C_BEGIN
+
 // macro for the program name
 #define PDCPL_PROGRAM_NAME pdcpl_main_program_name
+
+// program name. although this is translation-unit local, one really only needs
+// this header in the translation unit that defines main().
+static const char *PDCPL_PROGRAM_NAME = "";
 
 // macros for common main() signatures
 #define PDCPL_MAIN int main()
 #define PDCPL_ARGC argc
 #define PDCPL_ARGV argv
-#define PDCPL_ARG_MAIN \
-  static const char *PDCPL_PROGRAM_NAME = ""; \
-  int main(int PDCPL_ARGC, char **PDCPL_ARGV)
+#define PDCPL_ARG_MAIN int main(int PDCPL_ARGC, char **PDCPL_ARGV)
 
 // path separator macros
 #ifdef _WIN32
@@ -48,5 +52,7 @@
       PDCPL_PROGRAM_NAME++; \
   } \
   while (0)
+
+PDCPL_EXTERN_C_END
 
 #endif  // PDCPL_CORE_H_
