@@ -333,4 +333,5 @@ TEST_F(StringTest, ConcatTest)
   EXPECT_EQ(expected.size(), res_size);
   std::free(res);
 }
+
 }  // namespace
