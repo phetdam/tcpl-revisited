@@ -29,7 +29,7 @@ PDCPL_PROGRAM_USAGE_DEF
 
 PDCPL_ARG_MAIN
 {
-  PDCPL_HANDLE_INFO_OPTS();
+  PDCPL_HANDLE_OPTS();
   // getchar() output
   int c;
   // loop for each character
