@@ -76,7 +76,7 @@ PDCPL_PROGRAM_USAGE_DEF
 
 PDCPL_ARG_MAIN
 {
-  PDCPL_HANDLE_OPTS();
+  PDCPL_PARSE_PROGRAM_OPTIONS();
   int x;
   // compare K&R and pdcpl itoa on non-extreme input
   x = -182371;

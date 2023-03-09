@@ -26,7 +26,7 @@ PDCPL_PROGRAM_USAGE_DEF
 
 PDCPL_ARG_MAIN
 {
-  PDCPL_HANDLE_INFO_OPTS();
+  PDCPL_PARSE_PROGRAM_OPTIONS();
   // getchar() output + number of blanks, tabs, newlines, total characters
   int c;
   size_t nb = 0, nt = 0, nn = 0, nc = 0;

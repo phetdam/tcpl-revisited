@@ -75,10 +75,6 @@ typedef struct pdcpl_clioption {
   pdcpl_opterrhandler errhandler;
 } pdcpl_clioption;
 
-// TODO: remove conditional compile. currently used to avoid unused function
-// compiler warning in programs that use PDCPL_HANDLE_INFO_OPTS directly, which
-// are most of the executables that are in this project.
-#ifdef PDCPL_HAS_PROGRAM_OPTIONS
 /**
  * The generic error handler that is used on action error.
  *
@@ -129,7 +125,6 @@ pdcpl_default_opterrhandler(
   );
   return EXIT_FAILURE;
 }
-#endif  // PDCPL_HAS_PROGRAM_OPTIONS
 
 /**
  * Macro defining `PDCPL_PROGRAM_USAGE`, the program usage static global.
@@ -390,7 +385,7 @@ pdcpl_program_options_printf(const pdcpl_clioption *opts)
   while (0)
 
 /**
- * Handle optional arguments passed to a `PDCPL_ARG_MAIN` as appropriate.
+ * Parse optional arguments passed to a `PDCPL_ARG_MAIN` appropriately.
  *
  * TODO: Remove conditional compile later, see `pdcpl_default_opterrhandler`
  *
@@ -404,10 +399,7 @@ pdcpl_program_options_printf(const pdcpl_clioption *opts)
  * If the option is not associated with an action, i.e. action is `NULL`, then
  * the option and its required args are silently skipped.
  */
-#ifndef PDCPL_HAS_PROGRAM_OPTIONS
-#define PDCPL_HANDLE_OPTS() PDCPL_HANDLE_INFO_OPTS()
-#else
-#define PDCPL_HANDLE_OPTS() \
+#define PDCPL_PARSE_PROGRAM_OPTIONS() \
   do { \
     PDCPL_HANDLE_INFO_OPTS(); \
     pdcpl_clioption *prog_options = PDCPL_PROGRAM_OPTIONS; \
@@ -450,7 +442,6 @@ pdcpl_program_options_printf(const pdcpl_clioption *opts)
     } \
   } \
   while (0)
-#endif  // PDCPL_HAS_PROGRAM_OPTIONS
 
 PDCPL_EXTERN_C_END
 

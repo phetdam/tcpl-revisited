@@ -16,7 +16,7 @@ PDCPL_PROGRAM_USAGE_DEF("Prints \"hello, world\" to the screen.")
 
 PDCPL_ARG_MAIN
 {
-  PDCPL_HANDLE_INFO_OPTS();
+  PDCPL_PARSE_PROGRAM_OPTIONS();
   printf("hello, world\n");
   return EXIT_SUCCESS;
 }

@@ -82,7 +82,7 @@ PDCPL_PROGRAM_USAGE_DEF
 
 PDCPL_ARG_MAIN
 {
-  PDCPL_HANDLE_INFO_OPTS();
+  PDCPL_PARSE_PROGRAM_OPTIONS();
   // use %d specifier since numeric values are int by default
   printf("::  TCPL bitcount (%d iterations) :: ", N_BITCOUNTS);
   printf("%g ms\n", bitcount_us(bitcount, B_VALUE, N_BITCOUNTS) / 1e3);

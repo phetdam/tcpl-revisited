@@ -64,7 +64,7 @@ PDCPL_PROGRAM_USAGE_DEF
 
 PDCPL_ARG_MAIN
 {
-  PDCPL_HANDLE_INFO_OPTS();
+  PDCPL_PARSE_PROGRAM_OPTIONS();
   PDCPL_SWAP_DEMO(int, 4, 15, "%d");
   PDCPL_SWAP_DEMO(double, 14.4, 78.113, "%g");
   PDCPL_SWAP_DEMO(cstring, "first", "second", "\"%s\"");

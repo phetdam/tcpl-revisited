@@ -16,7 +16,7 @@ PDCPL_PROGRAM_USAGE_DEF("Prints the value of EOF as an integer.")
 
 PDCPL_ARG_MAIN
 {
-  PDCPL_HANDLE_INFO_OPTS();
+  PDCPL_PARSE_PROGRAM_OPTIONS();
   printf("EOF = %d\n", EOF);
   return EXIT_SUCCESS;
 }

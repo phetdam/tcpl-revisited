@@ -32,7 +32,7 @@ PDCPL_PROGRAM_USAGE_DEF
 
 PDCPL_ARG_MAIN
 {
-  PDCPL_HANDLE_INFO_OPTS();
+  PDCPL_PARSE_PROGRAM_OPTIONS();
   // size of current line read, size of max line read
   size_t cur_len, max_len = 0;
   // buffer for current and max line
