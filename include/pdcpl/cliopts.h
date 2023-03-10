@@ -8,8 +8,10 @@
 #ifndef PDCPL_CLIOPTS_H_
 #define PDCPL_CLIOPTS_H_
 
+#include <ctype.h>
 #include <errno.h>
 #include <stddef.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -28,18 +30,34 @@ PDCPL_EXTERN_C_BEGIN
 #define PDCPL_PROGRAM_EPILOG pdcpl_main_program_epilog
 
 /**
+ * Enum for predefined `pdcpl` program option parsing status values.
+ */
+typedef enum {
+  PDCPL_CLIOPT_PARSE_OK,
+  PDCPL_CLIOPT_ERROR_CANT_CONVERT = 1,
+  PDCPL_CLIOPT_STATUS_MAX
+} pdcpl_cliopt_status;
+
+/**
  * Typedef for a function to perform an action given `argc` and `argv`.
  *
  * Each `pdcpl_clioption` has an `action` slot that should be bound to a
  * function or set to `NULL` to not take any action.
  *
- * On action success, the action should return 0, otherwise failure.
- *
  * @param argc `argc` from `main()`
  * @param argv `argv` from `main()`
  * @param argi Index of `argv` we are currently at
+ * @returns 0 on success, with negative errno values, `pdcpl_cliopt_status`
+ *  values, and positive values > `PDCPL_CLIOPT_ERROR_MAX` indicating failure.
  */
-typedef int (*pdcpl_optaction)(int argc, char **argv, int argi);
+typedef int (*pdcpl_cliopt_action)(int argc, char **argv, int argi);
+
+/**
+ * Macro for declaring a `pdcpl_cliopt_action`.
+ *
+ * @param name Name of the function
+ */
+#define PDCPL_CLIOPT_ACTION(name) int name(int argc, char **argv, int argi)
 
 // forward declaration for the pdcpl_clioption type
 typedef struct pdcpl_clioption pdcpl_clioption;
@@ -52,9 +70,18 @@ typedef struct pdcpl_clioption pdcpl_clioption;
  * @param opt Address to `pdcpl_clioption` to read information from
  * @param argi Index of `argv` we are currently at
  * @param err Status value returned by associated action slot
+ * @returns 0 on success, nonzero values for failure
  */
-typedef int (*pdcpl_opterrhandler)(
+typedef int (*pdcpl_cliopt_errhandler)(
   int argc, char **argv, pdcpl_clioption *opt, int argi, int err);
+
+/**
+ * Macro for declaring a `pdcpl_cliopt_errhandler`.
+ *
+ * @param name Name of the function.
+ */
+#define PDCPL_CLIOPT_ERRHANDLER(name) \
+  int name(int argc, char **argv, pdcpl_clioption *opt, int argi, int err)
 
 /**
  * Struct to hold information about a CLI option.
@@ -71,58 +98,72 @@ typedef struct pdcpl_clioption {
   const char *long_name;
   const char *help;
   unsigned int nargs;
-  pdcpl_optaction action;
-  pdcpl_opterrhandler errhandler;
+  pdcpl_cliopt_action action;
+  pdcpl_cliopt_errhandler errhandler;
 } pdcpl_clioption;
+
+/**
+ * Print an error message to stderr preceded by the program name.
+ *
+ * @param message String literal message
+ */
+#define PDCPL_PRINT_ERROR(message) \
+  fprintf(stderr, "%s: " message, PDCPL_PROGRAM_NAME)
+
+/**
+ * Print an error message to stderr preceded by the program name.
+ *
+ * Allows `printf`-style formatting.
+ *
+ * @param message `printf` format literal message
+ * @param ... Variadic list of arguments for format specifiers
+ */
+#define PDCPL_PRINT_ERROR_EX(message, ...) \
+  fprintf(stderr, "%s: " message, PDCPL_PROGRAM_NAME, __VA_ARGS__)
 
 /**
  * The generic error handler that is used on action error.
  *
  * If `errhandler` is `NULL` for a `pdcpl_clioption`, this is used instead.
  *
+ * TODO: Handle some `pdcpl_cliopt_status` values and errno errors.
+ *
  * @param argc `argc` from `main()`
  * @param argv `argv` from `main()`
  * @param opt Address to `pdcpl_clioption` to read information from
  * @param argi Index of `argv` we are currently at
  * @param err Status value returned by associated action slot (unused)
+ * @returns 0 on success, nonzero values for failure
  */
-static int
-pdcpl_default_opterrhandler(
-  int argc, char **argv, pdcpl_clioption *opt, int argi, int err)
+static
+PDCPL_CLIOPT_ERRHANDLER(pdcpl_default_opterrhandler)
 {
   // set program name if not set + handle some fatal errors
   PDCPL_SET_PROGRAM_NAME();
   if (!argv) {
-    fprintf(stderr, "%s: fatal error: argv is NULL\n", PDCPL_PROGRAM_NAME);
+    PDCPL_PRINT_ERROR("fatal error: argv is NULL\n");
     return 2;
   }
   if (argi < 0 || argi >= argc) {
-    fprintf(
-      stderr,
-      "%s: fatal error: invalid argv index %d", PDCPL_PROGRAM_NAME, argi
-    );
+    PDCPL_PRINT_ERROR_EX("fatal error: invalid argv index %d\n", argi);
     return 2;
   }
   if (!opt) {
-    fprintf(
-      stderr,
-      "%s: fatal error: cannot handle error for NULL option\n",
-      PDCPL_PROGRAM_NAME
-    );
+    PDCPL_PRINT_ERROR("fatal error: cannot handle NULL option\n");
     return 2;
   }
   // doesn't actually do anything with err, so suppress compiler warning
   (void) err;
   // report error based on information from opt
-  fprintf(stderr, "%s: error: %s", PDCPL_PROGRAM_NAME, opt->name);
+  PDCPL_PRINT_ERROR_EX("error: %s", opt->name);
   if (opt->long_name)
     fprintf(stderr, ", %s", opt->long_name);
-  fprintf(
-    stderr,
-    " parsing error, expected %u arguments. current arg: %s\n",
-    opt->nargs,
-    argv[argi]
-  );
+  fprintf(stderr, " parsing error, expected %u arguments.", opt->nargs);
+  // prints next argument, unless there is no next argument
+  if (argi + 1 < argc)
+    fprintf(stderr, " current arg: %s\n", argv[argi + 1]);
+  else
+    fprintf(stderr, " no args provided\n");
   return EXIT_FAILURE;
 }
 
@@ -159,7 +200,7 @@ pdcpl_default_opterrhandler(
   static pdcpl_clioption PDCPL_PROGRAM_OPTIONS[] =
 
 /**
- * Sentinel `pdcpl_clioption` member
+ * Sentinel `pdcpl_clioption` member for `PDCPL_PROGRAM_OPTIONS`.
  */
 #define PDCPL_PROGRAM_OPTIONS_END {NULL, NULL, NULL, 0, NULL, NULL}
 
@@ -243,9 +284,33 @@ pdcpl_program_option_print_offset(const pdcpl_clioption *opt)
 #define PDCPL_PROGRAM_OPTION_COL_OFFSET 20
 
 /**
- * Print the formatted help text for a program option wrapped to 80 cols.
+ * Helper for printing a specified number of spaces
  *
- * TODO: Currently just prints the help text verbatim, no wrapping
+ * @param n Number of spaces to print
+ */
+static void
+pdcpl_print_spaces(size_t n)
+{
+  for (size_t i = 0; i < n; i++)
+    putchar(' ');
+}
+
+/**
+ * Helper for printing part of a string without checking its size.
+ *
+ * @param s String to print part of
+ * @param si Index to start printing at (included)
+ * @param ei Index to stop printing at (excluded)
+ */
+static void
+pdcpl_print_substring_unchecked(const char *s, size_t si, size_t ei)
+{
+  for (size_t i = si; i < ei; i++)
+    putchar(s[i]);
+}
+
+/**
+ * Print the formatted help text for a program option wrapped to 80 cols.
  *
  * @param opt Address to `pdcpl_clioption` whose help will be printed
  * @returns 0 on success, -EINVAL if option is malformed
@@ -255,17 +320,11 @@ pdcpl_program_option_print_help(const pdcpl_clioption *opt)
 {
   // print nice errors for each case
   if (!opt) {
-    fprintf(
-      stderr,
-      "%s: fatal error: encountered NULL program option\n",
-      PDCPL_PROGRAM_NAME
-    );
+    PDCPL_PRINT_ERROR("fatal error: encountered NULL program option\n");
     return -EINVAL;
   }
   if (!opt->name) {
-    fprintf(
-      stderr, "%s: fatal error: option with NULL name\n", PDCPL_PROGRAM_NAME
-    );
+    PDCPL_PRINT_ERROR("fatal error: option with NULL name\n");
     return -EINVAL;
   }
   // print short and long name (if there is long name)
@@ -288,18 +347,53 @@ pdcpl_program_option_print_help(const pdcpl_clioption *opt)
     }
     else
       offset = PDCPL_PROGRAM_OPTION_COL_OFFSET - offset;
-    for (size_t i = 0; i < offset; i++)
-      putchar(' ');
+    pdcpl_print_spaces(offset);
   }
-  // now print the help. we first make a copy so we can edit contents and then
-  // replace single spaces with newlines as appropriate to meet 80 - col_offset
-  // column width per line, although long words that exceed this length are
-  // allowed to continue unbroken (makes implementation easy and is natural).
-  // char *help = malloc((strlen(opt->help) + 1) * sizeof *help);
-  // if (!help)
-  //   return -ENOMEM;
-  // free(help);
-  printf("%s\n", opt->help);
+  // help length, position of last whitespace
+  size_t help_len = strlen(opt->help);
+  size_t wprev_i = SIZE_MAX;
+  // chars printed in the current line, current char, prev whitespace char
+  size_t n_line_chars = PDCPL_PROGRAM_OPTION_COL_OFFSET;
+  char c, wc;
+  // print chars in segments, printing newline when necessary
+  for (size_t i = 0; i < help_len; i++) {
+    // for any whitespace, e.g. tab, newline, space
+    if (c = opt->help[i], isspace(c)) {
+      // offset is PDCPL_PROGRAM_OPTION_COL_OFFSET. if number of chars in line
+      // plus the expected number of chars to print exceeds 80 cols and this
+      // is not the first line, we go to next line and reset chars in line
+      if (n_line_chars + (i - wprev_i) >= 80) {
+        // if wprev_i not set, i.e. this is a long first line, treat as zero
+        if (wprev_i == SIZE_MAX)
+          wprev_i = 0;
+        else {
+          putchar('\n');
+          pdcpl_print_spaces(PDCPL_PROGRAM_OPTION_COL_OFFSET);
+          n_line_chars = PDCPL_PROGRAM_OPTION_COL_OFFSET;
+        }
+      }
+      // otherwise, we print the whitespace and also increment n_line_chars
+      else {
+        wc = opt->help[wprev_i];
+        putchar(wc);
+        // if newline, also print the spaces and update n_line_chars instead
+        if (wc == '\n') {
+          pdcpl_print_spaces(PDCPL_PROGRAM_OPTION_COL_OFFSET);
+          n_line_chars = PDCPL_PROGRAM_OPTION_COL_OFFSET;
+        }
+        else
+          n_line_chars++;
+      }
+      // print chars between wprev_i, i exclusive (allows spill)
+      pdcpl_print_substring_unchecked(opt->help, wprev_i + 1, i);
+      // update n_line_chars and wprev_i
+      n_line_chars += i - wprev_i - 1;
+      wprev_i = i;
+    }
+  }
+  // print last bit of chars (include last wprev_i) + newline and we are done
+  pdcpl_print_substring_unchecked(opt->help, wprev_i, help_len);
+  putchar('\n');
   return 0;
 }
 
@@ -420,12 +514,7 @@ pdcpl_program_options_printf(const pdcpl_clioption *opts)
         prog_options++; \
       } \
       if (!cur_opt) { \
-        fprintf( \
-          stderr, \
-          "%s: error: unknown option %s\n", \
-          PDCPL_PROGRAM_NAME, \
-          PDCPL_ARGV[i] \
-        ); \
+        PDCPL_PRINT_ERROR_EX("error: unknown option %s\n", PDCPL_ARGV[i]); \
         return EXIT_FAILURE; \
       } \
       if (cur_opt->action) \
