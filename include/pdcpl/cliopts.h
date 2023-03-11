@@ -46,6 +46,21 @@ typedef enum {
 } pdcpl_cliopt_status;
 
 /**
+ * Static array of messages corresponding to each `pdcpl_cliopt_status`.
+ */
+static const char *pdcpl_cliopt_status_message[] = {
+  "success",
+  "too few arguments",
+  "too many arguments",
+  "expected zero",
+  "expected nonzero value",
+  "expected negative value",
+  "expected positive value",
+  "argument conversion failed",
+  "invalid argument value",
+};
+
+/**
  * Typedef for a function to perform an action given `argc` and `argv`.
  *
  * Each `pdcpl_clioption` has an `action` slot that should be bound to a
@@ -139,11 +154,11 @@ typedef struct pdcpl_clioption {
  * @param argv `argv` from `main()`
  * @param opt Address to `pdcpl_clioption` to read information from
  * @param argi Index of `argv` we are currently at
- * @param err Status value returned by associated action slot (unused)
+ * @param err Nonzero status value returned by associated action slot
  * @returns 0 on success, nonzero values for failure
  */
 static
-PDCPL_CLIOPT_ERRHANDLER(pdcpl_default_opterrhandler)
+PDCPL_CLIOPT_ERRHANDLER(pdcpl_default_cliopt_errhandler)
 {
   // set program name if not set + handle some fatal errors
   PDCPL_SET_PROGRAM_NAME();
@@ -159,18 +174,32 @@ PDCPL_CLIOPT_ERRHANDLER(pdcpl_default_opterrhandler)
     PDCPL_PRINT_ERROR("fatal error: cannot handle NULL option\n");
     return 2;
   }
-  // doesn't actually do anything with err, so suppress compiler warning
-  (void) err;
-  // report error based on information from opt
+  // error message string. if negative, use its negation with strerror, and if
+  // positive and < PDCPL_CLIOPT_STATUS_MAX, use pdcpl_cliopt_status_message
+  const char *err_str;
+  if (err < 0)
+    err_str = strerror(-err);
+  else if (err < PDCPL_CLIOPT_STATUS_MAX)
+    err_str = pdcpl_cliopt_status_message[err];
+  else {
+    PDCPL_PRINT_ERROR_EX("fatal error: unknown err status %d\n", err);
+    return 2;
+  }
+  // report error based on information from opt and err_str
   PDCPL_PRINT_ERROR_EX("error: %s", opt->name);
   if (opt->long_name)
     fprintf(stderr, ", %s", opt->long_name);
-  fprintf(stderr, " parsing error, expected %u arguments.", opt->nargs);
+  fprintf(stderr, " error: %s", err_str);
+  // print expected number of args if too few or too many
+  if (
+    err == PDCPL_CLIOPT_ERROR_ARGS_TOO_FEW ||
+    err == PDCPL_CLIOPT_ERROR_ARGS_TOO_MANY
+  )
+    fprintf(stderr, ", expected %u", opt->nargs);
   // prints next argument, unless there is no next argument
   if (argi + 1 < argc)
-    fprintf(stderr, " current arg: %s\n", argv[argi + 1]);
-  else
-    fprintf(stderr, " no args provided\n");
+    fprintf(stderr, ". current arg: %s", argv[argi + 1]);
+  fprintf(stderr, "\n");
   return EXIT_FAILURE;
 }
 
@@ -488,8 +517,6 @@ pdcpl_program_options_printf(const pdcpl_clioption *opts)
 /**
  * Parse optional arguments passed to a `PDCPL_ARG_MAIN` appropriately.
  *
- * TODO: Remove conditional compile later, see `pdcpl_default_opterrhandler`
- *
  * Prints program usage and exits if `-h`, `--help` is specified and prints
  * program version info and exits if `-V`, `--version` is specified. If there
  * are user-defined program options, i.e. `PDCPL_HAS_PROGRAM_OPTIONS` is
@@ -524,14 +551,11 @@ pdcpl_program_options_printf(const pdcpl_clioption *opts)
         PDCPL_PRINT_ERROR_EX("error: unknown option %s\n", PDCPL_ARGV[i]); \
         return EXIT_FAILURE; \
       } \
-      if (cur_opt->action) \
-        opt_status = cur_opt->action(argc, argv, i); \
-      else \
-        opt_status = 0; \
+      opt_status = (cur_opt->action) ? cur_opt->action(argc, argv, i) : 0; \
       if (opt_status) { \
         if (cur_opt->errhandler) \
           return cur_opt->errhandler(argc, argv, cur_opt, i, opt_status); \
-        return pdcpl_default_opterrhandler(argc, argv, cur_opt, i, opt_status); \
+        return pdcpl_default_cliopt_errhandler(argc, argv, cur_opt, i, opt_status); \
       } \
       i += (int) cur_opt->nargs; \
       cur_opt = NULL; \
