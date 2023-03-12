@@ -296,29 +296,75 @@ pdcpl_program_options_count(const pdcpl_clioption *opts)
   pdcpl_program_options_count(PDCPL_PROGRAM_OPTIONS)
 
 /**
+ * Return pointer to substring of option name that omits the hyphens.
+ *
+ * @param name Name of an option flag, i.e. string starting with hyphen
+ * @returns Pointer to substring on success, `NULL` on failure
+ */
+static const char *
+pdcpl_cliopt_print_name(const char *name)
+{
+  if (!name)
+    return NULL;
+  char *print_name = (char *) name;
+  while (*print_name == '-' && *print_name != '\0')
+    print_name++;
+  if (*print_name == '\0')
+    return NULL;
+  return print_name;
+}
+
+/**
+ * Helper function to get the length of the option's print name.
+ *
+ * @param name Name of an option flag, i.e. string starting with hyphen
+ * @returns Length of string without leading hyphens on success, 0 on failure
+ */
+static size_t
+pdcpl_cliopt_print_name_length(const char *name)
+{
+  const char *print_name = pdcpl_cliopt_print_name(name);
+  if (!print_name)
+    return 0;
+  return strlen(print_name);
+}
+
+/**
  * Return program option print offset.
  *
- * The print offset for a program option `opt` is defined as:
+ * The print offset for a program option `opt` with no args is defined as:
  *
  *  2 + strlen(opt.name) + ((opt.long_name) ? 2 + strlen(opt.long_name) : 0)
  *
  * The first 2 is to provide indentation, the second 2 accommodates the extra
- * ", " that is needed before printing the long option name.
+ * ", " that is needed before printing the long option name. If with args, then
+ * 1 + the length of the long, if available, otherwise short option name sans
+ * leading hypehsn is added to the result opt.nargs times before return.
  *
  * @param opt Address to `pdcpl_clioption` to get print offset for
  * @returns 0 on error, 2 or greater for any success
  */
-PDCPL_INLINE size_t
-pdcpl_program_option_print_offset(const pdcpl_clioption *opt)
+static size_t
+pdcpl_cliopt_print_offset(const pdcpl_clioption *opt)
 {
   size_t offset = 2;
   // malformed option or sentinel
   if (!opt || !opt->name)
     return 0;
   offset += strlen(opt->name);
-  // need an extra 2 for space and comma
+  // need an extra 2 for space and comma, done if option takes no args
   if (opt->long_name)
     offset += strlen(opt->long_name) + 2;
+  if (!opt->nargs)
+    return offset;
+  // else get the [long] print name and increment per arg before return
+  size_t len_place_name = pdcpl_cliopt_print_name_length(
+    (opt->long_name) ? opt->long_name : opt->name
+  );
+  if (!len_place_name)
+    return 0;
+  for (unsigned int i = 0; i < opt->nargs; i++)
+    offset += 1 + len_place_name;
   return offset;
 }
 
@@ -329,7 +375,7 @@ pdcpl_program_option_print_offset(const pdcpl_clioption *opt)
  * printed started on the same line from this column (starting from 0),
  * otherwise the help text will start on this column on the next line.
  */
-#define PDCPL_PROGRAM_OPTION_COL_OFFSET 20
+#define PDCPL_PROGRAM_OPTION_COL_OFFSET 30
 
 /**
  * Helper for printing a specified number of spaces
@@ -358,13 +404,67 @@ pdcpl_print_substring_unchecked(const char *s, size_t si, size_t ei)
 }
 
 /**
+ * Check that option names are valid and if so, write without leading hyphens.
+ *
+ * Does its own printing to stderr. Incoming arguments are unchecked.
+ *
+ * @param opt Address to `pdcpl_clioption` to check option names for
+ * @param np Address to `const char *` to store no-hyphen option name substring
+ * @param lnp Address to `const char*` to store no-hyphen long name substring
+ * @returns 0 on success, -EINVAL if name or long name (if exists) malformed
+ */
+static int
+pdcpl_cliopt_check_print_names(
+  const pdcpl_clioption *opt, const char **np, const char **lnp)
+{
+  // assume opt, np, lnp are valid
+  const char *print_name, *long_print_name;
+  print_name = pdcpl_cliopt_print_name(opt->name);
+  long_print_name = pdcpl_cliopt_print_name(opt->long_name);
+  // long_print_name is NULL if opt->long_name is NULL
+  if (!print_name || (opt->long_name && !long_print_name)) {  // -Wparentheses
+    PDCPL_PRINT_ERROR_EX("fatal error: %s", opt->name);
+    if (opt->long_name)
+      fprintf(stderr, ", %s", opt->long_name);
+    fprintf(stderr, " missing leading hyphen in name\n");
+    return -EINVAL;
+  }
+  // otherwise, assign and return ok
+  *np = print_name;
+  *lnp = long_print_name;
+  return 0;
+}
+
+/**
+ * Print the argument placeholders for an option given the print names.
+ *
+ * @param n_args Number of args that the option takes
+ * @param pname Short option name without leading hyphens
+ * @param long_pname Long option name without leading hyphens, can be `NULL`
+ */
+static void
+pdcpl_cliopt_print_arg_places(
+  unsigned int n_args, const char *pname, const char *long_pname)
+{
+  if (!pname && !long_pname)
+    return;
+  const char *lower_place = (long_pname) ? long_pname : pname;
+  size_t len_lower_place = strlen(lower_place);
+  for (unsigned int i = 0; i < n_args; i++) {
+    putchar(' ');
+    for (size_t j = 0; j < len_lower_place; j++)
+      putchar(toupper(lower_place[j]));
+  }
+}
+
+/**
  * Print the formatted help text for a program option wrapped to 80 cols.
  *
  * @param opt Address to `pdcpl_clioption` whose help will be printed
  * @returns 0 on success, -EINVAL if option is malformed
  */
 static int
-pdcpl_program_option_print_help(const pdcpl_clioption *opt)
+pdcpl_cliopt_print_help(const pdcpl_clioption *opt)
 {
   // print nice errors for each case
   if (!opt) {
@@ -375,10 +475,17 @@ pdcpl_program_option_print_help(const pdcpl_clioption *opt)
     PDCPL_PRINT_ERROR("fatal error: option with NULL name\n");
     return -EINVAL;
   }
+  // check name and long name have valid formats (prints its own errors)
+  const char *print_name, *long_print_name;
+  if (pdcpl_cliopt_check_print_names(opt, &print_name, &long_print_name))
+    return -EINVAL;
   // print short and long name (if there is long name)
   printf("  %s", opt->name);
   if (opt->long_name)
     printf(", %s", opt->long_name);
+  // if there are arguments, print leading space + upper print name nargs times
+  if (opt->nargs)
+    pdcpl_cliopt_print_arg_places(opt->nargs, print_name, long_print_name);
   // if no help, just print newline and move on
   if (!opt->help) {
     putchar('\n');
@@ -386,7 +493,7 @@ pdcpl_program_option_print_help(const pdcpl_clioption *opt)
   }
   // compute options print offset (no need to check, opt->name is not NULL)
   {
-    size_t offset = pdcpl_program_option_print_offset(opt);
+    size_t offset = pdcpl_cliopt_print_offset(opt);
     // if offset exceeds PDCPL_PROGRAM_OPTION_COL_OFFSET - 2, print a newline
     // and PDCPL_PROGRAM_OPTION_COL_OFFSET spaces, otherwise just the diff
     if (offset + 2 > PDCPL_PROGRAM_OPTION_COL_OFFSET) {
@@ -468,7 +575,7 @@ pdcpl_program_options_printf(const pdcpl_clioption *opts)
   printf("General options:\n");
   for (unsigned int i = 0; i < n_opts; i++) {
     // if there is an error, the function prints its own error message
-    if (pdcpl_program_option_print_help(opts + i))
+    if (pdcpl_cliopt_print_help(opts + i))
       return -EINVAL;
   }
   // need extra newline for spacing
@@ -493,8 +600,8 @@ pdcpl_program_options_printf(const pdcpl_clioption *opts)
       return EXIT_FAILURE; \
     printf( \
       "Info options:\n" \
-      "  -h, --help        Print this help output\n" \
-      "  -V, --version     Print program version info\n" \
+      "  -h, --help                  Print this help output\n" \
+      "  -V, --version               Print program version info\n" \
     ); \
     if (strlen(PDCPL_PROGRAM_EPILOG)) \
       printf("\n%s\n", PDCPL_PROGRAM_EPILOG); \

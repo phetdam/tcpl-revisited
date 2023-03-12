@@ -18,6 +18,8 @@ if(WIN32)
         /wd5045 /wd5105
         # unreferenced inline function removed
         /wd4514
+        # assignment within conditional expression
+        /wd4706
     )
     if(NOT CMAKE_BUILD_TYPE STREQUAL Release)
         add_compile_options(/Od /DEBUG)
