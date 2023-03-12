@@ -504,9 +504,9 @@ pdcpl_cliopt_print_help(const pdcpl_clioption *opt)
       offset = PDCPL_PROGRAM_OPTION_COL_OFFSET - offset;
     pdcpl_print_spaces(offset);
   }
-  // help length, position of last whitespace
+  // help length, position of last whitespace (starts at first char actually)
   size_t help_len = strlen(opt->help);
-  size_t wprev_i = SIZE_MAX;
+  size_t wprev_i = 0;
   // chars printed in the current line, current char, prev whitespace char
   size_t n_line_chars = PDCPL_PROGRAM_OPTION_COL_OFFSET;
   char c, wc;
@@ -518,14 +518,9 @@ pdcpl_cliopt_print_help(const pdcpl_clioption *opt)
       // plus the expected number of chars to print exceeds 80 cols and this
       // is not the first line, we go to next line and reset chars in line
       if (n_line_chars + (i - wprev_i) >= 80) {
-        // if wprev_i not set, i.e. this is a long first line, treat as zero
-        if (wprev_i == SIZE_MAX)
-          wprev_i = 0;
-        else {
-          putchar('\n');
-          pdcpl_print_spaces(PDCPL_PROGRAM_OPTION_COL_OFFSET);
-          n_line_chars = PDCPL_PROGRAM_OPTION_COL_OFFSET;
-        }
+        putchar('\n');
+        pdcpl_print_spaces(PDCPL_PROGRAM_OPTION_COL_OFFSET);
+        n_line_chars = PDCPL_PROGRAM_OPTION_COL_OFFSET;
       }
       // otherwise, we print the whitespace and also increment n_line_chars
       else {
