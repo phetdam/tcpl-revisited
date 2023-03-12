@@ -75,6 +75,18 @@ static const char *pdcpl_cliopt_status_message[] = {
 typedef int (*pdcpl_cliopt_action)(int argc, char **argv, int argi);
 
 /**
+ * Return error from `pdcpl_cliopt_action` if no arguments to consume.
+ *
+ * Although in a `pdcpl_cliopt_action` the `argi` index is guaranteed to be
+ * less than `argc`, if `argi` equals `argc - 1`, then there are no arguments
+ * to consume for this option. This macro is useful to immediately return the
+ * `PDCPL_CLIOPT_ERROR_ARGS_TOO_FEW` error if he option requires arguments.
+ */
+#define PDCPL_CLIOPT_ACTION_ARGI_GUARD \
+  if (argi + 1 >= argc) \
+    return PDCPL_CLIOPT_ERROR_ARGS_TOO_FEW;
+
+/**
  * Macro for declaring a `pdcpl_cliopt_action`.
  *
  * @param name Name of the function
