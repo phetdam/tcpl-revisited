@@ -131,6 +131,9 @@ pdcpl_fwc(FILE *f, pdcpl_wcresults *rp)
  * the contents of the line, excluding the `\n`, read from `f`. If `ncp` is not
  * `NULL`, it contains the length of the buffer - 1, i.e. the line length.
  *
+ * If `feof(f)` is nonzero, this function still succeeds, but `*ncp` is zero
+ * and `*sp` will be an empty string, i.e. just the null terminator.
+ *
  * @param f `FILE *` stream to read line from
  * @param sp Address of a `char *` for pointing to the line buffer
  * @param ncp Address of `size_t` to store line length (can be `NULL`)

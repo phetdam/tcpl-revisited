@@ -15,7 +15,7 @@
 
 PDCPL_PROGRAM_USAGE_DEF
 (
-  "Prints all lines read from stdin longer than 80 chars to stdout\n"
+  "Prints all lines read from stdin longer than 80 chars to stdout.\n"
   "\n"
   "Lines up to SIZE_MAX - 1 will be correctly printed while any lines that\n"
   "are SIZE_MAX or longer will trigger appropriate error handling and exit."
