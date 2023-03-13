@@ -93,6 +93,17 @@ typedef int (*pdcpl_cliopt_action)(int argc, char **argv, int argi);
  */
 #define PDCPL_CLIOPT_ACTION(name) int name(int argc, char **argv, int argi)
 
+/**
+ * Perform no-ops on the `pdcpl_cliopt_action` input variables.
+ *
+ * This is useful to suppress overeager compiler warnings about unreferened
+ * formal parameters, for example as issued by MSVC when using /Wall.
+ */
+#define PDCPL_CLIOPT_ACTION_NO_WARN_UNUSED \
+    (void) argc; \
+    (void) argv; \
+    (void) argi;
+
 // forward declaration for the pdcpl_clioption type
 typedef struct pdcpl_clioption pdcpl_clioption;
 
