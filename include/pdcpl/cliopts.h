@@ -449,6 +449,9 @@ pdcpl_cliopt_check_print_names(
 /**
  * Print the argument placeholders for an option given the print names.
  *
+ * Any non-leading hyphens in the print names are replaced with underscores and
+ * the names are printed in all caps, adhering with *nix style.
+ *
  * @param n_args Number of args that the option takes
  * @param pname Short option name without leading hyphens
  * @param long_pname Long option name without leading hyphens, can be `NULL`
@@ -464,7 +467,7 @@ pdcpl_cliopt_print_arg_places(
   for (unsigned int i = 0; i < n_args; i++) {
     putchar(' ');
     for (size_t j = 0; j < len_lower_place; j++)
-      putchar(toupper(lower_place[j]));
+      putchar((lower_place[j] == '-') ? '_' : toupper(lower_place[j]));
   }
 }
 
@@ -655,10 +658,11 @@ pdcpl_program_options_printf(const pdcpl_clioption *opts)
 #define PDCPL_PARSE_PROGRAM_OPTIONS() \
   do { \
     PDCPL_HANDLE_INFO_OPTS(); \
-    pdcpl_clioption *prog_options = PDCPL_PROGRAM_OPTIONS; \
+    pdcpl_clioption *prog_options; \
     pdcpl_clioption *cur_opt = NULL; \
     int opt_status; \
     for (int i = 1; i < PDCPL_ARGC; i++) { \
+      prog_options = PDCPL_PROGRAM_OPTIONS; \
       while (prog_options->name) { \
         if ( \
           !strcmp(PDCPL_ARGV[i], prog_options->name) || \
