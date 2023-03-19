@@ -20,6 +20,10 @@ if(WIN32)
         /wd4514
         # assignment within conditional expression
         /wd4706
+        # enum value not explicitly handled in by case label in switch
+        /wd4061
+        # const value not used
+        /wd5264
     )
     if(NOT CMAKE_BUILD_TYPE STREQUAL Release)
         add_compile_options(/Od /DEBUG)
