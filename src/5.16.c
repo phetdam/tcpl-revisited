@@ -96,6 +96,9 @@ PDCPL_CLIOPT_ACTION(ignore_case_action)
     case SORT_MODE_DEFAULT:
       sort_program_mode = SORT_MODE_DEFAULT_IGNORE_CASE;
       break;
+    case SORT_MODE_DIRECTORY:
+      sort_program_mode = SORT_MODE_DIRECTORY_IGNORE_CASE;
+      break;
     default:
       break;
   }
@@ -159,7 +162,7 @@ PDCPL_PROGRAM_OPTIONS_DEF
   {
     "-f", "--ignore-case",
     "Ignore alphabetic case when sorting. Has no effect if specified with -n, "
-    "--numeric-sort or with -d, --directory-sort",
+    "--numeric-sort",
     0,
     ignore_case_action,
     NULL
@@ -385,6 +388,61 @@ strptr_dcmp_r(const char **a, const char **b)
 }
 
 /**
+ * Compare two strings by directory order, ignoring case.
+ *
+ * @param a Address of first string
+ * @param b Address of second string
+ * @returns -1 if `*a` has directory order before `*b` when ignoring case, 0 if
+ *  equal in terms of directory order when ignoring case, 1 when `*b` has
+ *  directory order before `*a` when ignoring case
+ */
+static int
+strptr_ldcmp(const char **a, const char **b)
+{
+  // strings and current char of strings
+  const char *sa, *sb;
+  char ca, cb;
+  // compare only on alphanumeric or whitespace chars until we break
+  for (sa = *a, sb = *b; *sa != '\0' && *sb != '\0'; sa++, sb++) {
+    // advance sa, sb until *sa, *sb are both whitespace/alphanumeric or '\0'
+    while ((ca = (char) tolower(*sa)) != '\0' && ca != ' ' && !isalnum(ca))
+      ca = *sa++;
+    while ((cb = (char) tolower(*sb)) != '\0' && cb != ' ' && !isalnum(cb))
+      cb = *sb++;
+    // break if either are '\0'
+    if (ca == '\0' || cb == '\0')
+      break;
+    // otherwise compare and continue
+    if (ca < cb)
+      return -1;
+    if (cb < ca)
+      return 1;
+  }
+  // strings are equal
+  if (*sa == '\0' && *sb == '\0')
+    return 0;
+  // sa is shorter, sb is shorter
+  if (*sa == '\0')
+    return -1;
+  return 1;
+}
+
+/**
+ * Compare two strings by directory order, ignoring case.
+ *
+ * @param a Address of first string
+ * @param b Address of second string
+ * @returns -1 if `*a` has directory order before `*b` when ignoring case, 0 if
+ *  equal in terms of directory order when ignoring case, 1 when `*b` has
+ *  directory order before `*a` when ignoring case
+ */
+static inline int
+strptr_ldcmp_r(const char **a, const char **b)
+{
+  return -strptr_ldcmp(a, b);
+}
+
+/**
  * Determine which `qsort` compare function should be used.
  *
  * @param out Address to a `qsort_cmp` to use as the compare function
@@ -410,7 +468,9 @@ set_qsort_cmp(qsort_cmp *out, sort_mode mode, bool rev_sort)
     case SORT_MODE_DIRECTORY:
       *out = (rev_sort) ? (qsort_cmp) strptr_dcmp_r : (qsort_cmp) strptr_dcmp;
       break;
-    // case SORT_MODE_DIRECTORY_IGNORE_CASE:
+    case SORT_MODE_DIRECTORY_IGNORE_CASE:
+      *out = (rev_sort) ? (qsort_cmp) strptr_ldcmp_r : (qsort_cmp) strptr_ldcmp;
+      break;
     default:
       return -EINVAL;
   }
