@@ -53,6 +53,66 @@ static const char *PDCPL_PROGRAM_NAME = "";
   } \
   while (0)
 
+/**
+ * Print an error message to stderr preceded by the program name.
+ *
+ * @param message String literal message
+ */
+#define PDCPL_PRINT_ERROR(message) \
+  fprintf(stderr, "%s: " message, PDCPL_PROGRAM_NAME)
+
+/**
+ * Print an error message to stderr preceded by the program name.
+ *
+ * Allows `printf`-style formatting.
+ *
+ * @param message `printf` format literal message
+ * @param ... Variadic list of arguments for format specifiers
+ */
+#define PDCPL_PRINT_ERROR_EX(message, ...) \
+  fprintf(stderr, "%s: " message, PDCPL_PROGRAM_NAME, __VA_ARGS__)
+
+/**
+ * Return `EXIT_FAILURE` from `main()` if `expr` evaluates to an `errno` value.
+ *
+ * Prints a message to stderr using `strerror`, where `expr` is expected to
+ * resolve to an `errno` value or the negation of an `errno` value.
+ *
+ * @param expr Expression resolving to an `errno` value or its negation
+ */
+#define PDCPL_MAIN_ERRNO_EXIT(expr) \
+  do { \
+    int res; \
+    if ((res = expr)) { \
+      PDCPL_PRINT_ERROR_EX("%s\n", strerror((res < 0) ? -res : res)); \
+      return EXIT_FAILURE; \
+    } \
+  } \
+  while (0)
+
+/**
+ * Return `EXIT_FAILURE` from `main()` if `expr` evaluates to nonzero.
+ *
+ * @param expr Expression resolving to an integral value
+ */
+#define PDCPL_MAIN_EXIT(expr) if (expr) return EXIT_FAILURE
+
+/**
+ * Return `EXIT_FAILURE` from `main()` if `expr` evaluates to nonzero.
+ *
+ * Prints a user-defined message to stderr.
+ *
+ * @param expr Expression resolving to an integral value
+ */
+#define PDCPL_MAIN_EXIT_EX(expr, message) \
+  do { \
+    if (expr) { \
+      PDCPL_PRINT_ERROR_EX("%s\n", message); \
+      return EXIT_FAILURE; \
+    } \
+  } \
+  while (0)
+
 PDCPL_EXTERN_C_END
 
 #endif  // PDCPL_CORE_H_

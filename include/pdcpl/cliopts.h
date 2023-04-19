@@ -148,25 +148,6 @@ typedef struct pdcpl_clioption {
 } pdcpl_clioption;
 
 /**
- * Print an error message to stderr preceded by the program name.
- *
- * @param message String literal message
- */
-#define PDCPL_PRINT_ERROR(message) \
-  fprintf(stderr, "%s: " message, PDCPL_PROGRAM_NAME)
-
-/**
- * Print an error message to stderr preceded by the program name.
- *
- * Allows `printf`-style formatting.
- *
- * @param message `printf` format literal message
- * @param ... Variadic list of arguments for format specifiers
- */
-#define PDCPL_PRINT_ERROR_EX(message, ...) \
-  fprintf(stderr, "%s: " message, PDCPL_PROGRAM_NAME, __VA_ARGS__)
-
-/**
  * The generic error handler that is used on action error.
  *
  * If `errhandler` is `NULL` for a `pdcpl_clioption`, this is used instead.
