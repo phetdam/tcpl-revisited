@@ -2,4 +2,4 @@
 .vscode
 # ignore build directories
 /build
-/build_windows
+/build_windows*
