@@ -24,18 +24,14 @@ if(WIN32)
         /wd4061
         # const value not used
         /wd5264
+        # /Od applied by default when using Debug config, /O2 for Release
+        $<$<NOT:$<CONFIG:Release>>:/DEBUG>
     )
-    if(NOT CMAKE_BUILD_TYPE STREQUAL Release)
-        add_compile_options(/Od /DEBUG)
-    else()
-        add_compile_options(/O2)
-    endif()
 # Clang/GCC can accept most of the same options
 else()
-    add_compile_options(-Wall)
-    if(NOT CMAKE_BUILD_TYPE STREQUAL Release)
-        add_compile_options(-O0 -ggdb)
-    else()
-        add_compile_options(-O3)
-    endif()
+    add_compile_options(
+        -Wall
+        # -O0 is default optimization level anyways
+        $<IF:$<CONFIG:Release>,-O3,-O0> $<$<NOT:$<CONFIG:Release>>:-ggdb>
+    )
 endif()
