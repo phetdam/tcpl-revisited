@@ -19,11 +19,27 @@ cross-platform development to holistically scratch my C itch.
 Building from source
 --------------------
 
-Use CMake_. On x86-64 \*nix systems, the CMake release build command is
+CMake_ >=3.21 is required to build from source on all platforms.
+
+\*nix
+~~~~~
+
+Building is easy with the provided ``build.sh`` build script. For usage, type
 
 .. code:: bash
 
-   cmake -S . -B build -DCMAKE_BUILD_TYPE=Release && cmake --build build -j
+   ./build.sh --help
+
+To build release binaries for this project, simply use the command
+
+.. code::bash
+
+   ./build.sh -c Release
+
+Simply typing ``./build.sh`` will build unoptimized binaries with debug symbols.
+
+Windows
+~~~~~~~
 
 For Windows, the CMake release build command is
 
