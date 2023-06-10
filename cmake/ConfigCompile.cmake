@@ -24,6 +24,8 @@ if(WIN32)
         /wd4061
         # const value not used
         /wd5264
+        # /Wall enables excessive warnings about automatic inline expansion
+        /wd4710 /wd4711
         # /Od applied by default when using Debug config, /O2 for Release
         $<$<NOT:$<CONFIG:Release>>:/DEBUG>
     )

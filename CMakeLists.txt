@@ -67,6 +67,21 @@ add_compile_definitions(
     PDCPL_SYSTEM_ARCH="${PDCPL_SYSTEM_ARCH}"
 )
 
+# eliminate per-configuration subdirs from being appended to build artifact
+# output dirs for multi-config generators, e.g. Visual Studio
+set(
+    CMAKE_RUNTIME_OUTPUT_DIRECTORY
+    ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}$<$<CONFIG:Debug>:>
+)
+set(
+    CMAKE_LIBRARY_OUTPUT_DIRECTORY
+    ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}$<$<CONFIG:Debug>:>
+)
+set(
+    CMAKE_ARCHIVE_OUTPUT_DIRECTORY
+    ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}$<$<CONFIG:Debug>:>
+)
+
 # update CMake module path for our CMake scripts
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
