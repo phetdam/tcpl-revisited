@@ -26,6 +26,8 @@ if(WIN32)
         /wd5264
         # /Wall enables excessive warnings about automatic inline expansion
         /wd4710 /wd4711
+        # silence warnings on padding emitted when compiling x64 binaries
+        /wd4820
         # /Od applied by default when using Debug config, /O2 for Release
         $<$<NOT:$<CONFIG:Release>>:/DEBUG>
     )
