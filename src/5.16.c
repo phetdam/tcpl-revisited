@@ -460,7 +460,7 @@ PDCPL_ARG_MAIN
   ERRNO_EXIT(pdcpl_buffer_realloc(&linebuf, n_lines * sizeof(char **)));
   // set compare function according to options
   qsort_cmp cmp;
-  set_qsort_cmp(&cmp, sort_program_mode, reverse_target);
+  ERRNO_EXIT(set_qsort_cmp(&cmp, sort_program_mode, reverse_target));
   qsort(linebuf.data, n_lines, sizeof(char **), cmp);
   // print out + free the lines stored in linebuf's data pointer
   for (size_t i = 0; i < n_lines; i++) {
