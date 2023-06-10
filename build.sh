@@ -2,7 +2,7 @@
 #
 # Build script for tcpl-revisited.
 #
-# Originally copied from the daily-coding-problem build script.
+# Originally copied from the daily-coding-problem build.sh build script.
 #
 # Author: Derek Huang
 # Copyright: MIT License

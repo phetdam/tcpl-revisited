@@ -1,4 +1,6 @@
-:: Build script for daily-coding-problem.
+:: Build script for tcpl-revisited.
+::
+:: Originally copied from the daily-coding-problem build.bat build script.
 ::
 :: Author: Derek Huang
 :: Copyright: MIT License
@@ -27,7 +29,7 @@ exit /b !ERRORLEVEL!
     echo Usage: %PROGNAME% [-h] [-o OUTPUT_PREFIX] [-a ARCH] [-c CONFIG] ^
 [-Ca CMAKE_ARGS] [-Cb CMAKE_BUILD_ARGS]
     echo.
-    echo Build script for daily-coding-problem Windows builds.
+    echo Build script for tcpl-revisited Windows builds.
     echo.
     echo Uses the default Visual Studio generator and toolset.
     echo.
