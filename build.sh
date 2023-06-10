@@ -131,11 +131,11 @@ main () {
     if [ "$BUILD_ACTION" = "print_usage" ]
     then
         print_usage
-        return 0
     else
         cmake -S . -B $BUILD_OUTPUT_DIR -DCMAKE_BUILD_TYPE=$BUILD_CONFIG \
             $CMAKE_ARGS && cmake --build $BUILD_OUTPUT_DIR -j $CMAKE_BUILD_ARGS
     fi
+    return 0
 }
 
 main "$@"
