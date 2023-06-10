@@ -32,7 +32,7 @@ Building is easy with the provided ``build.sh`` build script. For usage, type
 
 To build release binaries for this project, simply use the command
 
-.. code::bash
+.. code:: bash
 
    ./build.sh -c Release
 
