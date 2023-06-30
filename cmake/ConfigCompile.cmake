@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION ${CMAKE_MINIMUM_REQUIRED_VERSION})
 
-if(WIN32)
+if(MSVC)
     # stop MSVC from warning about unsafe functions, C is unsafe by nature
     add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
     # always use release VC++ C runtime for ease of dependency management.
@@ -38,4 +38,11 @@ else()
         # -O0 is default optimization level anyways
         $<IF:$<CONFIG:Release>,-O3,-O0> $<$<NOT:$<CONFIG:Release>>:-ggdb>
     )
+    # enable AddressSanitizer use
+    if(PDCPL_ENABLE_ASAN)
+        message(STATUS "AddressSanitizer (-fsanitize=address) enabled")
+        # must specifiy for both compile and link
+        add_compile_options(-fsanitize=address)
+        add_link_options(-fsanitize=address)
+    endif()
 endif()
