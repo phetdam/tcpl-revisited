@@ -41,16 +41,28 @@ Simply typing ``./build.sh`` will build unoptimized binaries with debug symbols.
 Windows
 ~~~~~~~
 
-For Windows, the CMake release build command is
+Building is easy with the provided ``build.bat`` build script. For usage, type
 
 .. code:: shell
 
-   cmake -S . -B build_windows -G Ninja -DCMAKE_BUILD_TYPE=Release && ^
-   cmake --build build_windows -j
+   build --help
 
-Here the bitness of the build artifacts depends on the command prompt used,
-i.e. the "normal" Developer Command Prompt will produce 32-bit objects while
-the x64 Native Tools Command prompt will produce 64-bit objects.
+To build release binaries for this project, simple use the command
+
+.. code:: shell
+
+   build -c Release
+
+Simply typing ``build`` will build unoptimized binaries and the program
+database with debugging info. You can specify the target architecture using
+the ``-a`` flag, e.g. to build 64-bit release binaries instead of the default
+32-bit ones, use
+
+.. code:: shell
+
+   build -a x64 -c Release
+
+Currently, the Visual Studio toolset used will be whichever is the default.
 
 Building unit tests
 -------------------
