@@ -39,7 +39,7 @@ else()
         $<IF:$<CONFIG:Release>,-O3,-O0> $<$<NOT:$<CONFIG:Release>>:-ggdb>
     )
     # enable AddressSanitizer use
-    if(PDCPL_ENABLE_ASAN)
+    if(ENABLE_ASAN)
         message(STATUS "AddressSanitizer (-fsanitize=address) enabled")
         # must specifiy for both compile and link
         add_compile_options(-fsanitize=address)
