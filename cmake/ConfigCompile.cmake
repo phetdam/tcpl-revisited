@@ -31,6 +31,30 @@ if(MSVC)
         # /Od applied by default when using Debug config, /O2 for Release
         $<$<NOT:$<CONFIG:Release>>:/DEBUG>
     )
+    # note: does not work correctly for Windows for the test runner, which will
+    # hang indefinitely with CPU constantly spinning. it is possible that
+    # Google Test and AddressSanitizer simply don't mesh well.
+    # enable AddressSanitizer use
+    if(ENABLE_ASAN)
+        message(STATUS "AddressSanitizer (/fsanitize=address) enabled")
+        # must remove run-time check options from C++ flags. CMake adds these
+        # by default in CMAKE_C(XX)_FLAGS_DEBUG, so remove them
+        string(
+            REGEX REPLACE
+            "/RTC[1csu]" "" CMAKE_C_FLAGS_DEBUG ${CMAKE_C_FLAGS_DEBUG}
+        )
+        message(STATUS "Removed /RTC[1csu] from CMAKE_C_FLAGS_DEBUG")
+        string(
+            REGEX REPLACE
+            "/RTC[1csu]" "" CMAKE_CXX_FLAGS_DEBUG ${CMAKE_CXX_FLAGS_DEBUG}
+        )
+        message(STATUS "Removed /RTC[1csu] from CMAKE_CXX_FLAGS_DEBUG")
+        add_compile_options(/fsanitize=address)
+        # need to disable MSVC std::vector annotation for static Google Test
+        add_compile_definitions(_DISABLE_VECTOR_ANNOTATION)
+        # AddressSanitizer cannot be used with incremental linking
+        add_link_options(/INCREMENTAL:NO)
+    endif()
 # Clang/GCC can accept most of the same options
 else()
     add_compile_options(
