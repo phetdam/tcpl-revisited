@@ -125,6 +125,71 @@ pdcpl_fwc(FILE *f, pdcpl_wcresults *rp)
 }
 
 /**
+ * Read a word from a `FILE *` stream to a buffer.
+ *
+ * On success, `*wp` will point to a `NULL`-terminated `char` buffer containing
+ * the word read from `f`. If `ncp` is not `NULL`, it contains the length of
+ * the buffer - 1, i.e. the length of the word.
+ *
+ * If `feof(f)` is nonzero, this function still succeeds, but `*ncp` is zero
+ * and `*sp` will be an empty string, i.e. just the null terminator.
+ *
+ * @param f `FILE *` stream to read line from
+ * @param wp Address of a `char *` for pointing to the word buffer
+ * @param ncp Address of `size_t` to store word length (can be `NULL`)
+ * @returns 0 if no error, -EINVAL if `f` or `wp` are `NULL`, -ERANGE if the
+ *  word read exceeds `SIZE_MAX - 1`, -ENOMEM if buffer [re]allocation fails
+ */
+PDCPL_PUBLIC
+int
+pdcpl_getword(FILE *f, char **wp, size_t *ncp)
+{
+  // ncp allowed to be NULL
+  if (!f || !wp)
+    return -EINVAL;
+  // new buffer to hold the incoming word
+  pdcpl_buffer buf = pdcpl_buffer_new(BUFSIZ);
+  if (!pdcpl_buffer_ready(&buf))
+    return -ENOMEM;
+  // fgetc() value, exit status, number of chars read
+  int c, status;
+  size_t nc = 0;
+  // loop until we hit whitespace or EOF
+  for (; c = fgetc(f), (!isspace(c) && c != EOF); nc++) {
+    // realloc if buffer is full, can fail
+    if (nc == buf.size) {
+      // if realloc size is too big, error
+      if (nc + BUFSIZ < buf.size) {
+        status = -ERANGE;
+        goto error;
+      }
+      // otherwise, reallocate and handle error
+      status = pdcpl_buffer_expand_exact(&buf, BUFSIZ);
+      if (!status)
+        goto error;
+    }
+    // write character to buffer
+    PDCPL_INDEX_CHAR(buf.data, nc) = c;
+  }
+  // done, so realloc unless size is perfect
+  if (nc != buf.size - 1) {
+    status = pdcpl_buffer_realloc(&buf, nc + 1);
+    if (!status)
+      goto error;
+  }
+  // write '\0', update wp, optionally update ncp
+  PDCPL_INDEX_CHAR(buf.data, nc)= '\0';
+  *wp = buf.data;
+  if (ncp)
+    *ncp = nc;
+  return 0;
+// need to clear contents on error, no need to check return (&buf not NULL)
+error:
+  pdcpl_buffer_clear(&buf);
+  return status;
+}
+
+/**
  * Read an arbitrary line from a `FILE *` stream to a buffer.
  *
  * On success, `*sp` will point to a `NULL`-terminated `char` buffer containing
