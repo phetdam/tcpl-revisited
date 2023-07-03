@@ -152,21 +152,27 @@ pdcpl_getline(FILE *f, char **sp, size_t *ncp)
   char *buf = malloc(buf_size * sizeof *buf);
   if (!buf)
     return -ENOMEM;
-  // fgetc() value
-  int c;
+  // fgetc() value, exit status, temporary buffer for realloc()
+  int c, status;
+  char *buf_new;
   // loop until we hit a newline
   for (; c = fgetc(f), (c != '\n' && c != EOF); nc++) {
     // if the buffer is full, realloc it (might fail)
     if (nc == buf_size) {
       // if it's too big, free the buffer and error out
       if (buf_size + BUFSIZ < buf_size) {
-        free(buf);
-        return -ERANGE;
+        status = -ERANGE;
+        goto error;
       }
       buf_size += BUFSIZ;
-      buf = realloc(buf, buf_size);
-      if (!buf)
-        return -ENOMEM;
+      buf_new = realloc(buf, buf_size);
+      // still need to free existing buffer if realloc fails
+      if (!buf_new) {
+        status = -ENOMEM;
+        goto error;
+      }
+      // otherwise, reassign to buf
+      buf = buf_new;
     }
     // otherwise, keep going
     buf[nc] = (char) c;
@@ -174,9 +180,14 @@ pdcpl_getline(FILE *f, char **sp, size_t *ncp)
   // done, so update buf_size + realloc (unless size is perfect)
   if (nc != buf_size - 1) {
     buf_size = nc + 1;
-    buf = realloc(buf, buf_size);
-    if (!buf)
-      return -ENOMEM;
+    buf_new = realloc(buf, buf_size);
+    // still need to free existing buffer if realloc fails
+    if (!buf) {
+      status = -ENOMEM;
+      goto error;
+    }
+    // otherwise, reassign to buf
+    buf = buf_new;
   }
   // write '\0', update sp, optionally update ncp
   buf[nc] = '\0';
@@ -184,6 +195,10 @@ pdcpl_getline(FILE *f, char **sp, size_t *ncp)
   if (ncp)
     *ncp = nc;
   return 0;
+// on error, need to free the existing buffer before returning
+error:
+  free(buf);
+  return status;
 }
 
 /**
@@ -358,8 +373,8 @@ pdcpl_strsq(const char *s, char **op, const char *ds)
     return -EINVAL;
   // length of s, ds. both can be empty, i.e. only contain '\0'
   size_t s_len = strlen(s), ds_len = strlen(ds);
-  // stripped string to copy contents to
-  char *ss;
+  // stripped string to copy contents to + temp buffer for realloc()
+  char *ss, *ss_new;
   // if s is empty, just copy the empty string
   if (!s_len) {
     ss = calloc(1, sizeof *ss);
@@ -393,9 +408,14 @@ pdcpl_strsq(const char *s, char **op, const char *ds)
   }
   // done copying, so write '\0', realloc, update *op, done
   *ss_cur = '\0';
-  ss = realloc(ss, (strlen(ss) + 1) * sizeof *ss);
-  if (!ss)
+  ss_new = realloc(ss, (strlen(ss) + 1) * sizeof *ss);
+  // still need to free existing buffer if realloc fails
+  if (!ss_new) {
+    free(ss);
     return -ENOMEM;
+  }
+  // otherwise, reassign to ss
+  ss = ss_new;
   *op = ss;
   return 0;
 }
