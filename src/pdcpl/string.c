@@ -169,7 +169,7 @@ pdcpl_getword(FILE *f, char **wp, size_t *ncp)
         goto error;
     }
     // write character to buffer
-    PDCPL_INDEX_CHAR(buf.data, nc) = c;
+    PDCPL_INDEX_CHAR(buf.data, nc) = (char) c;
   }
   // done, so realloc unless size is perfect
   if (nc != buf.size - 1) {
