@@ -16,6 +16,9 @@
 
 namespace {
 
+/**
+ * Test fixture for parametrized testing of `pdcpl_next_tab_(stop|size)`.
+ */
 class TabStopStringTest : public ::testing::TestWithParam<
   std::tuple<std::size_t, unsigned int, std::size_t>> {};
 
@@ -30,6 +33,9 @@ INSTANTIATE_TEST_SUITE_P(
   )
 );
 
+/**
+ * Test that `pdcpl_next_tab_(stop|size)` work as expected.
+ */
 TEST_P(TabStopStringTest, ParamTest)
 {
   // current column position + tab size + next expected tab stop
