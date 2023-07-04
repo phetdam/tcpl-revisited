@@ -42,9 +42,10 @@ PDCPL_ARG_MAIN
     // read line from stdin, setting buffer address and line length
     if (pdcpl_getline(stdin, &cur_line, &cur_len))
       return EXIT_FAILURE;
-    // if line is longer than max line, instead of copying, exchange pointers
-    // and make cur_line NULL so free() is a no-op. then, update max_len
+    // if line is longer than max line, free + update previous max line and
+    // make cur_line NULL so free() is a no-op. then, update max_len
     if (cur_len > max_len) {
+      free(max_line);
       max_line = cur_line;
       cur_line = NULL;
       max_len = cur_len;
