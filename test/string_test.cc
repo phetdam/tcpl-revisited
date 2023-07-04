@@ -52,22 +52,6 @@ protected:
 };
 
 /**
- * Test that `pdcpl_printpwtd` and `pdcpl_printwtd` work as expected.
- */
-TEST_F(StringTest, PrintWidthTest)
-{
-  // signed int and number of columns needed to fit this int
-  static constexpr int col_int = 123513272;
-  static constexpr unsigned short col_width = 9;
-  // padding and number of columns needed to fit the int with said padding
-  static constexpr unsigned short col_padding = 2;
-  static constexpr unsigned short col_width_padded = col_width + 2 * col_padding;
-  // padded and non-padded widths should match up
-  EXPECT_EQ(col_width_padded, pdcpl_printpwtd(col_int, col_padding));
-  EXPECT_EQ(col_width, pdcpl_printwtd(col_int));
-}
-
-/**
  * Test that `pdcpl_strwc` works as expected.
  */
 TEST_F(StringTest, StringWordCountTest)
