@@ -11,23 +11,25 @@ if(MSVC)
         /Wall
         # MSVC doesn't define __cplusplus correctly unless this is specified
         /Zc:__cplusplus
+        # enum value not explicitly handled in by case label in switch
+        /wd4061
         # implicit definition of copy, move ctor/operator= as deleted. MSVC
         # tends to emit this whenenever one uses Google Test.
         /wd4625 /wd4626 /wd5026 /wd5027
-        # Spectre mitigation, winbase.h macro expansion issue
-        /wd5045 /wd5105
         # unreferenced inline function removed
         /wd4514
         # assignment within conditional expression
         /wd4706
-        # enum value not explicitly handled in by case label in switch
-        /wd4061
-        # const value not used
-        /wd5264
         # /Wall enables excessive warnings about automatic inline expansion
         /wd4710 /wd4711
         # silence warnings on padding emitted when compiling x64 binaries
         /wd4820
+        # compiler may not enforce left-to-right eval in braced init list
+        /wd4868
+        # Spectre mitigation, winbase.h macro expansion issue
+        /wd5045 /wd5105
+        # const value not used
+        /wd5264
         # /Od applied by default when using Debug config, /O2 for Release
         $<$<NOT:$<CONFIG:Release>>:/DEBUG>
     )

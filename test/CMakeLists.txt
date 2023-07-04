@@ -2,7 +2,11 @@ cmake_minimum_required(VERSION ${CMAKE_MINIMUM_REQUIRED_VERSION})
 
 add_executable(
     pdcpl_test
-    bitwise_test.cc memory_test.cc misc_test.cc string_test.cc
+    bitwise_test.cc
+    memory_test.cc
+    misc_test.cc
+    string_param_test.cc
+    string_test.cc
 )
 target_link_libraries(pdcpl_test PRIVATE GTest::gtest_main pdcpl)
 # on Windows, copy the library and other DLL dependencies to output dir
