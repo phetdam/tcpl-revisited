@@ -132,7 +132,8 @@ pdcpl_fwc(FILE *f, pdcpl_wcresults *rp)
  * the buffer - 1, i.e. the length of the word.
  *
  * If `feof(f)` is nonzero, this function still succeeds, but `*ncp` is zero
- * and `*sp` will be an empty string, i.e. just the null terminator.
+ * and `*wp` will be `NULL`. If using this function in a loop, one should
+ * check either `*wp` or `*ncp` in the loop condition.
  *
  * @param f `FILE *` stream to read line from
  * @param wp Address of a `char *` for pointing to the word buffer
@@ -154,8 +155,12 @@ pdcpl_getword(FILE *f, char **wp, size_t *ncp)
   // fgetc() value, exit status, number of chars read
   int c, status;
   size_t nc = 0;
-  // loop until we hit whitespace or EOF
-  for (; c = fgetc(f), (!isspace(c) && c != EOF); nc++) {
+  // skip any leading whitespace
+  while (c = fgetc(f), isspace(c))
+    ;
+  // loop until we hit whitespace or EOF. we get the new character at the end
+  // of the loop, as previous while loop guarantees !isspace(c)
+  for (; !isspace(c) && c != EOF; c = fgetc(f), nc++) {
     // realloc if buffer is full, can fail
     if (nc == buf.size) {
       // if realloc size is too big, error
@@ -164,17 +169,24 @@ pdcpl_getword(FILE *f, char **wp, size_t *ncp)
         goto error;
       }
       // otherwise, reallocate and handle error
-      status = pdcpl_buffer_expand_exact(&buf, BUFSIZ);
-      if (!status)
+      if ((status = pdcpl_buffer_expand_exact(&buf, BUFSIZ)))
         goto error;
     }
     // write character to buffer
     PDCPL_INDEX_CHAR(buf.data, nc) = (char) c;
   }
-  // done, so realloc unless size is perfect
+  // done. if nc is zero, clear buffer and update wp, ncp if necessary
+  if (!nc) {
+    pdcpl_buffer_clear(&buf);
+    // buffer address is NULL, length zero
+    *wp = NULL;
+    if (ncp)
+      *ncp = 0;
+    return 0;
+  }
+  // otherwise, nonzero string length, so realloc unless size is perfect
   if (nc != buf.size - 1) {
-    status = pdcpl_buffer_realloc(&buf, nc + 1);
-    if (!status)
+    if ((status = pdcpl_buffer_realloc(&buf, nc + 1)))
       goto error;
   }
   // write '\0', update wp, optionally update ncp

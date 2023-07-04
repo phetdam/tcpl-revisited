@@ -16,14 +16,40 @@
 
 #include <gtest/gtest.h>
 
+#include "pdcpl/features.h"
 #include "pdcpl/cpp/common.h"
+#include "pdcpl/cpp/memory.h"
+
+// tests reading from an in-memory buffer as a FILE* need fmemopen
+#ifdef PDCPL_POSIX_1_2008
+#include <errno.h>
+#include <stdio.h>  // fmemopen
+
+#include <cstring>  // std::strtok
+#include <memory>
+#endif  // PDCPL_POSIX_1_2008
 
 namespace {
 
 /**
  * Test fixture class for string tests.
  */
-class StringTest : public ::testing::Test {};
+class StringTest : public ::testing::Test {
+protected:
+  // string to count words, chars, lines for
+  static inline PDCPL_CONSTEXPR_20 std::string wc_string_{
+    "A really long\n"
+    "sequence of words over many\n"
+    "long lines\n"
+    "\n"
+    "Also a bad\n"
+    "haiku"
+  };
+  // number of words, chars, lines
+  static inline constexpr std::size_t wc_words_ = 14;
+  static inline PDCPL_CONSTEXPR_20 std::size_t wc_chars_ = wc_string_.size();
+  static inline constexpr std::size_t wc_lines_ = 6;
+};
 
 /**
  * Test that `pdcpl_printpwtd` and `pdcpl_printwtd` work as expected.
@@ -58,29 +84,86 @@ TEST_F(StringTest, TabStopTest)
 /**
  * Test that `pdcpl_strwc` works as expected.
  */
-TEST_F(StringTest, WordCountTest)
+TEST_F(StringTest, StringWordCountTest)
 {
-  // string to count words, chars, lines for
-  static PDCPL_CONSTEXPR_20 std::string wc_string{
-    "A really long\n"
-    "sequence of words over many\n"
-    "long lines\n"
-    "\n"
-    "Also a bad\n"
-    "haiku"
-  };
-  // number of words, chars, lines
-  static constexpr std::size_t wc_words = 14;
-  static PDCPL_CONSTEXPR_20 std::size_t wc_chars = wc_string.size();
-  static constexpr std::size_t wc_lines = 6;
-  // word count results
   pdcpl_wcresults res;
   // if something goes wrong, the test will abort
-  ASSERT_FALSE(pdcpl_strwc(wc_string.c_str(), &res));
-  EXPECT_EQ(res.nc, wc_chars);
-  EXPECT_EQ(res.nl, wc_lines);
-  EXPECT_EQ(res.nw, wc_words);
+  ASSERT_FALSE(pdcpl_strwc(wc_string_.c_str(), &res));
+  EXPECT_EQ(res.nc, wc_chars_);
+  EXPECT_EQ(res.nl, wc_lines_);
+  EXPECT_EQ(res.nw, wc_words_);
 }
+
+#ifdef PDCPL_POSIX_1_2008
+/**
+ * Test that `pdcpl_fwc` works as expected.
+ *
+ * @note Requires POSIX.1-2008 `fmemopen` to be available.
+ */
+TEST_F(StringTest, FileWordCountTest)
+{
+  pdcpl_wcresults res;
+  // get managed FILE* from the string's char buffer (no null terminator)
+  pdcpl::unique_file file{fmemopen((void*) wc_string_.c_str(), wc_chars_, "r")};
+  ASSERT_TRUE(file) << "fmemopen error: " << strerror(errno);
+  // check that results are as expected
+  ASSERT_FALSE(pdcpl_fwc(file.get(), &res));
+  EXPECT_EQ(res.nc, wc_chars_);
+  EXPECT_EQ(res.nl, wc_lines_);
+  EXPECT_EQ(res.nw, wc_words_);
+}
+
+/**
+ * Split a string by delimiters into a substring vector.
+ *
+ * @param str String to split by delimiters
+ * @param delims Delimiters to split string with
+ * @returns `std::vector<std::string>` of the component substrings
+ */
+auto string_split(const std::string& str, const char* delims)
+{
+  // buffer to hold a copy of the string contents
+  auto buffer = std::make_unique<char[]>(str.size() + 1);
+  std::strcpy(buffer.get(), str.c_str());
+  // vector to put the substrings in
+  std::vector<std::string> substrs;
+  // emplace tokens from buffer into the vector
+  char *token = std::strtok(buffer.get(), delims);
+  while (token) {
+    substrs.emplace_back(token);
+    token = std::strtok(nullptr, delims);
+  }
+  return substrs;
+}
+
+/**
+ * Test that `pdcpl_getword` works as expected.
+ *
+ * @note Requires POSIX.1-2008 `fmemopen` to be available.
+ */
+TEST_F(StringTest, FileGetWordTest)
+{
+  // get managed FILE* from the string's char buffer (no null terminator)
+  pdcpl::unique_file file{fmemopen((void*) wc_string_.c_str(), wc_chars_, "r")};
+  ASSERT_TRUE(file) << "fmemopen error: " << strerror(errno);
+  // expected vector of words to get
+  const auto exp_words = string_split(wc_string_, " \n");
+  // word buffer, word length, vector of words, status
+  char* word;
+  std::size_t word_len;
+  std::vector<std::string> act_words;
+  int status;
+  // loop until word length is zero (word will be NULL then)
+  while (status = pdcpl_getword(file.get(), &word, &word_len), word_len) {
+    ASSERT_FALSE(status) << "pdcpl_getword error: " << strerror(-status);
+    // append to vector + clean up
+    act_words.emplace_back(word);
+    std::free(word);
+  }
+  // compare values
+  EXPECT_EQ(exp_words, act_words);
+}
+#endif  // PDCPL_POSIX_1_2008
 
 /**
  * Test that `pdcpl_strrev` works as expected.
@@ -90,7 +173,7 @@ TEST_F(StringTest, StringReverseTest)
   // string to reverse
   static PDCPL_CONSTEXPR_20 std::string rev_string{"hello nice to meet you"};
   // actual reversed string + its size
-  char *act_rev;
+  char* act_rev;
   std::size_t n_act_rev;
   ASSERT_FALSE(pdcpl_strrev(rev_string.c_str(), &act_rev, &n_act_rev));
   // expected reversed string

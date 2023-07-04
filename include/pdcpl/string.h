@@ -198,7 +198,8 @@ pdcpl_fwc(FILE *f, pdcpl_wcresults *rp);
  * the buffer - 1, i.e. the length of the word.
  *
  * If `feof(f)` is nonzero, this function still succeeds, but `*ncp` is zero
- * and `*sp` will be an empty string, i.e. just the null terminator.
+ * and `*wp` will be `NULL`. If using this function in a loop, one should
+ * check either `*wp` or `*ncp` in the loop condition.
  *
  * @param f `FILE *` stream to read line from
  * @param wp Address of a `char *` for pointing to the word buffer
