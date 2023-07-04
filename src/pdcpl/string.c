@@ -209,7 +209,8 @@ error:
  * `NULL`, it contains the length of the buffer - 1, i.e. the line length.
  *
  * If `feof(f)` is nonzero, this function still succeeds, but `*ncp` is zero
- * and `*sp` will be an empty string, i.e. just the null terminator.
+ * and `*sp` will be `NULL`. If using this function in a loop, one should
+ * check either `*sp` or `*ncp` in the loop condition.
  *
  * @param f `FILE *` stream to read line from
  * @param sp Address of a `char *` for pointing to the line buffer
@@ -254,7 +255,16 @@ pdcpl_getline(FILE *f, char **sp, size_t *ncp)
     // otherwise, keep going
     buf[nc] = (char) c;
   }
-  // done, so update buf_size + realloc (unless size is perfect)
+  // done. if nc is zero, clear buffer and update sp, ncp if necessary
+  if (!nc) {
+    free(buf);
+    // buffer address is NULL, length zero
+    *sp = NULL;
+    if (ncp)
+      *ncp = 0;
+    return 0;
+  }
+  // otherwise, update buf_size + realloc (unless size is perfect)
   if (nc != buf_size - 1) {
     buf_size = nc + 1;
     buf_new = realloc(buf, buf_size);
