@@ -9,15 +9,22 @@
 #define PDCPL_CPP_COMMON_H_
 
 // macros for the C++ version numbers
-#define PDCPL_CXX_14 201402L
-#define PDCPL_CXX_17 201703L
-#define PDCPL_CXX_20 202002L
+#define PDCPL_CPP_14 201402L
+#define PDCPL_CPP_17 201703L
+#define PDCPL_CPP_20 202002L
+
+// correct C++ integer value even when /Zc:__cplusplus is not defined
+#if defined(_MSC_VER)
+#define PDCPL_CPLUSPLUS _MSVC_LANG
+#else
+#define PDCPL_CPLUSPLUS __cplusplus
+#endif  // !defined(_MSC_VER)
 
 // support for pre-C++20 constexpr
-#if __cplusplus >= PDCPL_CXX_20
-#define PDCPL_CXX_20_CONSTEXPR constexpr
+#if __cplusplus >= PDCPL_CPP_20
+#define PDCPL_CONSTEXPR_20 constexpr
 #else
-#define PDCPL_CXX_20_CONSTEXPR const
-#endif  // __cplusplus < PDCPL_CXX_20
+#define PDCPL_CONSTEXPR_20 const
+#endif  // __cplusplus < PDCPL_CPP_20
 
 #endif  // PDCPL_CPP_COMMON_H_

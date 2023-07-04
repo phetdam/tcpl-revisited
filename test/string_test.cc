@@ -30,7 +30,7 @@ namespace {
  * @param value Hex value
  */
 #define PDCPL_HEX_STRING_TEST_PAIR(name, value) \
-  static inline PDCPL_CXX_20_CONSTEXPR std::string name{ \
+  static inline PDCPL_CONSTEXPR_20 std::string name{ \
     PDCPL_STRINGIFY(value) \
   }; \
   static inline constexpr std::intmax_t PDCPL_CONCAT(name, val_) = value
@@ -46,7 +46,7 @@ namespace {
  * @param nn_value Non-negative hex value with the 0x or 0X prefix
  */
 #define PDCPL_HEX_STRING_TEST_PAIR_NO_PREFIX(name, nn_value) \
-  static inline PDCPL_CXX_20_CONSTEXPR std::string name{ \
+  static inline PDCPL_CONSTEXPR_20 std::string name{ \
     PDCPL_STRINGIFY(nn_value) \
   }; \
   static inline constexpr std::intmax_t \
@@ -65,10 +65,10 @@ namespace {
  * @param squeezed Expected squeezed string, i.e. w/o chars from `delete_chars`
  */
 #define PDCPL_SQUEEZE_STRING_TEST_PARAMS(name, orig, delete_chars, squeezed) \
-  static inline PDCPL_CXX_20_CONSTEXPR std::string name{orig}; \
-  static inline PDCPL_CXX_20_CONSTEXPR std::string \
+  static inline PDCPL_CONSTEXPR_20 std::string name{orig}; \
+  static inline PDCPL_CONSTEXPR_20 std::string \
   PDCPL_CONCAT(name, ds_){delete_chars}; \
-  static inline PDCPL_CXX_20_CONSTEXPR std::string \
+  static inline PDCPL_CONSTEXPR_20 std::string \
   PDCPL_CONCAT(name, sq_){squeezed}
 
 /**
@@ -91,7 +91,7 @@ protected:
   static inline constexpr std::size_t next_tab_stop_ = 20;
 
   // string to count words, chars, lines for
-  static inline PDCPL_CXX_20_CONSTEXPR std::string wc_string_{
+  static inline PDCPL_CONSTEXPR_20 std::string wc_string_{
     "A really long\n"
     "sequence of words over many\n"
     "long lines\n"
@@ -101,11 +101,11 @@ protected:
   };
   // number of words, chars, lines
   static inline constexpr std::size_t wc_words_ = 14;
-  static inline PDCPL_CXX_20_CONSTEXPR std::size_t wc_chars_ = wc_string_.size();
+  static inline PDCPL_CONSTEXPR_20 std::size_t wc_chars_ = wc_string_.size();
   static inline constexpr std::size_t wc_lines_ = 6;
 
   // string to reverse
-  static inline PDCPL_CXX_20_CONSTEXPR std::string rev_string_{
+  static inline PDCPL_CONSTEXPR_20 std::string rev_string_{
     "hello nice to meet you"
   };
 
