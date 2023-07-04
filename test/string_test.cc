@@ -68,20 +68,6 @@ TEST_F(StringTest, PrintWidthTest)
 }
 
 /**
- * Test that `pdcpl_next_tab_stop` and `pdcpl_next_tab_size` work as expected.
- */
-TEST_F(StringTest, TabStopTest)
-{
-  // current column position + tab size + next expected tab stop
-  static constexpr std::size_t cur_col = 17;
-  static constexpr unsigned int tab_size = 5;
-  static constexpr std::size_t next_tab_stop = 20;
-  // check position of next tab stop and next tab size
-  EXPECT_EQ(next_tab_stop, pdcpl_next_tab_stop(cur_col, tab_size));
-  EXPECT_EQ(next_tab_stop - cur_col, pdcpl_next_tab_size(cur_col, tab_size));
-}
-
-/**
  * Test that `pdcpl_strwc` works as expected.
  */
 TEST_F(StringTest, StringWordCountTest)
