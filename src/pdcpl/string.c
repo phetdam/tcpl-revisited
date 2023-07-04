@@ -259,7 +259,7 @@ pdcpl_getline(FILE *f, char **sp, size_t *ncp)
     buf_size = nc + 1;
     buf_new = realloc(buf, buf_size);
     // still need to free existing buffer if realloc fails
-    if (!buf) {
+    if (!buf_new) {
       status = -ENOMEM;
       goto error;
     }
