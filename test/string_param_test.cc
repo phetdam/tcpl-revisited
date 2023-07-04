@@ -22,25 +22,25 @@ namespace {
  * Test fixture for parametrized testing of `pdcpl_print[p]wtd`.
  */
 class PrintWidthStringTest : public ::testing::TestWithParam<
-  std::tuple<std::ptrdiff_t, unsigned short, unsigned short>> {};
-
-/**
- * Return an input for `PrintWidthStringTest` parametrized tests.
- *
- * @param value Input value
- * @param padding Print width padding
- * @returns Triple of input value, print width padding, and padded print width
- */
-PrintWidthStringTest::ParamType print_width_input(
-  std::ptrdiff_t value, unsigned short padding)
-{
-  return {
-    value,
-    padding,
-    // cast entire expression as 2 * padding is promoted to int so MSVC warns
-    static_cast<unsigned short>(std::to_string(value).size() + 2 * padding)
-  };
-}
+  std::tuple<std::ptrdiff_t, unsigned short, unsigned short>> {
+public:
+  /**
+   * Return an input for `PrintWidthStringTest` parametrized tests.
+   *
+   * @param value Input value
+   * @param padding Print width padding
+   * @returns Tuple of input value, print width padding, and padded print width
+   */
+  static ParamType CreateInput(std::ptrdiff_t value, unsigned short padding)
+  {
+    return {
+      value,
+      padding,
+      // cast entire expression as 2 * padding is promoted to int so MSVC warns
+      static_cast<unsigned short>(std::to_string(value).size() + 2 * padding)
+    };
+  }
+};
 
 /**
  * Test that `pdcpl_printpwtd` and `pdcpl_printwtd` work as expected.
@@ -60,9 +60,9 @@ INSTANTIATE_TEST_SUITE_P(
   PrintWidthParams,
   PrintWidthStringTest,
   ::testing::Values(
-    print_width_input(123513272, 2),
-    print_width_input(-1991823, 3),
-    print_width_input(8787822, 6)
+    PrintWidthStringTest::CreateInput(123513272, 2),
+    PrintWidthStringTest::CreateInput(-1991823, 3),
+    PrintWidthStringTest::CreateInput(8787822, 6)
   )
 );
 
