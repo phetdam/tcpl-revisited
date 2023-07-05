@@ -25,3 +25,24 @@ pdcpl_add_standalone(4.14)
 pdcpl_add_standalone(5.13 pdcpl)
 pdcpl_add_standalone(5.16 pdcpl)
 pdcpl_add_standalone(6.1 pdcpl)
+pdcpl_add_standalone(7.1)
+# create the appropriate copies/symbolic links of 7.1
+if(WIN32)
+    add_custom_command(
+        TARGET 7.1 POST_BUILD
+        # copy on Windows as link creation requires privilege escalation
+        COMMAND
+            ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:7.1>
+                $<TARGET_FILE_DIR:7.1>/lower.exe
+        COMMAND
+            ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:7.1>
+                $<TARGET_FILE_DIR:7.1>/upper.exe
+    )
+else()
+    add_custom_command(
+        TARGET 7.1 POST_BUILD WORKING_DIRECTORY $<TARGET_FILE_DIR:7.1>
+        # use ln directly as create_symlink creates link with absolute paths
+        COMMAND ln -frs $<TARGET_FILE:7.1> $<TARGET_FILE_DIR:7.1>/lower
+        COMMAND ln -frs $<TARGET_FILE:7.1> $<TARGET_FILE_DIR:7.1>/upper
+    )
+endif()
