@@ -47,7 +47,7 @@ PDCPL_ARG_MAIN
   while (status = pdcpl_getword(stdin, &word, &word_len), word_len) {
     // handle any errors
     if (status) {
-      fprintf(stderr, "%s: error: %s\n", PDCPL_PROGRAM_NAME, strerror(-status));
+      PDCPL_PRINT_ERROR_EX("error: %s\n", strerror(-status));
       return EXIT_FAILURE;
     }
     // otherwise, just print on new line and free
