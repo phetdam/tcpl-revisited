@@ -35,10 +35,10 @@ PDCPL_ARG_MAIN
   PDCPL_PARSE_PROGRAM_OPTIONS();
   // size of current line read, size of max line read
   size_t cur_len, max_len = 0;
-  // buffers for current and max line, status
+  // buffers for current and max line
   char *cur_line, *max_line = NULL;
-  int status;
   // go line by line. if line is NULL, no more input
+  int status;
   while (status = pdcpl_getline(stdin, &cur_line, &cur_len), cur_line) {
     // handle line-reading failure
     if (status)

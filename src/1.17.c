@@ -27,10 +27,11 @@ PDCPL_ARG_MAIN
   // pointer to current line buffer and its size
   char *line;
   size_t len;
-  // keep going until we reach EOF
-  while (!feof(stdin)) {
-    // read line from stdin, setting buffer address and line length
-    if (pdcpl_getline(stdin, &line, &len))
+  // go line by line. if line is NULL, no more input
+  int status;
+  while (status = pdcpl_getline(stdin, &line, &len), line) {
+    // handle line reading error
+    if (status)
       return EXIT_FAILURE;
     // print if greater than 80 chars in length + free
     if (len > 80)

@@ -30,10 +30,10 @@ PDCPL_PROGRAM_USAGE_DEF
 PDCPL_ARG_MAIN
 {
   PDCPL_PARSE_PROGRAM_OPTIONS();
-  // buffers for current and reversed current lines + status
+  // buffers for current and reversed current lines
   char *line = NULL, *line_r = NULL;
-  int status;
   // go line by line. if line is NULL, no more input
+  int status;
   while (status = pdcpl_getline(stdin, &line, NULL), line) {
     // error if getting or reversing the lines fail
     if (status || pdcpl_strrev(line, &line_r, NULL))
