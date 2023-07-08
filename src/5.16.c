@@ -447,9 +447,12 @@ PDCPL_ARG_MAIN
   // number of lines read, current line
   size_t n_lines;
   char *line;
-  // read the lines until there are no more + realloc linebuf to n_lines lines
-  for (n_lines = 0; !feof(stdin); n_lines++) {
+  // read the lines until there are no more
+  for (n_lines = 0; ; n_lines++) {
+    // handle line reading error + break if no lines to read
     ERRNO_EXIT(pdcpl_getline(stdin, &line, NULL));
+    if (!line)
+      break;
     // if necessary, expand the buffer by chunk_lines_target. note division by
     // sizeof(char **) to get the stored number of lines
     if (n_lines && !(n_lines % (linebuf.size / sizeof(char **))))
@@ -457,6 +460,9 @@ PDCPL_ARG_MAIN
     // treat the buffer as a char ** to store the line strings
     PDCPL_INDEX((char **) linebuf.data, n_lines) = line;
   }
+  // if no lines, just exit, otherwise realloc linebuf to n_lines lines
+  if (!n_lines)
+    return EXIT_SUCCESS;
   ERRNO_EXIT(pdcpl_buffer_realloc(&linebuf, n_lines * sizeof(char **)));
   // set compare function according to options
   qsort_cmp cmp;
