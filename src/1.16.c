@@ -25,9 +25,9 @@ PDCPL_PROGRAM_USAGE_DEF
   "To provide an example of program output, if the top-level CMakeLists.txt\n"
   "was used as input to this program, the output would be\n"
   "\n"
-  "  # set some system information variables used for the version info. note "
-    "the\n"
-  "  75 chars"
+  "          \"Google Test >=${GTEST_MIN_VERSION} not found. No tests will be "
+    "built.\"\n"
+  "  79 chars"
 )
 
 PDCPL_ARG_MAIN
@@ -35,12 +35,13 @@ PDCPL_ARG_MAIN
   PDCPL_PARSE_PROGRAM_OPTIONS();
   // size of current line read, size of max line read
   size_t cur_len, max_len = 0;
-  // buffer for current and max line
+  // buffers for current and max line, status
   char *cur_line, *max_line = NULL;
-  // keep going until we reach EOF
-  while (!feof(stdin)) {
-    // read line from stdin, setting buffer address and line length
-    if (pdcpl_getline(stdin, &cur_line, &cur_len))
+  int status;
+  // go line by line. if line is NULL, no more input
+  while (status = pdcpl_getline(stdin, &cur_line, &cur_len), cur_line) {
+    // handle line-reading failure
+    if (status)
       return EXIT_FAILURE;
     // if line is longer than max line, free + update previous max line and
     // make cur_line NULL so free() is a no-op. then, update max_len
