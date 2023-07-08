@@ -73,16 +73,20 @@ PDCPL_ARG_MAIN
   }
   // get lines, filling the lines buffer + exit on error
   int status;
-  for (; !feof(stdin) && n_read < lines_target; n_read++) {
+  for (; n_read < lines_target; n_read++) {
+    // handle error if any
     if ((status = pdcpl_getline(stdin, lines + n_read, NULL))) {
       PDCPL_PRINT_ERROR_EX("%s\n", strerror(status));
       return EXIT_FAILURE;
     }
+    // if *(lines + n_read) is NULL, no more lines to get, so break
+    if (!*(lines + n_read))
+      break;
   }
   // now buffer is full, so rotate for each read (no-op if done reading)
   char *cur_line;
-  while (!feof(stdin)) {
-    if ((status = pdcpl_getline(stdin, &cur_line, NULL))) {
+  while (status = pdcpl_getline(stdin, &cur_line, NULL), cur_line) {
+    if (status) {
       PDCPL_PRINT_ERROR_EX("%s\n", strerror(status));
       return EXIT_FAILURE;
     }
