@@ -29,7 +29,7 @@
   { \
     if (!vt) \
       return -EINVAL; \
-    vt->type = PDCPL_CONCAT(pdcpl_variant_, suffix); \
+    vt->flags = PDCPL_CONCAT(pdcpl_variant_, suffix); \
     vt->data.field = val; \
     return 0; \
   } \
@@ -46,7 +46,7 @@ PDCPL_VARIANT_SCALAR_INIT_DEF(float, float, f);
 /**
  * Initialize a `pdcpl_variant` with a string.
  *
- * The variant will copy the contents of the string to a new buffer in memory.
+ * String contents are copied to a new memory buffer and owned.
  *
  * @param vt Variant to initialize
  * @param val `const char *` to initialize with, can be `NULL`
@@ -57,8 +57,8 @@ PDCPL_VARIANT_INIT_DECL(string, const char *)
   // variant pointer cannot be NULL
   if (!vt)
     return -EINVAL;
-  // set type. allow incoming string to be NULL
-  vt->type = pdcpl_variant_string;
+  // set type and ownership. allow incoming string to be NULL
+  vt->flags = pdcpl_variant_string | pdcpl_variant_mem_own;
   if (!val)
     return 0;
   // otherwise, malloc. don't forget + 1 for null terminator
@@ -72,62 +72,72 @@ PDCPL_VARIANT_INIT_DECL(string, const char *)
 }
 
 /**
+ * Initialize a `pdcpl_variant` with a string.
+ *
+ * The string pointer refers to the existing string buffer and is not owned.
+ *
+ * @param vt Variant to initialize
+ * @param val `char *` to copy, can be `NULL`
+ * @returns 0 on success, -EINVAL if `vt` is `NULL`
+ */
+PDCPL_VARIANT_INIT_DECL(string_ref, char *)
+{
+  if (!vt)
+    return -EINVAL;
+  vt->flags = pdcpl_variant_string | pdcpl_variant_mem_borrow;
+  vt->data.s = val;
+  return 0;
+}
+
+/**
  * Initialize a `pdcpl_variant` with an arbitrary data buffer.
  *
- * @todo `pdcpl_variant_free` will free the buffer, maybe not a good idea
+ * String contents are copied to a new memory buffer and owned.
  *
  * @param vt Variant to initialize
  * @param val Buffer to initialize with
  * @param size Number of bytes in the buffer
  * @returns 0 on success, -EINVAL if `vt` or `buf` are `NULL` or if `size` is
- *  zero,  -ENOMEM if `malloc` fails when allocating buffer
+ *  zero, -ENOMEM if `malloc` fails when allocating buffer
  */
 PDCPL_VARIANT_INIT_DECL_EX(void, void *, size_t size)
 {
   if (!vt || !val || !size)
     return -EINVAL;
-  vt->type = pdcpl_variant_void;
+  vt->flags = pdcpl_variant_void | pdcpl_variant_mem_own;
+  // -ENOMEM if malloc fails
+  vt->data.v_b = malloc(size);
+  if (!vt->data.v_b)
+    return -ENOMEM;
+  // otherwise copy the buffer and size
+  memcpy(vt->data.v_b, val, size);
+  vt->data.v_z = size;
+  return 0;
+}
+
+/**
+ * Initialize a `pdcpl_variant` with an arbitrary data buffer.
+ *
+ * The variant data pointer refers to the existing data buffer and is not owned.
+ *
+ * @param vt Variant to initialize
+ * @param val Buffer to point to
+ * @param size Number of bytes in the buffer
+ * @returns 0 on success, -EINVAL if `vt`, `buf` are `NULL` or if `size` is 0
+ */
+PDCPL_PUBLIC
+PDCPL_VARIANT_INIT_DECL_EX(void_ref, void *, size_t size)
+{
+  if (!vt || !val || !size)
+    return -EINVAL;
+  vt->flags = pdcpl_variant_void | pdcpl_variant_mem_borrow;
   vt->data.v_b = val;
   vt->data.v_z = size;
   return 0;
 }
 
 /**
- * Free a `pdcpl_variant` containing a scalar.
- */
-static int
-pdcpl_variant_free_scalar(pdcpl_variant * vt)
-{
-  (void) vt;  // unused
-  return 0;
-}
-
-/**
- * Free a `pdcpl_variant` containing a string.
- */
-static int
-pdcpl_variant_free_string(pdcpl_variant *vt)
-{
-  free(vt->data.s);
-  return 0;
-}
-
-/**
- * Free a `pdcpl_variant` containing a `void *` buffer.
- */
-static int
-pdcpl_variant_free_void(pdcpl_variant *vt)
-{
-  free(vt->data.v_b);
-  return 0;
-}
-
-/**
  * Free a `pdcpl_variant`.
- *
- * The relevant free functions are indexed from an array.
- *
- * @todo May change implementation to assume scalar if not string or `void *`.
  *
  * @param vt Variant to free
  * @returns 0 on success
@@ -137,17 +147,22 @@ pdcpl_variant_free(pdcpl_variant *vt)
 {
   if (!vt)
     return -EINVAL;
-  // free function array
-  static const pdcpl_variant_free_function free_funcs[] = {
-    pdcpl_variant_free_scalar,  // char
-    pdcpl_variant_free_scalar,  // int
-    pdcpl_variant_free_scalar,  // unsigned int
-    pdcpl_variant_free_scalar,  // size_t
-    pdcpl_variant_free_scalar,  // double
-    pdcpl_variant_free_scalar,  // float
-    pdcpl_variant_free_string,  // char *
-    pdcpl_variant_free_void     // void *
-  };
-  // use enum to index into array
-  return free_funcs[vt->type](vt);
+  // only need to free memory if it is owned
+  if (vt->flags & pdcpl_variant_mem_own) {
+    // free owned string
+    if (vt->flags & pdcpl_variant_string) {
+      free(vt->data.s);
+      goto success;
+    }
+    // free void * buffer
+    else if (vt->flags & pdcpl_variant_void) {
+      free(vt->data.v_b);
+      goto success;
+    }
+    // error, so return -EINVAL
+    return -EINVAL;
+  }
+  // otherwise, can just return
+success:
+  return 0;
 }

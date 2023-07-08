@@ -18,9 +18,13 @@
 PDCPL_EXTERN_C_BEGIN
 
 /**
- * Enum indicating the data containing within the `pdcpl_variant.`
+ * `pdcpl_variant` field constants.
+ *
+ * The memory ownership flags indicate whether the `pdcpl_variant_clear` should
+ * be responsible for freeing memory buffers required by some types.
  */
-typedef enum {
+enum {
+  // available types
   pdcpl_variant_char,      // char
   pdcpl_variant_int,       // int
   pdcpl_variant_uint,      // unsigned int
@@ -28,16 +32,22 @@ typedef enum {
   pdcpl_variant_double,    // double
   pdcpl_variant_float,     // float
   pdcpl_variant_string,    // char *
-  pdcpl_variant_void       // void *
-} pdcpl_variant_type;
+  pdcpl_variant_void,      // void *
+  // memory ownership flags
+  pdcpl_variant_mem_own = 0x10000,    // memory owned
+  pdcpl_variant_mem_borrow            // memory borrowed
+};
 
 /**
  * Variant type.
  *
+ * The `data` union describes the possible values that can be stored and the
+ * `flags` member holds type and ownership information.
+ *
  * @todo In the future, this may allow pointer to another `pdcpl_variant`.
  */
 typedef struct {
-  pdcpl_variant_type type;
+  unsigned int flags;
   union {
     char c;
     int i;
@@ -148,7 +158,7 @@ PDCPL_VARIANT_INIT_DECL(float, float);
 /**
  * Initialize a `pdcpl_variant` with a string.
  *
- * The variant will copy the contents of the string to a new buffer in memory.
+ * String contents are copied to a new memory buffer and owned.
  *
  * @param vt Variant to initialize
  * @param val `const char *` to initialize with, can be `NULL`
@@ -158,18 +168,43 @@ PDCPL_PUBLIC
 PDCPL_VARIANT_INIT_DECL(string, const char *);
 
 /**
+ * Initialize a `pdcpl_variant` with a string.
+ *
+ * The string pointer refers to the existing string buffer and is not owned.
+ *
+ * @param vt Variant to initialize
+ * @param val `char *` to point to, can be `NULL`
+ * @returns 0 on success, -EINVAL if `vt` is `NULL`
+ */
+PDCPL_PUBLIC
+PDCPL_VARIANT_INIT_DECL(string_ref, char *);
+
+/**
  * Initialize a `pdcpl_variant` with an arbitrary data buffer.
  *
- * @todo `pdcpl_variant_free` will free the buffer, maybe not a good idea
+ * String contents are copied to a new memory buffer and owned.
  *
  * @param vt Variant to initialize
  * @param val Buffer to initialize with
  * @param size Number of bytes in the buffer
  * @returns 0 on success, -EINVAL if `vt` or `buf` are `NULL` or if `size` is
- *  zero,  -ENOMEM if `malloc` fails when allocating buffer
+ *  zero, -ENOMEM if `malloc` fails when allocating buffer
  */
 PDCPL_PUBLIC
 PDCPL_VARIANT_INIT_DECL_EX(void, void *, size_t size);
+
+/**
+ * Initialize a `pdcpl_variant` with an arbitrary data buffer.
+ *
+ * The variant data pointer refers to the existing data buffer and is not owned.
+ *
+ * @param vt Variant to initialize
+ * @param val Buffer to point to
+ * @param size Number of bytes in the buffer
+ * @returns 0 on success, -EINVAL if `vt`, `buf` are `NULL` or if `size` is 0
+ */
+PDCPL_PUBLIC
+PDCPL_VARIANT_INIT_DECL_EX(void_ref, void *, size_t size);
 
 /**
  * Typedef for `pdcpl_variant` free function.
@@ -181,12 +216,9 @@ typedef int (*pdcpl_variant_free_function)(pdcpl_variant *);
 /**
  * Free a `pdcpl_variant`.
  *
- * The relevant free functions are indexed from an array.
- *
- * @todo May change implementation to assume scalar if not string or `void *`.
- *
  * @param vt Variant to free
- * @returns 0 on success
+ * @returns 0 on success, -EINVAL if `vt` is `NULL` or if flags indicate memory
+ *  ownership but no type flag has been set to indicate how to free
  */
 PDCPL_PUBLIC
 int
