@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION ${CMAKE_MINIMUM_REQUIRED_VERSION})
 
-add_library(pdcpl SHARED bitwise.c histogram.c memory.c string.c)
+add_library(pdcpl SHARED bitwise.c histogram.c memory.c string.c variant.c)
 # we could use lazy Windows __declspec(dllexport), __declspec(dllimport)
 # handling by using set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON), but we opt not to
 # do this to make our code build-system neutral.
