@@ -219,8 +219,9 @@ pdcpl_getword(FILE *f, char **wp, size_t *ncp);
  * `NULL`, it contains the length of the buffer - 1, i.e. the line length.
  *
  * If `feof(f)` is nonzero, this function still succeeds, but `*ncp` is zero
- * and `*sp` will be `NULL`. If using this function in a loop, one should
- * check either `*sp` or `*ncp` in the loop condition.
+ * and `*sp` will be `NULL`. If using this function in a loop, one should only
+ * check that `*sp` is not `NULL` to determine if there is no more input to
+ * get, as `*sp` could point to an empty string.
  *
  * @param f `FILE *` stream to read line from
  * @param sp Address of a `char *` for pointing to the line buffer

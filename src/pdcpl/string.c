@@ -175,7 +175,8 @@ pdcpl_getword(FILE *f, char **wp, size_t *ncp)
     // write character to buffer
     PDCPL_INDEX_CHAR(buf.data, nc) = (char) c;
   }
-  // done. if nc is zero, clear buffer and update wp, ncp if necessary
+  // done. if nc is zero, clear buffer and update wp, ncp if necessary. in
+  // general you cannot have a zero-length word, so we definitely reached EOF
   if (!nc) {
     pdcpl_buffer_clear(&buf);
     // buffer address is NULL, length zero
@@ -209,8 +210,9 @@ error:
  * `NULL`, it contains the length of the buffer - 1, i.e. the line length.
  *
  * If `feof(f)` is nonzero, this function still succeeds, but `*ncp` is zero
- * and `*sp` will be `NULL`. If using this function in a loop, one should
- * check either `*sp` or `*ncp` in the loop condition.
+ * and `*sp` will be `NULL`. If using this function in a loop, one should only
+ * check that `*sp` is not `NULL` to determine if there is no more input to
+ * get, as `*sp` could point to an empty string.
  *
  * @param f `FILE *` stream to read line from
  * @param sp Address of a `char *` for pointing to the line buffer
@@ -255,8 +257,9 @@ pdcpl_getline(FILE *f, char **sp, size_t *ncp)
     // otherwise, keep going
     buf[nc] = (char) c;
   }
-  // done. if nc is zero, clear buffer and update sp, ncp if necessary
-  if (!nc) {
+  // done. if nc is zero AND feof reports end of stream, then we clear buffer
+  // and update sp, ncp as necessary, in particular, sp is NULL
+  if (!nc && feof(f)) {
     free(buf);
     // buffer address is NULL, length zero
     *sp = NULL;
