@@ -100,8 +100,8 @@ INSTANTIATE_TEST_SUITE_P(
 /**
  * Test fixture for parametrized testing of `pdcpl_htoj`.
  */
-class HexConvertStringTest
-  : public ::testing::TestWithParam<std::pair<std::string, std::intmax_t>> {};
+class HexConvertStringTest : public ::testing::TestWithParam<
+  std::pair<std::string, std::intmax_t>> {};
 
 /**
  * Test that `pdcpl_htoj` works as expected.
