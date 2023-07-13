@@ -267,7 +267,7 @@ class ConcatTest : public StringTest, public ::testing::WithParamInterface<
 public:
   /**
    * Return an input for `ConcatTest` parametrized tests.
-   * 
+   *
    * @param s1 First string
    * @param s2 Second string
    * @returns Tuple of `s1`, `s2`, and `s1 + s2`
