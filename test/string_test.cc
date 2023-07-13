@@ -262,6 +262,11 @@ TEST_F(StringTest, StringRevFindTest)
   EXPECT_EQ(SIZE_MAX, act_loc);
 }
 
+/**
+ * Test fixture for parametrized testing of `pdcpl_concat`.
+ *
+ * @todo May later remove inheritance from `StringTest`.
+ */
 class ConcatTest : public StringTest, public ::testing::WithParamInterface<
   std::tuple<std::string, std::string, std::string>> {
 public:
