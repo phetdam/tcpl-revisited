@@ -242,25 +242,52 @@ TEST_F(StringTest, StringFindTest)
 }
 
 /**
+ * Test fixture for parametrized testing of `pdcpl_strrfind`.
+ *
+ * @todo May later remove inheritance from `StringTest`.
+ */
+class StringRevFindTest
+  : public StringTest, public ::testing::WithParamInterface<
+      std::tuple<std::string, std::string, std::size_t>> {
+public:
+  /**
+   * Return an input for `StringRevFindTest` parametrized tests.
+   *
+   * @param s Input string
+   * @param ss String to search for
+   * @returns Tuple of `s`, `ss`, and expected index location
+   */
+  static ParamType CreateInput(const std::string& s, const std::string& ss)
+  {
+    return {s, ss, s.rfind(ss)};
+  }
+};
+
+/**
  * Test that `pdcpl_strrfind` works as expected.
  */
-TEST_F(StringTest, StringRevFindTest)
+TEST_P(StringRevFindTest, ParamTest)
 {
-  // original string, string to search for
-  static PDCPL_CONSTEXPR_20 std::string s{
-    "something to search in to search from the right"
-  };
-  static PDCPL_CONSTEXPR_20 std::string ss{"search "};
-  // expected index location + actual index location
-  auto exp_loc = s.rfind(ss);
+  // original string, string to search for, expected index location
+  const auto& [s, ss, exp_loc] = GetParam();
+  // get actual index location + compare
   std::size_t act_loc;
   ASSERT_FALSE(pdcpl_strrfind(s.c_str(), ss.c_str(), &act_loc));
-  // exp_loc and act_loc should match
   EXPECT_EQ(exp_loc, act_loc);
-  // now we try with a string that is not in s, act_loc should be SIZE_MAX
-  ASSERT_FALSE(pdcpl_strrfind(s.c_str(), "unfindable", &act_loc));
-  EXPECT_EQ(SIZE_MAX, act_loc);
 }
+
+INSTANTIATE_TEST_SUITE_P(
+  StringTest,
+  StringRevFindTest,
+  ::testing::Values(
+    StringRevFindTest::CreateInput("to search by right search", "search"),
+    StringRevFindTest::CreateInput("not really searching correctly", "really"),
+    StringRevFindTest::CreateInput("hello sweet world of sweetness", "sweet"),
+    // string not in the input string, index is SIZE_MAX
+    StringRevFindTest::CreateInput("nothing to find here", "string"),
+    StringRevFindTest::CreateInput("string with lots of characters", "b")
+  )
+);
 
 /**
  * Test fixture for parametrized testing of `pdcpl_concat`.
