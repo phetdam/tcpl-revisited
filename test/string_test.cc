@@ -13,6 +13,7 @@
 #include <cstdint>
 #include <cstdlib>
 #include <string>
+#include <utility>
 
 #include <gtest/gtest.h>
 
@@ -261,15 +262,29 @@ TEST_F(StringTest, StringRevFindTest)
   EXPECT_EQ(SIZE_MAX, act_loc);
 }
 
+class ConcatTest : public StringTest, public ::testing::WithParamInterface<
+  std::tuple<std::string, std::string, std::string>> {
+public:
+  /**
+   * Return an input for `ConcatTest` parametrized tests.
+   * 
+   * @param s1 First string
+   * @param s2 Second string
+   * @returns Tuple of `s1`, `s2`, and `s1 + s2`
+   */
+  static ParamType CreateInput(const std::string& s1, const std::string& s2)
+  {
+    return {s1, s2, s1 + s2};
+  }
+};
+
 /**
  * Test that `pdcpl_concat` works as expected.
  */
-TEST_F(StringTest, ConcatTest)
+TEST_P(ConcatTest, ParamTest)
 {
   // strings to concatenate + expected result
-  static PDCPL_CONSTEXPR_20 std::string s1{"first string"};
-  static PDCPL_CONSTEXPR_20 std::string s2{"second string"};
-  static PDCPL_CONSTEXPR_20 std::string expected = s1 + s2;
+  const auto& [s1, s2, expected] = GetParam();
   // actual result + length
   char *res;
   std::size_t res_size;
@@ -279,5 +294,16 @@ TEST_F(StringTest, ConcatTest)
   EXPECT_EQ(expected.size(), res_size);
   std::free(res);
 }
+
+INSTANTIATE_TEST_SUITE_P(
+  StringTest,
+  ConcatTest,
+  ::testing::Values(
+    ConcatTest::CreateInput("first string", " second string"),
+    ConcatTest::CreateInput("hello", " world"),
+    ConcatTest::CreateInput("", "the result"),
+    ConcatTest::CreateInput("the result", "")
+  )
+);
 
 }  // namespace

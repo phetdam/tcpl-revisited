@@ -48,9 +48,7 @@ public:
 TEST_P(PrintWidthTest, ParamTest)
 {
   // input, padding, padded print width
-  const auto value = std::get<0>(GetParam());
-  const auto padding = std::get<1>(GetParam());
-  const auto padded_width = std::get<2>(GetParam());
+  const auto [value, padding, padded_width] = GetParam();
   // padded and non-padded widths (-2 * padding) should match up
   EXPECT_EQ(padded_width, pdcpl_printpwtd(value, padding));
   EXPECT_EQ(padded_width - 2 * padding, pdcpl_printwtd(value));
@@ -78,9 +76,7 @@ class TabStopTest : public ::testing::TestWithParam<
 TEST_P(TabStopTest, ParamTest)
 {
   // current column position + tab size + next expected tab stop
-  const auto cur_col = std::get<0>(GetParam());
-  const auto tab_size = std::get<1>(GetParam());
-  const auto next_tab_stop = std::get<2>(GetParam());
+  const auto [cur_col, tab_size, next_tab_stop] = GetParam();
   // check position of next tab stop and next tab size
   EXPECT_EQ(next_tab_stop, pdcpl_next_tab_stop(cur_col, tab_size));
   EXPECT_EQ(next_tab_stop - cur_col, pdcpl_next_tab_size(cur_col, tab_size));
@@ -139,9 +135,7 @@ TEST_P(SqueezeTest, ParamTest)
   // must be freed after every successful call
   char *res;
   // input, chars to delete, expected result
-  const auto& input = std::get<0>(GetParam());
-  const auto& delete_chars = std::get<1>(GetParam());
-  const auto& expected = std::get<2>(GetParam());
+  const auto& [input, delete_chars, expected] = GetParam();
   // check equality and clean up
   ASSERT_FALSE(pdcpl_strsq(input.c_str(), &res, delete_chars.c_str()));
   EXPECT_EQ(expected, std::string{res});
