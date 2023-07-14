@@ -17,7 +17,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "pdcpl/dllexport.h"
 #include "pdcpl/memory.h"
 #include "pdcpl/warnings.h"
 
@@ -29,7 +28,6 @@
  * @param value Value to get print width for
  * @param padding Padding to apply on both sides of the print width
  */
-PDCPL_PUBLIC
 unsigned short
 pdcpl_printpwtd(ptrdiff_t value, unsigned short padding)
 {
@@ -57,7 +55,6 @@ PDCPL_MSVC_WARNING_ENABLE()
  * @param rp Pointer to results struct
  * @returns 0 if no error, -EINVAL if `rp` is `NULL`
  */
-PDCPL_PUBLIC
 int
 pdcpl_strwc(const char *s, pdcpl_wcresults *rp)
 {
@@ -95,7 +92,6 @@ pdcpl_strwc(const char *s, pdcpl_wcresults *rp)
  * @param rp Pointer to results struct
  * @returns 0 if no error, -EINVAL if `rp` is `NULL`
  */
-PDCPL_PUBLIC
 int
 pdcpl_fwc(FILE *f, pdcpl_wcresults *rp)
 {
@@ -141,7 +137,6 @@ pdcpl_fwc(FILE *f, pdcpl_wcresults *rp)
  * @returns 0 if no error, -EINVAL if `f` or `wp` are `NULL`, -ERANGE if the
  *  word read exceeds `SIZE_MAX - 1`, -ENOMEM if buffer [re]allocation fails
  */
-PDCPL_PUBLIC
 int
 pdcpl_getword(FILE *f, char **wp, size_t *ncp)
 {
@@ -220,7 +215,6 @@ error:
  * @returns 0 if no error, -EINVAL if `f` or `sp` are `NULL`, -ERANGE if the
  *  line read exceeds `SIZE_MAX - 1`, -ENOMEM if buffer `(m|re)alloc` fails
  */
-PDCPL_PUBLIC
 int
 pdcpl_getline(FILE *f, char **sp, size_t *ncp)
 {
@@ -302,7 +296,6 @@ error:
  * @param ncp Address of a `size_t` giving the string length (can be `NULL`)
  * @returns 0 if no error, -EINVAL if `srp` is `NULL`, -ENOMEM if malloc fails
  */
-PDCPL_PUBLIC
 int
 pdcpl_strrev(const char *s, char **srp, size_t *ncp)
 {
@@ -342,7 +335,6 @@ pdcpl_strrev(const char *s, char **srp, size_t *ncp)
  * @param nwp Address to write number of chars written (can be `NULL`)
  * @returns 0 on success, -errno if there is a stream error
  */
-PDCPL_PUBLIC
 int
 pdcpl_detab(FILE *in, FILE *out, unsigned int spaces, size_t *nrp, size_t *nwp)
 {
@@ -400,7 +392,6 @@ pdcpl_detab(FILE *in, FILE *out, unsigned int spaces, size_t *nrp, size_t *nwp)
  * @returns 0 on success, -EINVAL if `out` or `s` are `NULL` as well as if
  *  `s` is empty or misspecified (not a valid hex string).
  */
-PDCPL_PUBLIC
 int
 pdcpl_htoj(const char *s, intmax_t *out)
 {
@@ -455,7 +446,6 @@ pdcpl_htoj(const char *s, intmax_t *out)
  * @returns 0 on success, -EINVAL if any parameters are `NULL`, -ENOMEM if any
  *  of the memory allocation operations fail
  */
-PDCPL_PUBLIC
 int
 pdcpl_strsq(const char *s, char **op, const char *ds)
 {
@@ -523,7 +513,6 @@ pdcpl_strsq(const char *s, char **op, const char *ds)
  * @returns 0 on success, -EINVAL if `in` or `op` are `NULL`, -ENOMEM if there
  *  is not enough memory to expand or reallocate the output buffer
  */
-PDCPL_PUBLIC
 int
 pdcpl_strexpand(const char *in, char **op, size_t *nwp)
 {
@@ -597,7 +586,6 @@ error:
  * @param ncp Address of `size_t` to write string length to (can be `NULL`)
  * @returns 0 on succes, -EINVAL if `sp` is `NULL`, -ENOMEM if `malloc` fails
  */
-PDCPL_PUBLIC
 int
 pdcpl_jtoa(ptrdiff_t x, char **sp, size_t *ncp)
 {
@@ -635,7 +623,6 @@ pdcpl_jtoa(ptrdiff_t x, char **sp, size_t *ncp)
  * @param ss String to search for within `s`
  * @param pp Address of `size_t` to write leftmost occurrence index to
  */
-PDCPL_PUBLIC
 int
 pdcpl_strfind(const char *s, const char *ss, size_t *pp)
 {
@@ -676,7 +663,6 @@ no_match:
  * @param ss String to search for within `s`
  * @param pp Address of `size_t` to write rightmost occurrence index to
  */
-PDCPL_PUBLIC
 int
 pdcpl_strrfind(const char *s, const char *ss, size_t *pp)
 {
@@ -723,7 +709,6 @@ no_match:
  * @param op Address to `char *` to write the output string
  * @param ncp Address to `size_t` to write output string length (can be `NULL`)
  */
-PDCPL_PUBLIC
 int
 pdcpl_strcat(const char *s1, const char *s2, char **op, size_t *ncp)
 {
