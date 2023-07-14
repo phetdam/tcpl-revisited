@@ -184,7 +184,7 @@ public:
 /**
  * Test that `pdcpl_tolower` works as expected.
  */
-TEST_P(ToLowerTest, ParamTest)
+TEST_P(ToLowerTest, Test)
 {
   // original and lowercase string
   const auto& [input, expected_lower] = GetParam();
@@ -217,7 +217,7 @@ class StringExpandTest
 /**
  * Test that `pdcpl_strexpand` works as expected.
  */
-TEST_P(StringExpandTest, ParamTest)
+TEST_P(StringExpandTest, Test)
 {
   // original and expanded strings
   const auto& [orig, expanded] = GetParam();
@@ -271,7 +271,7 @@ public:
 /**
  * Test that `pdcpl_jtoa` works as expected.
  */
-TEST_P(IntToCharConvertTest, ParamTest)
+TEST_P(IntToCharConvertTest, Test)
 {
   // int to convert and expected result
   const auto& [x, x_str] = GetParam();
@@ -321,7 +321,7 @@ public:
 /**
  * Test that `pdcpl_strfind` works as expected.
  */
-TEST_P(StringFindTest, ParamTest)
+TEST_P(StringFindTest, Test)
 {
   // original string, string to search for, expected index location
   const auto& [s, ss, exp_loc] = GetParam();
@@ -369,7 +369,7 @@ public:
 /**
  * Test that `pdcpl_strrfind` works as expected.
  */
-TEST_P(StringRevFindTest, ParamTest)
+TEST_P(StringRevFindTest, Test)
 {
   // original string, string to search for, expected index location
   const auto& [s, ss, exp_loc] = GetParam();
@@ -418,7 +418,7 @@ public:
 /**
  * Test that `pdcpl_concat` works as expected.
  */
-TEST_P(ConcatTest, ParamTest)
+TEST_P(ConcatTest, Test)
 {
   // strings to concatenate + expected result
   const auto& [s1, s2, expected] = GetParam();
