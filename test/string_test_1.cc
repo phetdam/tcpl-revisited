@@ -1,7 +1,7 @@
 /**
- * @file string_test.cc
+ * @file string_test_1.cc
  * @author Derek Huang
- * @brief string.(c|h) unit tests
+ * @brief string.(c|h) unit tests 1
  * @copyright MIT License
  */
 

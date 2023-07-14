@@ -1,7 +1,7 @@
 /**
- * @file string_param_test.cc
+ * @file string_test_2.cc
  * @author Derek Huang
- * @brief string.(c|h) parametrized unit tests
+ * @brief string.(c|h) unit tests 2
  * @copyright MIT License
  */
 

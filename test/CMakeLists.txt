@@ -5,8 +5,8 @@ add_executable(
     bitwise_test.cc
     memory_test.cc
     misc_test.cc
-    string_param_test.cc
-    string_test.cc
+    string_test_1.cc
+    string_test_2.cc
 )
 target_link_libraries(pdcpl_test PRIVATE GTest::gtest_main pdcpl)
 # on Windows, copy the library and other DLL dependencies to output dir
