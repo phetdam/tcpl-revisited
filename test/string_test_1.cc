@@ -34,6 +34,36 @@
 namespace {
 
 /**
+ * Test fixture for parametrized testing of `pdcpl_isesc`.
+ */
+class IsEscTest : public ::testing::TestWithParam<std::pair<int, bool>> {};
+
+/**
+ * Test that `pdcpl_isesc` works as expected.
+ */
+TEST_P(IsEscTest, Test)
+{
+  // character, expected truth
+  const auto [input, truth] = GetParam();
+  EXPECT_EQ(truth, pdcpl_isesc(input));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+  StringTest,
+  IsEscTest,
+  ::testing::Values(
+    IsEscTest::ParamType{'a', false},
+    IsEscTest::ParamType{'b', false},
+    IsEscTest::ParamType{'\\', true},
+    IsEscTest::ParamType{'\t', true},
+    IsEscTest::ParamType{'1', false},
+    IsEscTest::ParamType{'?', false},
+    IsEscTest::ParamType{'\a', true},
+    IsEscTest::ParamType{'\n', true}
+  )
+);
+
+/**
  * Test fixture class for string tests.
  */
 class StringTest : public ::testing::Test {
