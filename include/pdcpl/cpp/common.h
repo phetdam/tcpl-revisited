@@ -21,7 +21,7 @@
 #endif  // !defined(_MSC_VER)
 
 // support for pre-C++20 constexpr
-#if __cplusplus >= PDCPL_CPP_20
+#if PDCPL_CPLUSPLUS >= PDCPL_CPP_20
 #define PDCPL_CONSTEXPR_20 constexpr
 #else
 #define PDCPL_CONSTEXPR_20 const
