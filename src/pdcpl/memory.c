@@ -13,7 +13,6 @@
 #include <stdlib.h>
 
 #include "pdcpl/common.h"
-#include "pdcpl/dllexport.h"
 
 /**
  * Expand the buffer by the specified number of bytes.
@@ -23,7 +22,6 @@
  * @returns 0 on success, -EINVAL if `buf` or its data is `NULL`, -ENOMEM if
  *  the call to `realloc` fails, i.e. not enough memory to realloc
  */
-PDCPL_PUBLIC
 int
 pdcpl_buffer_expand_exact(pdcpl_buffer *buf, size_t expand_size)
 {
@@ -53,7 +51,6 @@ pdcpl_buffer_expand_exact(pdcpl_buffer *buf, size_t expand_size)
  * @returns 0 on success, -EINVAL if any pointer args are `NULL`, -ENOMEM if
  *  the call to realloc fails, any negative `int` if `compute_expansion` fails
  */
-PDCPL_PUBLIC
 int
 pdcpl_buffer_dynexpand_custom(
   pdcpl_buffer *buf,
@@ -124,7 +121,6 @@ pdcpl_compute_expansion_exact(
  * @returns 0 on success, -EINVAL if any pointer args are `NULL`, -ENOMEM if
  *  the call to realloc fails, i.e. not enough memory to realloca
  */
-PDCPL_PUBLIC
 int
 pdcpl_buffer_dynexpand_exact(
   pdcpl_buffer *buf, const void *pos, size_t write_size)
@@ -166,7 +162,6 @@ pdcpl_compute_expansion_default(
  * @returns 0 on success, -EINVAL if any pointer args are `NULL`, -ENOMEM if
  *  the call to realloc fails, i.e. not enough memory to realloca
  */
-PDCPL_PUBLIC
 int
 pdcpl_buffer_dynexpand(pdcpl_buffer *buf, const void *pos, size_t write_size)
 {

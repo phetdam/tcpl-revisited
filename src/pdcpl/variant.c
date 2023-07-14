@@ -125,7 +125,6 @@ PDCPL_VARIANT_INIT_DECL_EX(void, void *, size_t size)
  * @param size Number of bytes in the buffer
  * @returns 0 on success, -EINVAL if `vt`, `buf` are `NULL` or if `size` is 0
  */
-PDCPL_PUBLIC
 PDCPL_VARIANT_INIT_DECL_EX(void_ref, void *, size_t size)
 {
   if (!vt || !val || !size)

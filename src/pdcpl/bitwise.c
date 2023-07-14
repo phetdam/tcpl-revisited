@@ -10,7 +10,6 @@
 #include <stdint.h>
 
 #include "pdcpl/common.h"
-#include "pdcpl/dllexport.h"
 
 /**
  * Count the number of 1-bits in a value.
@@ -20,7 +19,6 @@
  *
  * @param x Value to count 1-bits for
  */
-PDCPL_PUBLIC
 unsigned short
 pdcpl_bitcount(unsigned int x)
 {
@@ -36,7 +34,6 @@ pdcpl_bitcount(unsigned int x)
  * @param x Value to rotate
  * @param n Number of bits to rotate by
  */
-PDCPL_PUBLIC
 unsigned int
 pdcpl_rrotbits(unsigned int x, unsigned short n)
 {
