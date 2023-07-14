@@ -223,23 +223,53 @@ TEST_F(StringTest, IntToCharConvertTest)
 }
 
 /**
+ * Test fixture for parametrized testing of `pdcpl_strfind`.
+ *
+ * @todo May later remove inheritance from `StringTest`.
+ */
+class StringFindTest
+  : public StringTest,
+    public ::testing::WithParamInterface<
+      std::tuple<std::string, std::string, std::size_t>> {
+public:
+  /**
+   * Return an input for `StringFindTest` parametrized tests.
+   *
+   * @param s Input string
+   * @param ss String to search for
+   * @returns Tuple of `s`, `ss`, and expected index location
+   */
+  static ParamType CreateInput(const std::string& s, const std::string& ss)
+  {
+    return {s, ss, s.find(ss)};
+  }
+};
+
+/**
  * Test that `pdcpl_strfind` works as expected.
  */
-TEST_F(StringTest, StringFindTest)
+TEST_P(StringFindTest, ParamTest)
 {
-  // original string, string to search for
-  static PDCPL_CONSTEXPR_20 std::string s{"hello there was a man"};
-  static PDCPL_CONSTEXPR_20 std::string ss{"re was"};
-  // expected index location + actual index location
-  auto exp_loc = s.find(ss);
+  // original string, string to search for, expected index location
+
+  const auto& [s, ss, exp_loc] = GetParam();
+  // get actual index location + compare
   std::size_t act_loc;
   ASSERT_FALSE(pdcpl_strfind(s.c_str(), ss.c_str(), &act_loc));
-  // exp_loc and act_loc should match
   EXPECT_EQ(exp_loc, act_loc);
-  // now we try with a string that is not in s, act_loc should be SIZE_MAX
-  ASSERT_FALSE(pdcpl_strfind(s.c_str(), "unfindable", &act_loc));
-  EXPECT_EQ(SIZE_MAX, act_loc);
 }
+
+INSTANTIATE_TEST_SUITE_P(
+  StringTest,
+  StringFindTest,
+  ::testing::Values(
+    StringFindTest::CreateInput("hello there was a man", "re was"),
+    StringFindTest::CreateInput("master chief", "chief"),
+    // string not in the input string, index is SIZE_MAX
+    StringFindTest::CreateInput("no findable strings here", "oops"),
+    StringFindTest::CreateInput("no string findable", "unfindable")
+  )
+);
 
 /**
  * Test fixture for parametrized testing of `pdcpl_strrfind`.
