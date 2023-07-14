@@ -247,7 +247,8 @@ TEST_F(StringTest, StringFindTest)
  * @todo May later remove inheritance from `StringTest`.
  */
 class StringRevFindTest
-  : public StringTest, public ::testing::WithParamInterface<
+  : public StringTest,
+    public ::testing::WithParamInterface<
       std::tuple<std::string, std::string, std::size_t>> {
 public:
   /**
@@ -294,8 +295,10 @@ INSTANTIATE_TEST_SUITE_P(
  *
  * @todo May later remove inheritance from `StringTest`.
  */
-class ConcatTest : public StringTest, public ::testing::WithParamInterface<
-  std::tuple<std::string, std::string, std::string>> {
+class ConcatTest
+  : public StringTest,
+    public ::testing::WithParamInterface<
+      std::tuple<std::string, std::string, std::string>> {
 public:
   /**
    * Return an input for `ConcatTest` parametrized tests.
