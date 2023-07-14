@@ -13,6 +13,7 @@
 #include <cstdint>
 #include <cstdlib>
 #include <string>
+#include <tuple>
 #include <utility>
 
 #include <gtest/gtest.h>
@@ -157,6 +158,140 @@ TEST_F(StringTest, StringReverseTest)
 }
 
 /**
+ * Test fixture for parametrized testing of `pdcpl_print[p]wtd`.
+ */
+class PrintWidthTest : public ::testing::TestWithParam<
+  std::tuple<std::ptrdiff_t, unsigned short, unsigned short>> {
+public:
+  /**
+   * Return an input for `PrintWidthTest` parametrized tests.
+   *
+   * @param value Input value
+   * @param padding Print width padding
+   * @returns Tuple of input value, print width padding, and padded print width
+   */
+  static ParamType CreateInput(std::ptrdiff_t value, unsigned short padding)
+  {
+    return {
+      value,
+      padding,
+      // cast entire expression as 2 * padding is promoted to int so MSVC warns
+      static_cast<unsigned short>(std::to_string(value).size() + 2 * padding)
+    };
+  }
+};
+
+/**
+ * Test that `pdcpl_printpwtd` and `pdcpl_printwtd` work as expected.
+ */
+TEST_P(PrintWidthTest, ParamTest)
+{
+  // input, padding, padded print width
+  const auto [value, padding, padded_width] = GetParam();
+  // padded and non-padded widths (-2 * padding) should match up
+  EXPECT_EQ(padded_width, pdcpl_printpwtd(value, padding));
+  EXPECT_EQ(padded_width - 2 * padding, pdcpl_printwtd(value));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+  StringTest,
+  PrintWidthTest,
+  ::testing::Values(
+    PrintWidthTest::CreateInput(123513272, 2),
+    PrintWidthTest::CreateInput(-1991823, 3),
+    PrintWidthTest::CreateInput(8787822, 6)
+  )
+);
+
+/**
+ * Test fixture for parametrized testing of `pdcpl_next_tab_(stop|size)`.
+ */
+class TabStopTest : public ::testing::TestWithParam<
+  std::tuple<std::size_t, unsigned int, std::size_t>> {};
+
+/**
+ * Test that `pdcpl_next_tab_(stop|size)` work as expected.
+ */
+TEST_P(TabStopTest, ParamTest)
+{
+  // current column position + tab size + next expected tab stop
+  const auto [cur_col, tab_size, next_tab_stop] = GetParam();
+  // check position of next tab stop and next tab size
+  EXPECT_EQ(next_tab_stop, pdcpl_next_tab_stop(cur_col, tab_size));
+  EXPECT_EQ(next_tab_stop - cur_col, pdcpl_next_tab_size(cur_col, tab_size));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+  StringTest,
+  TabStopTest,
+  ::testing::Values(
+    TabStopTest::ParamType{17, 5, 20},
+    TabStopTest::ParamType{30, 7, 35},
+    TabStopTest::ParamType{15, 4, 16},
+    TabStopTest::ParamType{20, 3, 21}
+  )
+);
+
+/**
+ * Test fixture for parametrized testing of `pdcpl_htoj`.
+ */
+class HexConvertTest : public ::testing::TestWithParam<
+  std::pair<std::string, std::intmax_t>> {};
+
+/**
+ * Test that `pdcpl_htoj` works as expected.
+ */
+TEST_P(HexConvertTest, ParamTest)
+{
+  // target intmax_t value to convert hex string to
+  std::intmax_t value;
+  ASSERT_FALSE(pdcpl_htoj(GetParam().first.c_str(), &value));
+  EXPECT_EQ(GetParam().second, value);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+  StringTest,
+  HexConvertTest,
+  ::testing::Values(
+    HexConvertTest::ParamType{"0xdeadbeef", 0xdeadbeef},
+    HexConvertTest::ParamType{"-0xAFE12", -0xafe12},
+    HexConvertTest::ParamType{"-0XaE098FbD0", -0xae098fbd0},
+    HexConvertTest::ParamType{"34343dae", 0x34343dae}
+  )
+);
+
+/**
+ * Test fixture for parametrized testing of `pdcpl_strsq`.
+ */
+class SqueezeTest : public ::testing::TestWithParam<
+  std::tuple<std::string, std::string, std::string>> {};
+
+/**
+ * Test that `pdcpl_strsq` works as expected.
+ */
+TEST_P(SqueezeTest, ParamTest)
+{
+  // must be freed after every successful call
+  char *res;
+  // input, chars to delete, expected result
+  const auto& [input, delete_chars, expected] = GetParam();
+  // check equality and clean up
+  ASSERT_FALSE(pdcpl_strsq(input.c_str(), &res, delete_chars.c_str()));
+  EXPECT_EQ(expected, std::string{res});
+  std::free(res);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+  StringTest,
+  SqueezeTest,
+  ::testing::Values(
+    SqueezeTest::ParamType{"totally", "holy", "tta"},
+    SqueezeTest::ParamType{"normally", "", "normally"},
+    SqueezeTest::ParamType{"Veronica", "acinoVer", ""}
+  )
+);
+
+/**
  * Test fixture for parametrized testing of `pdcpl_tolower`.
  */
 class ToLowerTest
@@ -247,199 +382,6 @@ INSTANTIATE_TEST_SUITE_P(
       "new ABCDEFGHIJKLMNOPQRSTUVWXYZ string to "
       "0123456789abcdefghijklmnopqrstuvwxyz expand --some"
     }
-  )
-);
-
-/**
- * Test fixture for parametrized testing of `pdcpl_jtoa`.
- */
-class IntToCharConvertTest
-  : public ::testing::TestWithParam<std::pair<int, std::string>> {
-public:
-  /**
-   * Return an input for `IntToCharConvertTest` parametrized tests.
-   *
-   * @param x Input integer
-   * @returns Pair of `x` and resulting string
-   */
-  static ParamType CreateInput(int x)
-  {
-    return {x, std::to_string(x)};
-  }
-};
-
-/**
- * Test that `pdcpl_jtoa` works as expected.
- */
-TEST_P(IntToCharConvertTest, Test)
-{
-  // int to convert and expected result
-  const auto& [x, x_str] = GetParam();
-  // pdcpl_jtoa result and result length
-  char *res;
-  std::size_t res_size;
-  ASSERT_FALSE(pdcpl_jtoa(x, &res, &res_size));
-  // compare + clean up
-  EXPECT_EQ(x_str, std::string{res});
-  EXPECT_EQ(x_str.size(), res_size);
-  std::free(res);
-}
-
-INSTANTIATE_TEST_SUITE_P(
-  StringTest,
-  IntToCharConvertTest,
-  ::testing::Values(
-    IntToCharConvertTest::CreateInput(-282813239),
-    IntToCharConvertTest::CreateInput(12312372),
-    IntToCharConvertTest::CreateInput(-99101)
-  )
-);
-
-/**
- * Test fixture for parametrized testing of `pdcpl_strfind`.
- *
- * @todo May later remove inheritance from `StringTest`.
- */
-class StringFindTest
-  : public StringTest,
-    public ::testing::WithParamInterface<
-      std::tuple<std::string, std::string, std::size_t>> {
-public:
-  /**
-   * Return an input for `StringFindTest` parametrized tests.
-   *
-   * @param s Input string
-   * @param ss String to search for
-   * @returns Tuple of `s`, `ss`, and expected index location
-   */
-  static ParamType CreateInput(const std::string& s, const std::string& ss)
-  {
-    return {s, ss, s.find(ss)};
-  }
-};
-
-/**
- * Test that `pdcpl_strfind` works as expected.
- */
-TEST_P(StringFindTest, Test)
-{
-  // original string, string to search for, expected index location
-  const auto& [s, ss, exp_loc] = GetParam();
-  // get actual index location + compare
-  std::size_t act_loc;
-  ASSERT_FALSE(pdcpl_strfind(s.c_str(), ss.c_str(), &act_loc));
-  EXPECT_EQ(exp_loc, act_loc);
-}
-
-INSTANTIATE_TEST_SUITE_P(
-  StringTest,
-  StringFindTest,
-  ::testing::Values(
-    StringFindTest::CreateInput("hello there was a man", "re was"),
-    StringFindTest::CreateInput("master chief", "chief"),
-    // string not in the input string, index is SIZE_MAX
-    StringFindTest::CreateInput("no findable strings here", "oops"),
-    StringFindTest::CreateInput("no string findable", "unfindable")
-  )
-);
-
-/**
- * Test fixture for parametrized testing of `pdcpl_strrfind`.
- *
- * @todo May later remove inheritance from `StringTest`.
- */
-class StringRevFindTest
-  : public StringTest,
-    public ::testing::WithParamInterface<
-      std::tuple<std::string, std::string, std::size_t>> {
-public:
-  /**
-   * Return an input for `StringRevFindTest` parametrized tests.
-   *
-   * @param s Input string
-   * @param ss String to search for
-   * @returns Tuple of `s`, `ss`, and expected index location
-   */
-  static ParamType CreateInput(const std::string& s, const std::string& ss)
-  {
-    return {s, ss, s.rfind(ss)};
-  }
-};
-
-/**
- * Test that `pdcpl_strrfind` works as expected.
- */
-TEST_P(StringRevFindTest, Test)
-{
-  // original string, string to search for, expected index location
-  const auto& [s, ss, exp_loc] = GetParam();
-  // get actual index location + compare
-  std::size_t act_loc;
-  ASSERT_FALSE(pdcpl_strrfind(s.c_str(), ss.c_str(), &act_loc));
-  EXPECT_EQ(exp_loc, act_loc);
-}
-
-INSTANTIATE_TEST_SUITE_P(
-  StringTest,
-  StringRevFindTest,
-  ::testing::Values(
-    StringRevFindTest::CreateInput("to search by right search", "search"),
-    StringRevFindTest::CreateInput("not really searching correctly", "really"),
-    StringRevFindTest::CreateInput("hello sweet world of sweetness", "sweet"),
-    // string not in the input string, index is SIZE_MAX
-    StringRevFindTest::CreateInput("nothing to find here", "string"),
-    StringRevFindTest::CreateInput("string with lots of characters", "b")
-  )
-);
-
-/**
- * Test fixture for parametrized testing of `pdcpl_concat`.
- *
- * @todo May later remove inheritance from `StringTest`.
- */
-class ConcatTest
-  : public StringTest,
-    public ::testing::WithParamInterface<
-      std::tuple<std::string, std::string, std::string>> {
-public:
-  /**
-   * Return an input for `ConcatTest` parametrized tests.
-   *
-   * @param s1 First string
-   * @param s2 Second string
-   * @returns Tuple of `s1`, `s2`, and `s1 + s2`
-   */
-  static ParamType CreateInput(const std::string& s1, const std::string& s2)
-  {
-    return {s1, s2, s1 + s2};
-  }
-};
-
-/**
- * Test that `pdcpl_concat` works as expected.
- */
-TEST_P(ConcatTest, Test)
-{
-  // strings to concatenate + expected result
-  const auto& [s1, s2, expected] = GetParam();
-  // actual result + length
-  char *res;
-  std::size_t res_size;
-  ASSERT_FALSE(pdcpl_strcat(s1.c_str(), s2.c_str(), &res, &res_size));
-  // compare + free
-  EXPECT_EQ(expected, std::string{res});
-  EXPECT_EQ(expected.size(), res_size);
-  std::free(res);
-}
-
-INSTANTIATE_TEST_SUITE_P(
-  StringTest,
-  ConcatTest,
-  ::testing::Values(
-    ConcatTest::CreateInput("first string", " second string"),
-    ConcatTest::CreateInput("hello", " world"),
-    ConcatTest::CreateInput("", "the result"),
-    ConcatTest::CreateInput("the result", "")
   )
 );
 
