@@ -251,7 +251,6 @@ public:
 TEST_P(StringFindTest, ParamTest)
 {
   // original string, string to search for, expected index location
-
   const auto& [s, ss, exp_loc] = GetParam();
   // get actual index location + compare
   std::size_t act_loc;
