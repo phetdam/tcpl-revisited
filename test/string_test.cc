@@ -205,13 +205,30 @@ TEST_F(StringTest, StringExpandTest)
 }
 
 /**
+ * Test fixture for parametrized testing of `pdcpl_jtoa`.
+ */
+class IntToCharConvertTest
+  : public ::testing::TestWithParam<std::pair<int, std::string>> {
+public:
+  /**
+   * Return an input for `IntToCharConvertTest` parametrized tests.
+   *
+   * @param x Input integer
+   * @returns Pair of `x` and resulting string
+   */
+  static ParamType CreateInput(int x)
+  {
+    return {x, std::to_string(x)};
+  }
+};
+
+/**
  * Test that `pdcpl_jtoa` works as expected.
  */
-TEST_F(StringTest, IntToCharConvertTest)
+TEST_P(IntToCharConvertTest, ParamTest)
 {
   // int to convert and expected result
-  static constexpr int x = -282813239;
-  static const std::string x_str{std::to_string(x)};
+  const auto& [x, x_str] = GetParam();
   // pdcpl_jtoa result and result length
   char *res;
   std::size_t res_size;
@@ -221,6 +238,16 @@ TEST_F(StringTest, IntToCharConvertTest)
   EXPECT_EQ(x_str.size(), res_size);
   std::free(res);
 }
+
+INSTANTIATE_TEST_SUITE_P(
+  StringTest,
+  IntToCharConvertTest,
+  ::testing::Values(
+    IntToCharConvertTest::CreateInput(-282813239),
+    IntToCharConvertTest::CreateInput(12312372),
+    IntToCharConvertTest::CreateInput(-99101)
+  )
+);
 
 /**
  * Test fixture for parametrized testing of `pdcpl_strfind`.

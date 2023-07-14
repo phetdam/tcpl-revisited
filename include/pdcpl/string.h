@@ -418,7 +418,7 @@ pdcpl_jtoa(ptrdiff_t x, char **sp, size_t *ncp);
 PDCPL_INLINE int
 pdcpl_itoa(int x, char **sp, size_t *ncp)
 {
-  return (int) pdcpl_jtoa(x, sp, ncp);
+  return pdcpl_jtoa(x, sp, ncp);
 }
 
 /**
