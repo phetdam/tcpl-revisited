@@ -520,6 +520,8 @@ pdcpl_strsq(const char *s, char **op, const char *ds)
  * @param in Input string
  * @param op Address to `char *` pointing to the expanded string
  * @param nwp Address to `size_t` given length of new string, can be `NULL`
+ * @returns 0 on success, -EINVAL if `in` or `op` are `NULL`, -ENOMEM if there
+ *  is not enough memory to expand or reallocate the output buffer
  */
 PDCPL_PUBLIC
 int

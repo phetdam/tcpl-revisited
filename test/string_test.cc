@@ -157,42 +157,70 @@ TEST_F(StringTest, StringReverseTest)
 }
 
 /**
+ * Test fixture for parametrized testing of `pdcpl_tolower`.
+ */
+class ToLowerTest
+  : public ::testing::TestWithParam<std::pair<std::string, std::string>> {
+public:
+  /**
+   * Return an input for `ToLowerTest` parametrized tests.
+   *
+   * @param s Input string
+   * @returns Pair of `s` and `s` converted to all lowercase
+   */
+  static ParamType CreateInput(const std::string& s)
+  {
+    auto s_lower = s;
+    // std::tolower
+    std::for_each(
+      s_lower.begin(),
+      s_lower.end(),
+      [](auto c) { return static_cast<decltype(c)>(std::tolower(c)); }
+    );
+    return {s, s_lower};
+  }
+};
+
+/**
  * Test that `pdcpl_tolower` works as expected.
  */
-TEST_F(StringTest, ToLowerTest)
+TEST_P(ToLowerTest, ParamTest)
 {
-  std::string orig_string{"STOP the SHOUTING!"};
-  std::string lower_string = orig_string;
-  // std::tolower
+  // original and lowercase string
+  const auto& [input, expected_lower] = GetParam();
+  // use pdcpl_tolower and compare
+  auto actual_lower = input;
   std::for_each(
-    lower_string.begin(),
-    lower_string.end(),
-    [](auto c) { return static_cast<decltype(c)>(std::tolower(c)); }
-  );
-  // pdcpl_tolower
-  std::for_each(
-    orig_string.begin(),
-    orig_string.end(),
+    actual_lower.begin(),
+    actual_lower.end(),
     [](auto c) { return pdcpl_tolower(c); }
   );
-  EXPECT_EQ(lower_string, orig_string);
+  EXPECT_EQ(expected_lower, actual_lower);
 }
+
+INSTANTIATE_TEST_SUITE_P(
+  StringTest,
+  ToLowerTest,
+  ::testing::Values(
+    ToLowerTest::CreateInput("STOP the SHOUTING!"),
+    ToLowerTest::CreateInput("Lots of MIxEd CASE"),
+    ToLowerTest::CreateInput("1gn0R3 Str4ng3! charact3r$")
+  )
+);
+
+/**
+ * Test fixture for parametrized testing of `pdcpl_strexpand`.
+ */
+class StringExpandTest
+  : public ::testing::TestWithParam<std::pair<std::string, std::string>> {};
 
 /**
  * Test that `pdcpl_strexpand` works as expected.
  */
-TEST_F(StringTest, StringExpandTest)
+TEST_P(StringExpandTest, ParamTest)
 {
-  static PDCPL_CONSTEXPR_20 std::string orig{"-hello a-z0-9A-Zb-d what's up-"};
-  // broken into chunks so each range is more easily delineated
-  static PDCPL_CONSTEXPR_20 std::string expanded{
-    "-hello "
-    "abcdefghijklmnopqrstuvwxyz"
-    "0123456789"
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    "bcd"
-    " what's up-"
-  };
+  // original and expanded strings
+  const auto& [orig, expanded] = GetParam();
   // expected string and number of chars written
   char* res;
   std::size_t res_size;
@@ -203,6 +231,24 @@ TEST_F(StringTest, StringExpandTest)
   // string is on heap, clean up
   std::free(res);
 }
+
+INSTANTIATE_TEST_SUITE_P(
+  StringTest,
+  StringExpandTest,
+  ::testing::Values(
+    StringExpandTest::ParamType{
+      "-hello a-z0-9A-Zb-d what's up-",
+      "-hello "
+      "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZbcd"
+      " what's up-"
+    },
+    StringExpandTest::ParamType{
+      "new A-Z string to 0-9a-z expand --some",
+      "new ABCDEFGHIJKLMNOPQRSTUVWXYZ string to "
+      "0123456789abcdefghijklmnopqrstuvwxyz expand --some"
+    }
+  )
+);
 
 /**
  * Test fixture for parametrized testing of `pdcpl_jtoa`.
