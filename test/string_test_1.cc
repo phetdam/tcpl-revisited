@@ -194,7 +194,7 @@ public:
 /**
  * Test that `pdcpl_printpwtd` and `pdcpl_printwtd` work as expected.
  */
-TEST_P(PrintWidthTest, ParamTest)
+TEST_P(PrintWidthTest, Test)
 {
   // input, padding, padded print width
   const auto [value, padding, padded_width] = GetParam();
@@ -268,7 +268,7 @@ class TabStopTest : public ::testing::TestWithParam<
 /**
  * Test that `pdcpl_next_tab_(stop|size)` work as expected.
  */
-TEST_P(TabStopTest, ParamTest)
+TEST_P(TabStopTest, Test)
 {
   // current column position + tab size + next expected tab stop
   const auto [cur_col, tab_size, next_tab_stop] = GetParam();
@@ -297,7 +297,7 @@ class HexConvertTest : public ::testing::TestWithParam<
 /**
  * Test that `pdcpl_htoj` works as expected.
  */
-TEST_P(HexConvertTest, ParamTest)
+TEST_P(HexConvertTest, Test)
 {
   // target intmax_t value to convert hex string to
   std::intmax_t value;
@@ -325,7 +325,7 @@ class SqueezeTest : public ::testing::TestWithParam<
 /**
  * Test that `pdcpl_strsq` works as expected.
  */
-TEST_P(SqueezeTest, ParamTest)
+TEST_P(SqueezeTest, Test)
 {
   // must be freed after every successful call
   char *res;
