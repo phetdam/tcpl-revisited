@@ -168,26 +168,6 @@ TEST_F(StringTest, FileGetWordTest)
 #endif  // PDCPL_POSIX_1_2008
 
 /**
- * Test that `pdcpl_strrev` works as expected.
- */
-TEST_F(StringTest, StringReverseTest)
-{
-  // string to reverse
-  static PDCPL_CONSTEXPR_20 std::string rev_string{"hello nice to meet you"};
-  // actual reversed string + its size
-  char* act_rev;
-  std::size_t n_act_rev;
-  ASSERT_FALSE(pdcpl_strrev(rev_string.c_str(), &act_rev, &n_act_rev));
-  // expected reversed string
-  std::string exp_rev{rev_string.rbegin(), rev_string.rend()};
-  // contents/size should match
-  EXPECT_EQ(exp_rev, std::string{act_rev});
-  EXPECT_EQ(exp_rev.size(), n_act_rev);
-  // string is on heap, clean up
-  std::free(act_rev);
-}
-
-/**
  * Test fixture for parametrized testing of `pdcpl_print[p]wtd`.
  */
 class PrintWidthTest : public ::testing::TestWithParam<
@@ -230,6 +210,52 @@ INSTANTIATE_TEST_SUITE_P(
     PrintWidthTest::CreateInput(123513272, 2),
     PrintWidthTest::CreateInput(-1991823, 3),
     PrintWidthTest::CreateInput(8787822, 6)
+  )
+);
+
+/**
+ * Test fixture for parametrized testing of `pdcpl_strrev`.
+ */
+class StringReverseTest : public ::testing::TestWithParam<
+  std::tuple<std::string, std::string, std::size_t>> {
+public:
+  /**
+   * Create an input for `StringReverseTest` parametrized tests.
+   *
+   * @param s String to reverse
+   * @returns Tuple of `s`, `s` reversed, and the size of `s`
+   */
+  static ParamType CreateInput(const std::string& s)
+  {
+    return {s, std::string{s.rbegin(), s.rend()}, s.size()};
+  }
+};
+
+/**
+ * Test that `pdcpl_strrev` works as expected.
+ */
+TEST_P(StringReverseTest, Test)
+{
+  // string to reverse, expected reversed string, expected reverse size
+  const auto& [input, exp_rev, exp_size] = GetParam();
+  // actual reversed string + its size
+  char* act_rev;
+  std::size_t act_size;
+  ASSERT_FALSE(pdcpl_strrev(input.c_str(), &act_rev, &act_size));
+  // contents/size should match
+  EXPECT_EQ(exp_rev, std::string{act_rev});
+  EXPECT_EQ(exp_size, act_size);
+  // string is on heap, clean up
+  std::free(act_rev);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+  StringTest,
+  StringReverseTest,
+  ::testing::Values(
+    StringReverseTest::CreateInput("hello nice to meet you"),
+    StringReverseTest::CreateInput("another string to reverse"),
+    StringReverseTest::CreateInput("")
   )
 );
 
