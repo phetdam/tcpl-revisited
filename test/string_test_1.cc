@@ -96,7 +96,6 @@ TEST_F(StringTest, StringWordCountTest)
   EXPECT_EQ(res.nw, wc_words_);
 }
 
-#ifdef PDCPL_POSIX_1_2008
 /**
  * Test that `pdcpl_fwc` works as expected.
  *
@@ -104,6 +103,7 @@ TEST_F(StringTest, StringWordCountTest)
  */
 TEST_F(StringTest, FileWordCountTest)
 {
+#if defined(PDCPL_POSIX_1_2008)
   pdcpl_wcresults res;
   // get managed FILE* from the string's char buffer (no null terminator)
   pdcpl::unique_file file{fmemopen((void*) wc_string_.c_str(), wc_chars_, "r")};
@@ -113,8 +113,12 @@ TEST_F(StringTest, FileWordCountTest)
   EXPECT_EQ(res.nc, wc_chars_);
   EXPECT_EQ(res.nl, wc_lines_);
   EXPECT_EQ(res.nw, wc_words_);
+#else
+  GTEST_SKIP();
+#endif  // !PDCPL_POSIX_1_2008
 }
 
+#ifdef PDCPL_POSIX_1_2008
 /**
  * Split a string by delimiters into a substring vector.
  *
@@ -137,6 +141,7 @@ auto string_split(const std::string& str, const char* delims)
   }
   return substrs;
 }
+#endif  // PDCPL_POSIX_1_2008
 
 /**
  * Test that `pdcpl_getword` works as expected.
@@ -145,6 +150,7 @@ auto string_split(const std::string& str, const char* delims)
  */
 TEST_F(StringTest, FileGetWordTest)
 {
+#if defined(PDCPL_POSIX_1_2008)
   // get managed FILE* from the string's char buffer (no null terminator)
   pdcpl::unique_file file{fmemopen((void*) wc_string_.c_str(), wc_chars_, "r")};
   ASSERT_TRUE(file) << "fmemopen error: " << strerror(errno);
@@ -164,8 +170,10 @@ TEST_F(StringTest, FileGetWordTest)
   }
   // compare values
   EXPECT_EQ(exp_words, act_words);
+#else
+  GTEST_SKIP();
+#endif  // !PDCPL_POSIX_1_2008
 }
-#endif  // PDCPL_POSIX_1_2008
 
 /**
  * Test fixture for parametrized testing of `pdcpl_print[p]wtd`.
