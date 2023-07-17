@@ -3,14 +3,18 @@ cmake_minimum_required(VERSION ${CMAKE_MINIMUM_REQUIRED_VERSION})
 add_executable(
     pdcpl_test
     bitwise_test.cc
+    file_test.cc
     memory_test.cc
     misc_test.cc
     string_test_1.cc
     string_test_2.cc
 )
 target_link_libraries(pdcpl_test PRIVATE GTest::gtest_main pdcpl)
-# on Windows, copy the library and other DLL dependencies to output dir
+# on Windows, there are additional link dependencies. also, we need to copy the
+# library and other DLL dependencies to output dir
 if(WIN32)
+    # CMake adds this by default, but it's good to be explicit
+    target_link_libraries(pdcpl_test PRIVATE kernel32)
     add_custom_command(
         TARGET pdcpl_test POST_BUILD
         COMMAND
