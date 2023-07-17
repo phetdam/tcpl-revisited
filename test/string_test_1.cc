@@ -103,7 +103,7 @@ TEST_F(StringTest, StringWordCountTest)
  */
 TEST_F(StringTest, FileWordCountTest)
 {
-#if defined(PDCPL_POSIX_1_2008)
+#ifdef PDCPL_POSIX_1_2008
   pdcpl_wcresults res;
   // get managed FILE* from the string's char buffer (no null terminator)
   pdcpl::unique_file file{fmemopen((void*) wc_string_.c_str(), wc_chars_, "r")};
@@ -150,7 +150,7 @@ auto string_split(const std::string& str, const char* delims)
  */
 TEST_F(StringTest, FileGetWordTest)
 {
-#if defined(PDCPL_POSIX_1_2008)
+#ifdef PDCPL_POSIX_1_2008
   // get managed FILE* from the string's char buffer (no null terminator)
   pdcpl::unique_file file{fmemopen((void*) wc_string_.c_str(), wc_chars_, "r")};
   ASSERT_TRUE(file) << "fmemopen error: " << strerror(errno);
