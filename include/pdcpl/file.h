@@ -42,6 +42,20 @@ pdcpl_win_gettempdir(char **path);
 PDCPL_PUBLIC
 HRESULT
 pdcpl_win_gettempfilename(char **path);
+
+/**
+ * Get a `HANDLE` to a new unique temporary file.
+ *
+ * @param file_handle Address of `HANDLE` to write to
+ * @param access Desired file access, e.g. `GENERIC_READ`, `GENERIC_WRITE`
+ * @param sharing File sharing mode, e.g. `0U` for exclusive process access,
+ *  `FILE_SHARE_READ`, `FILE_SHARE_WRITE`, etc.
+ * @returns `S_OK` on success, `E_INVALIDARG` if `file_handle` is `NULL`,
+ *  `HRESULT_FROM_WIN32(GetLastError())` on file creation or other Win32 error
+ */
+PDCPL_PUBLIC
+HRESULT
+pdcpl_win_gettempfh(LPHANDLE file_handle, DWORD access, DWORD sharing);
 #endif  // _WIN32
 
 PDCPL_EXTERN_C_END
