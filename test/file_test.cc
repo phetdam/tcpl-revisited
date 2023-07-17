@@ -26,7 +26,7 @@ namespace {
 class FileTest : public ::testing::Test {};
 
 /**
- * Test that `pdcpl_win_gettempdir` works as expecte.
+ * Test that `pdcpl_win_gettempdir` works as expected.
  */
 TEST_F(FileTest, WinGetTempDir)
 {
@@ -40,6 +40,23 @@ TEST_F(FileTest, WinGetTempDir)
   EXPECT_EQ('\\', path[path_len - 1]);
   // clean up
   std::free(path);
+#else
+  GTEST_SKIP();
+#endif  // !_WIN32
+}
+
+/**
+ * Test that `pdcpl_win_gettempfile` works as expected.
+ */
+TEST_F(FileTest, WinGetTempFileName)
+{
+#ifdef _WIN32
+  char *path;
+  ASSERT_EQ(S_OK, pdcpl_win_gettempfilename(&path));
+  // basic checks. file name cannot be empty and there should not be any temp
+  // file hanging around on the filesystem
+  ASSERT_GT(std::strlen(path), 0);
+  EXPECT_EQ(INVALID_FILE_ATTRIBUTES, GetFileAttributesA(path));
 #else
   GTEST_SKIP();
 #endif  // !_WIN32
