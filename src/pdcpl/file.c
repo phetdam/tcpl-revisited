@@ -28,12 +28,13 @@ pdcpl_win_gettempdir(char **path)
 {
   if (!path)
     return E_INVALIDARG;
-  // allocate buffer to max possible size
-  LPSTR buf = malloc(sizeof(CHAR) * (MAX_PATH + 1));
+  // allocate buffer to max possible size. need +1 for null terminator and note
+  // that GetTempPathA max return value is MAX_PATH + 1
+  LPSTR buf = malloc(sizeof(CHAR) * (MAX_PATH + 2));
   if (!buf)
     return E_OUTOFMEMORY;
   // attempt to get the path. on error, 0 is returned
-  DWORD path_len = GetTempPathA(MAX_PATH + 1, buf);
+  DWORD path_len = GetTempPathA(MAX_PATH + 2, buf);
   if (!path_len) {
     free(buf);
     return HRESULT_FROM_WIN32(GetLastError());
