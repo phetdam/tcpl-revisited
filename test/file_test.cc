@@ -30,7 +30,7 @@ class FileTest : public ::testing::Test {};
  */
 TEST_F(FileTest, WinGetTempDir)
 {
-#if defined(_WIN32)
+#ifdef _WIN32
   char *path;
   ASSERT_EQ(S_OK, pdcpl_win_gettempdir(&path));
   // basic checks. documentation says the returned path will end with backslash
