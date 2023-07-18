@@ -64,7 +64,7 @@ TEST_F(FileTest, WinGetTempFileName)
 }
 
 /**
- * Test that `pdcpl_win_gettempfg` works as expected.
+ * Test that `pdcpl_win_gettempfh` works as expected.
  */
 TEST_F(FileTest, WinGetTempFileHandle)
 {
