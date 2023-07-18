@@ -75,36 +75,33 @@ pdcpl_win_gettempfilename(char **path)
   LPSTR buf = malloc(MAX_PATH * sizeof *buf);
   if (!buf) {
     status = E_OUTOFMEMORY;
-    goto error_get_temp;
+    goto final;
   }
   // get temp file path. with 0, temp file is created and closed on success
   if (!GetTempFileNameA(temp_dir_path, "pdw", 0U, buf)) {
+    free(buf);
     status = HRESULT_FROM_WIN32(GetLastError());
-    goto error_get_temp;
+    goto final;
   }
   // resize name buffer to correct size
   size_t path_len = strlen(buf);
   char *temp_file_path = realloc(buf, path_len + 1);
   if (!temp_file_path) {
+    free(buf);
     status = E_OUTOFMEMORY;
-    goto error_realloc;
+    goto final;
   }
-  // delete the created temporary file
+  // delete the created temporary file. clean up temp_file_path on error
   if (!DeleteFileA(temp_file_path)) {
+    free(temp_file_path);
     status = HRESULT_FROM_WIN32(GetLastError());
-    goto error_del_temp;
+    goto final;
   }
-  // done, just assign to path
+  // done, just assign to path, update status, fall through
   *path = temp_file_path;
-  return S_OK;
-// error deleting the temp file created by GetTempFileNameA
-error_del_temp:
-  free(temp_file_path);
-// error reallocating temp file buffer
-error_realloc:
-  free(buf);
-// error getting temp file name
-error_get_temp:
+  status = S_OK;
+// final clean up of temp dir path
+final:
   free(temp_dir_path);
   return status;
 }
