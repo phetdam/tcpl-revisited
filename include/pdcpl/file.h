@@ -56,6 +56,19 @@ pdcpl_win_gettempfilename(char **path);
 PDCPL_PUBLIC
 HRESULT
 pdcpl_win_gettempfh(LPHANDLE file_handle, DWORD access, DWORD sharing);
+
+/**
+ * Get a file descriptor to a new unique temporary file.
+ *
+ * @param fd Address of file descriptor
+ * @param flags Access flags from `fcntl.h`, e.g. `_O_RDONLY`, `_O_RDWR`
+ * @returns `S_OK` on success, `E_INVALIDARG` if `fd` is `NULL`,
+ *  `HRESULT_FROM_WIN32(GetLastError())` if `pdcpl_win_gettempfh` fails, or a
+ *  generic `E_FAIL` if `_open_osfhandle` fails
+ */
+PDCPL_PUBLIC
+HRESULT
+pdcpl_win_gettempfd(int *fd, int flags);
 #endif  // _WIN32
 
 PDCPL_EXTERN_C_END

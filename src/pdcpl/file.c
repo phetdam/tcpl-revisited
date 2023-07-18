@@ -11,6 +11,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 #include <fcntl.h>
+#include <io.h>
 #endif  // _WIN32
 
 #include <stddef.h>
@@ -152,5 +153,39 @@ pdcpl_win_gettempfh(LPHANDLE file_handle, DWORD access, DWORD sharing)
 final:
   free(temp_file_path);
   return status;
+}
+
+/**
+ * Get a file descriptor to a new unique temporary file.
+ *
+ * @param fd Address of file descriptor
+ * @param flags Access flags from `fcntl.h`, e.g. `_O_RDONLY`, `_O_RDWR`
+ * @returns `S_OK` on success, `E_INVALIDARG` if `fd` is `NULL`,
+ *  `HRESULT_FROM_WIN32(GetLastError())` if `pdcpl_win_gettempfh` fails, or a
+ *  generic `E_FAIL` if `_open_osfhandle` fails
+ */
+HRESULT
+pdcpl_win_gettempfd(int *fd, int flags)
+{
+  if (!fd)
+    return E_INVALIDARG;
+  // function return status
+  HRESULT status;
+  // get temp file handle
+  HANDLE hnd;
+  if FAILED(status = pdcpl_win_gettempfh(&hnd, GENERIC_READ | GENERIC_WRITE, 0U))
+    return status;
+  // attempt to open file descriptor
+  int fdesc = _open_osfhandle((intptr_t) hnd, flags);
+  if (fdesc < 0) {
+    // close open handle first
+    if (!CloseHandle(hnd))
+      return HRESULT_FROM_WIN32(GetLastError());
+    // _open_osfhandle doesn't have a very useful error status
+    return E_FAIL;
+  }
+  // otherwise, we succeeded. file descriptor owns the handle now
+  *fd = fdesc;
+  return S_OK;
 }
 #endif  // _WIN32

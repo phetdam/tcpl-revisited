@@ -10,8 +10,10 @@
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
+#include <fcntl.h>
 #endif  // _WIN32
 
+#include <cerrno>
 #include <cstdlib>
 #include <cstring>
 #include <ios>
@@ -77,6 +79,20 @@ TEST_F(FileTest, WinGetTempFileHandle)
 #else
   GTEST_SKIP();
 #endif  // !_WIN32
+}
+
+/**
+ * Test that `pdcpl_win_gettempfd` works as expected.
+ */
+TEST_F(FileTest, WinGetTempFileDesc)
+{
+#ifdef _WIN32
+  int fd;
+  ASSERT_EQ(S_OK, pdcpl_win_gettempfd(&fd, _O_RDWR | _O_TEXT));
+  EXPECT_EQ(0, _close(fd)) << "error closing fd: " << std::strerror(errno);
+#else
+  GTEST_SKIP();
+#endif  // _WIN32
 }
 
 }  // namespace
