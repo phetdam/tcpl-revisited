@@ -14,6 +14,7 @@
 
 #include <cstdlib>
 #include <cstring>
+#include <ios>
 #include <iostream>
 
 #include <gtest/gtest.h>
@@ -57,6 +58,22 @@ TEST_F(FileTest, WinGetTempFileName)
   // file hanging around on the filesystem
   ASSERT_GT(std::strlen(path), 0);
   EXPECT_EQ(INVALID_FILE_ATTRIBUTES, GetFileAttributesA(path));
+#else
+  GTEST_SKIP();
+#endif  // !_WIN32
+}
+
+/**
+ * Test that `pdcpl_win_gettempfg` works as expected.
+ */
+TEST_F(FileTest, WinGetTempFileHandle)
+{
+#ifdef _WIN32
+  HANDLE handle = INVALID_HANDLE_VALUE;
+  ASSERT_EQ(S_OK, pdcpl_win_gettempfh(&handle, GENERIC_READ | GENERIC_WRITE, 0U));
+  EXPECT_NE(INVALID_HANDLE_VALUE, handle);
+  EXPECT_TRUE(CloseHandle(handle)) << "error closing handle: HRESULT " <<
+    std::hex << HRESULT_FROM_WIN32(GetLastError()) << std::dec;
 #else
   GTEST_SKIP();
 #endif  // !_WIN32
