@@ -15,7 +15,10 @@
 #endif  // _WIN32
 
 #include <stddef.h>
+#include <stdio.h>
 #include <stdlib.h>
+
+#include "pdcpl/features.h"
 
 #ifdef _WIN32
 /**
@@ -189,3 +192,24 @@ pdcpl_win_gettempfd(int *fd, int flags)
   return S_OK;
 }
 #endif  // _WIN32
+
+#if defined(_WIN32) || defined(PDCPL_POSIX)
+/**
+ * Open file stream from a descriptor using the specified mode.
+ *
+ * @note Only available on Windows or for POSIX systems.
+ *
+ * @param fd File descriptor
+ * @param mode Open mode, e.g. `"r"`, `"w+"`, etc.
+ * @returns File stream, `NULL` on error. If `NULL`, check `errno` for status.
+ */
+FILE *
+pdcpl_fdopen(int fd, const char *mode)
+{
+#if defined(_WIN32)
+  return _fdopen(fd, mode);
+#elif defined(PDCPL_POSIX)
+  return fdopen(fd, mode);
+#endif  // !defined(_WIN32) && !defined(PDCPL_POSIX)
+}
+#endif  // !defined(_WIN32) && !defined(PDCPL_POSIX)
