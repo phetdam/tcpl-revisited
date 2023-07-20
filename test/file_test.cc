@@ -14,12 +14,20 @@
 #endif  // _WIN32
 
 #include <cerrno>
+#include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <ios>
 #include <iostream>
+#include <string>
 
 #include <gtest/gtest.h>
+
+#include "pdcpl/features.h"
+
+#ifdef PDCPL_POSIX_1_2008
+#include <stdlib.h>  // mkstemp()
+#endif  // PDCPL_POSIX1_2008
 
 namespace {
 
@@ -45,7 +53,7 @@ TEST_F(FileTest, WinGetTempDir)
   std::free(path);
 #else
   GTEST_SKIP();
-#endif  // !_WIN32
+#endif  // !defined(_WIN32)
 }
 
 /**
@@ -62,7 +70,7 @@ TEST_F(FileTest, WinGetTempFileName)
   EXPECT_EQ(INVALID_FILE_ATTRIBUTES, GetFileAttributesA(path));
 #else
   GTEST_SKIP();
-#endif  // !_WIN32
+#endif  // !defined(_WIN32)
 }
 
 /**
@@ -78,7 +86,7 @@ TEST_F(FileTest, WinGetTempFileHandle)
     std::hex << HRESULT_FROM_WIN32(GetLastError()) << std::dec;
 #else
   GTEST_SKIP();
-#endif  // !_WIN32
+#endif  // !defined(_WIN32)
 }
 
 /**
@@ -93,6 +101,26 @@ TEST_F(FileTest, WinGetTempFileDesc)
 #else
   GTEST_SKIP();
 #endif  // _WIN32
+}
+
+/**
+ * Test that `pdcpl_fdopen` works as expected.
+ */
+TEST_F(FileTest, FdOpenTest)
+{
+  // TODO: maybe i should add a Win32 test as well
+#if defined(PDCPL_POSIX_1_2008)
+  // use mkstemp to get a read/write file descriptor
+  std::string temp_name{"pdcpl_fdopen_test_templateXXXXXX"};
+  auto fd = mkstemp(temp_name.data());
+  ASSERT_LT(0, fd) << "mkstemp error: " << std::strerror(errno);
+  // get FILE * from descriptor and close. although b is ignored on POSIX
+  // systems, it is for Windows and C89 compatibility
+  auto f = pdcpl_fdopen(fd, "w+b");
+  EXPECT_NE(EOF, std::fclose(f));
+#else
+  GTEST_SKIP();
+#endif  // !defined(PDCPL_POSIX_1_2008)
 }
 
 }  // namespace
