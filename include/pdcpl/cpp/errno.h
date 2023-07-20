@@ -14,6 +14,11 @@
 
 namespace pdcpl {
 
+/**
+ * Return string message on current thread's `errno` state.
+ *
+ * @param prefix Message prefix
+ */
 inline auto errno_message(const char* prefix = "errno")
 {
   std::stringstream ss;
@@ -22,6 +27,11 @@ inline auto errno_message(const char* prefix = "errno")
   return ss.str();
 }
 
+/**
+ * Return string message on current thread's `errno` state.
+ *
+ * @param prefix Message prefix
+ */
 inline auto errno_message(const std::string& prefix)
 {
   return errno_message(prefix.c_str());
