@@ -49,6 +49,8 @@ pdcpl_win_gettempfilename(char **path);
 /**
  * Get a `HANDLE` to a new unique temporary file.
  *
+ * The file is in-memory if possible and is deleted when on `HANDLE` close.
+ *
  * @param file_handle Address of `HANDLE` to write to
  * @param access Desired file access, e.g. `GENERIC_READ`, `GENERIC_WRITE`
  * @param sharing File sharing mode, e.g. `0U` for exclusive process access,
@@ -62,6 +64,9 @@ pdcpl_win_gettempfh(LPHANDLE file_handle, DWORD access, DWORD sharing);
 
 /**
  * Get a file descriptor to a new unique temporary file.
+ *
+ * The underlying file, which is in-memory if possible, is deleted when the
+ * file descriptor associated with the underlying handle is closed.
  *
  * @param fd Address of file descriptor
  * @param flags Access flags from `fcntl.h`, e.g. `_O_RDONLY`, `_O_RDWR`
@@ -88,6 +93,22 @@ PDCPL_PUBLIC
 FILE *
 pdcpl_fdopen(int fd, const char *mode);
 #endif  // !defined(_WIN32) && !defined(PDCPL_POSIX)
+
+#ifdef _WIN32
+/**
+ * Open a file stream to a temporary file for binary reading + writing.
+ *
+ * The underlying file, which is in-memory if possible, is deleted on close.
+ * This function is intended as a partial substitute for `fmemopen`.
+ *
+ * @param win_err Address to `HRESULT` to store Windows errors, can be `NULL`
+ * @returns File stream, `NULL` on error. If `NULL`, check `errno` for status
+ *  and `*win_err` if `win_err` was specified and not `NULL`.
+ */
+PDCPL_PUBLIC
+FILE *
+pdcpl_win_tempfile(HRESULT *win_err);
+#endif  // _WIN32
 
 PDCPL_EXTERN_C_END
 
