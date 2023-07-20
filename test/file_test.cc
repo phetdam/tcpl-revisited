@@ -7,7 +7,7 @@
 
 #include "pdcpl/file.h"
 
-#ifdef _WIN32
+#if defined(_WIN32)
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 #include <fcntl.h>
@@ -41,7 +41,7 @@ class FileTest : public ::testing::Test {};
  */
 TEST_F(FileTest, WinGetTempDir)
 {
-#ifdef _WIN32
+#if defined(_WIN32)
   char *path;
   ASSERT_EQ(S_OK, pdcpl_win_gettempdir(&path));
   // basic checks. documentation says the returned path will end with backslash
@@ -61,7 +61,7 @@ TEST_F(FileTest, WinGetTempDir)
  */
 TEST_F(FileTest, WinGetTempFileName)
 {
-#ifdef _WIN32
+#if defined(_WIN32)
   char *path;
   ASSERT_EQ(S_OK, pdcpl_win_gettempfilename(&path));
   // basic checks. file name cannot be empty and there should not be any temp
@@ -78,7 +78,7 @@ TEST_F(FileTest, WinGetTempFileName)
  */
 TEST_F(FileTest, WinGetTempFileHandle)
 {
-#ifdef _WIN32
+#if defined(_WIN32)
   HANDLE handle = INVALID_HANDLE_VALUE;
   ASSERT_EQ(S_OK, pdcpl_win_gettempfh(&handle, GENERIC_READ | GENERIC_WRITE, 0U));
   EXPECT_NE(INVALID_HANDLE_VALUE, handle);
@@ -94,7 +94,7 @@ TEST_F(FileTest, WinGetTempFileHandle)
  */
 TEST_F(FileTest, WinGetTempFileDesc)
 {
-#ifdef _WIN32
+#if defined(_WIN32)
   int fd;
   ASSERT_EQ(S_OK, pdcpl_win_gettempfd(&fd, _O_RDWR | _O_TEXT));
   EXPECT_EQ(0, _close(fd)) << "error closing fd: " << std::strerror(errno);
