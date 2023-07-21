@@ -114,16 +114,43 @@ TEST_F(FileTest, WinGetTempFileDesc)
  */
 TEST_F(FileTest, FdOpenTest)
 {
-  // TODO: maybe i should add a Win32 test as well
-#if defined(PDCPL_POSIX_1_2008)
-  // use mkstemp to get a read/write file descriptor
+#if defined(_WIN32)
+  // create managed handle
+  pdcpl::unique_handle handle = CreateFileA(
+    "pdcpl_fdopen_test_template_win32",
+    GENERIC_READ | GENERIC_WRITE,
+    0U,
+    NULL,
+    CREATE_ALWAYS,
+    FILE_ATTRIBUTE_TEMPORARY | FILE_FLAG_DELETE_ON_CLOSE,
+    NULL
+  );
+  ASSERT_NE(INVALID_HANDLE_VALUE, handle.get()) <<
+    "CreateFileA error: HRESULT " << std::hex <<
+    HRESULT_FROM_WIN32(GetLastError()) << std::dec;
+  // create managed file descriptor
+  pdcpl::unique_fd fd = _open_osfhandle((intptr_t) handle.get(), _O_RDWR);
+  ASSERT_NE(-1, fd.get()) << "_open_osfhandle error";
+  // release handle as fd owns it now
+  handle.release();
+  // get FILE * from descriptor and close. binary mode for no translation
+  auto f = pdcpl_fdopen(fd.get(), "w+b");
+  ASSERT_TRUE(f) << pdcpl::errno_message();
+  // release fd as f owns it now and then close the file
+  fd.release();
+  EXPECT_NE(EOF, std::fclose(f)) << pdcpl::errno_message();
+#elif defined(PDCPL_POSIX_1_2008)
+  // use mkstemp to get a managed read/write file descriptor
   std::string temp_name{"pdcpl_fdopen_test_templateXXXXXX"};
-  auto fd = mkstemp(temp_name.data());
-  ASSERT_NE(-1, fd) << pdcpl::errno_message("mkstemp error");
+  pdcpl::unique_fd fd = mkstemp(temp_name.data());
+  ASSERT_NE(-1, fd.get()) << pdcpl::errno_message("mkstemp error");
   // get FILE * from descriptor and close. although b is ignored on POSIX
   // systems, it is for Windows and C89 compatibility
-  auto f = pdcpl_fdopen(fd, "w+b");
-  ASSERT_NE(EOF, std::fclose(f)) << pdcpl::errno_message();
+  auto f = pdcpl_fdopen(fd.get(), "w+b");
+  ASSERT_TRUE(f) << pdcpl::errno_message();
+  // release fd as f owns it now and then close the file
+  fd.release();
+  EXPECT_NE(EOF, std::fclose(f)) << pdcpl::errno_message();
   // don't forget to unlink the file, otherwise it will hang around
   EXPECT_EQ(0, std::remove(temp_name.c_str())) << pdcpl::errno_message();
 #else

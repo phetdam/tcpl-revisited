@@ -8,6 +8,13 @@
 #ifndef PDCPL_FEATURE_H_
 #define PDCPL_FEATURE_H_
 
+// test for POSIX unistd.h
+#if defined(__has_include)
+#if __has_include(<unistd.h>)
+#define PDCPL_HAS_UNISTD
+#endif  // !__has_include(<unistd.h>)
+#endif
+
 // test for POSIX features
 #ifdef _POSIX_C_SOURCE
 // we have some subset of POSIX features
