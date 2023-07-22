@@ -7,7 +7,7 @@
 
 #include "pdcpl/file.h"
 
-#if defined(_WIN32)
+#ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 #include <fcntl.h>
@@ -28,6 +28,10 @@
 #include "pdcpl/warnings.h"
 #include "pdcpl/cpp/errno.h"
 #include "pdcpl/cpp/memory.h"
+
+#ifdef _WIN32
+#include "pdcpl/cpp/hresult.h"
+#endif  // _WIN32
 
 #ifdef PDCPL_POSIX_1_2008
 #include <stdlib.h>  // mkstemp()
@@ -88,8 +92,7 @@ TEST_F(FileTest, WinGetTempFileHandle)
   HANDLE handle = INVALID_HANDLE_VALUE;
   ASSERT_EQ(S_OK, pdcpl_win_gettempfh(&handle, GENERIC_READ | GENERIC_WRITE, 0U));
   EXPECT_NE(INVALID_HANDLE_VALUE, handle);
-  EXPECT_TRUE(CloseHandle(handle)) << "error closing handle: HRESULT " <<
-    std::hex << HRESULT_FROM_WIN32(GetLastError()) << std::dec;
+  EXPECT_TRUE(CloseHandle(handle)) << pdcpl::hresult_message();
 #else
   GTEST_SKIP();
 #endif  // !defined(_WIN32)
@@ -126,8 +129,7 @@ TEST_F(FileTest, FdOpenTest)
     NULL
   );
   ASSERT_NE(INVALID_HANDLE_VALUE, handle.get()) <<
-    "CreateFileA error: HRESULT " << std::hex <<
-    HRESULT_FROM_WIN32(GetLastError()) << std::dec;
+    pdcpl::hresult_message("CreateFileA error");
   // create managed file descriptor
   pdcpl::unique_fd fd = _open_osfhandle((intptr_t) handle.get(), _O_RDWR);
   ASSERT_NE(-1, fd.get()) << "_open_osfhandle error";
@@ -175,7 +177,7 @@ PDCPL_MSVC_WARNING_DISABLE(4165)
     if (status) {
 PDCPL_MSVC_WARNING_ENABLE()
       std::stringstream ss;
-      ss << ", HRESULT: " << std::hex << status << std::dec;
+      ss << ", HRESULT: " << std::hex << status;
       return ss.str();
     }
     return std::string{};
