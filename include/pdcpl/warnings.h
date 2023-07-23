@@ -15,11 +15,11 @@
 /**
  * Push warning state and disable specified warnings.
  *
- * @param ... List of warnings, e.g. 5045, 5105
+ * @param wnos MSVC warning number(s), e.g. 5045, 5105
  */
-#define PDCPL_MSVC_WARNING_DISABLE(...) \
+#define PDCPL_MSVC_WARNING_DISABLE(wnos) \
   __pragma(warning (push)) \
-  __pragma(warning(disable: __VA_ARGS__))
+  __pragma(warning(disable: wnos))
 
 /**
  * Pop warning state.
@@ -29,9 +29,9 @@
 /**
  * Push warning state and disable specified warnings.
  *
- * @param ... List of warnings, e.g. 5045, 5105
+ * @param wnos MSVC warning number(s), e.g. 5045, 5105
  */
-#define PDCPL_MSVC_WARNING_DISABLE(...)
+#define PDCPL_MSVC_WARNING_DISABLE(wnos)
 
 /**
  * Pop warning state.
