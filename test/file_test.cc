@@ -188,7 +188,7 @@ PDCPL_MSVC_WARNING_ENABLE()
   // write string to file
   const std::string text{"hello here is some text"};
   ASSERT_NE(EOF, std::fputs(text.c_str(), f.get())) << pdcpl::errno_message();
-  // get file size (seeking from the end), should equal string size
+  // get file size (seeking from the end), should equal string size, and rewind
   auto file_size = std::ftell(f.get());
   ASSERT_NE(-1, file_size) << pdcpl::errno_message();
   ASSERT_EQ(text.size(), file_size);
