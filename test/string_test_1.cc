@@ -119,8 +119,7 @@ TEST_F(StringTest, FileWordCountTest)
   pdcpl_wcresults res;
   // get managed FILE* from the string's char buffer (no null terminator)
 #if defined(_WIN32)
-  HRESULT status;
-  pdcpl::unique_file file{pdcpl_win_tempfile(&status)};
+  pdcpl::unique_file file{pdcpl_win_tempfile(NULL)};
   ASSERT_TRUE(file) << pdcpl::errno_message() << ", " << pdcpl::hresult_message();
   // since Win32 has no fmemopen equivalent, we manually write to this file.
   // note that the Win32 version of fputs is not documented to set errno
@@ -141,7 +140,7 @@ TEST_F(StringTest, FileWordCountTest)
 #endif  // !defined(_WIN32) && !defined(PDCPL_POSIX_1_2008)
 }
 
-#ifdef PDCPL_POSIX_1_2008
+#if defined(_WIN32) || defined(PDCPL_POSIX_1_2008)
 /**
  * Split a string by delimiters into a substring vector.
  *
@@ -164,7 +163,7 @@ auto string_split(const std::string& str, const char* delims)
   }
   return substrs;
 }
-#endif  // PDCPL_POSIX_1_2008
+#endif  // !defined(_WIN32) && !defined(PDCPL_POSIX_1_2008)
 
 /**
  * Test that `pdcpl_getword` works as expected.
@@ -173,10 +172,20 @@ auto string_split(const std::string& str, const char* delims)
  */
 TEST_F(StringTest, FileGetWordTest)
 {
-#ifdef PDCPL_POSIX_1_2008
+#if defined(_WIN32) || defined(PDCPL_POSIX_1_2008)
   // get managed FILE* from the string's char buffer (no null terminator)
+#if defined(_WIN32)
+  pdcpl::unique_file file{pdcpl_win_tempfile(NULL)};
+  ASSERT_TRUE(file) << pdcpl::errno_message() << ", " << pdcpl::hresult_message();
+  // since Win32 has no fmemopen equivalent, we manually write to this file.
+  // note that the Win32 version of fputs is not documented to set errno
+  ASSERT_NE(EOF, std::fputs(wc_string_.c_str(), file.get()));
+  // rewind so we can read from the beginning of the file
+  std::rewind(file.get());
+#else
   pdcpl::unique_file file{fmemopen((void*) wc_string_.c_str(), wc_chars_, "r")};
   ASSERT_TRUE(file) << pdcpl::errno_message();
+#endif  // !defined(_WIN32)
   // expected vector of words to get
   const auto exp_words = string_split(wc_string_, " \n");
   // word buffer, word length, vector of words, status
@@ -195,7 +204,7 @@ TEST_F(StringTest, FileGetWordTest)
   EXPECT_EQ(exp_words, act_words);
 #else
   GTEST_SKIP();
-#endif  // !PDCPL_POSIX_1_2008
+#endif  // !defined(_WIN32) && !defined(PDCPL_POSIX_1_2008)
 }
 
 /**
