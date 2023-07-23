@@ -9,6 +9,7 @@
 #define PDCPL_CPP_ERRNO_H_
 
 #include <cerrno>
+#include <cstring>
 #include <sstream>
 #include <string>
 

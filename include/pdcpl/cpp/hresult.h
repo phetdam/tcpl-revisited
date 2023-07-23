@@ -26,7 +26,7 @@ namespace pdcpl {
  *
  * @param prefix Message prefix
  */
-inline auto hresult_message(const char* prefix = "error")
+inline auto hresult_message(const char* prefix = "Win32 error")
 {
   std::stringstream ss;
   ss << prefix << ": HRESULT " << std::hex << HRESULT_FROM_WIN32(GetLastError());
