@@ -7,6 +7,11 @@
 
 #include "pdcpl/string.h"
 
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+#endif  // _WIN32
+
 #include <algorithm>
 #include <cctype>
 #include <climits>
@@ -19,17 +24,24 @@
 #include <gtest/gtest.h>
 
 #include "pdcpl/features.h"
+#include "pdcpl/file.h"
+#include "pdcpl/cpp/errno.h"
 #include "pdcpl/cpp/common.h"
 #include "pdcpl/cpp/memory.h"
 
 // tests reading from an in-memory buffer as a FILE* need fmemopen
 #ifdef PDCPL_POSIX_1_2008
-#include <errno.h>
 #include <stdio.h>  // fmemopen
 
 #include <cstring>  // std::strtok
 #include <memory>
 #endif  // PDCPL_POSIX_1_2008
+
+#ifdef _WIN32
+#include <cstdio>  // std::fputs
+
+#include "pdcpl/cpp/hresult.h"
+#endif  // _WIN32
 
 namespace {
 
@@ -103,11 +115,22 @@ TEST_F(StringTest, StringWordCountTest)
  */
 TEST_F(StringTest, FileWordCountTest)
 {
-#ifdef PDCPL_POSIX_1_2008
+#if defined(_WIN32) || defined(PDCPL_POSIX_1_2008)
   pdcpl_wcresults res;
   // get managed FILE* from the string's char buffer (no null terminator)
+#if defined(_WIN32)
+  HRESULT status;
+  pdcpl::unique_file file{pdcpl_win_tempfile(&status)};
+  ASSERT_TRUE(file) << pdcpl::errno_message() << ", " << pdcpl::hresult_message();
+  // since Win32 has no fmemopen equivalent, we manually write to this file.
+  // note that the Win32 version of fputs is not documented to set errno
+  ASSERT_NE(EOF, std::fputs(wc_string_.c_str(), file.get()));
+  // rewind so we can read from the beginning of the file
+  std::rewind(file.get());
+#else
   pdcpl::unique_file file{fmemopen((void*) wc_string_.c_str(), wc_chars_, "r")};
-  ASSERT_TRUE(file) << "fmemopen error: " << strerror(errno);
+  ASSERT_TRUE(file) << pdcpl::errno_message();
+#endif  // !defined(_WIN32)
   // check that results are as expected
   ASSERT_FALSE(pdcpl_fwc(file.get(), &res));
   EXPECT_EQ(res.nc, wc_chars_);
@@ -115,7 +138,7 @@ TEST_F(StringTest, FileWordCountTest)
   EXPECT_EQ(res.nw, wc_words_);
 #else
   GTEST_SKIP();
-#endif  // !PDCPL_POSIX_1_2008
+#endif  // !defined(_WIN32) && !defined(PDCPL_POSIX_1_2008)
 }
 
 #ifdef PDCPL_POSIX_1_2008
@@ -153,7 +176,7 @@ TEST_F(StringTest, FileGetWordTest)
 #ifdef PDCPL_POSIX_1_2008
   // get managed FILE* from the string's char buffer (no null terminator)
   pdcpl::unique_file file{fmemopen((void*) wc_string_.c_str(), wc_chars_, "r")};
-  ASSERT_TRUE(file) << "fmemopen error: " << strerror(errno);
+  ASSERT_TRUE(file) << pdcpl::errno_message();
   // expected vector of words to get
   const auto exp_words = string_split(wc_string_, " \n");
   // word buffer, word length, vector of words, status

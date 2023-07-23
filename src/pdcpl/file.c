@@ -237,7 +237,7 @@ pdcpl_win_tempfile(HRESULT *win_err)
   HRESULT status;
   // attempt to get file descriptor
   int fd;
-  if FAILED(status = pdcpl_win_gettempfd(&fd, _O_RDWR)) {
+  if FAILED(status = pdcpl_win_gettempfd(&fd, _O_RDWR | _O_BINARY)) {
     if (win_err)
       *win_err = status;
     errno = EBADF;
