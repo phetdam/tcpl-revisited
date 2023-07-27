@@ -76,72 +76,6 @@ INSTANTIATE_TEST_SUITE_P(
 );
 
 /**
- * Test fixture class for string tests.
- */
-class StringTest : public ::testing::Test {
-protected:
-  // string to count words, chars, lines for
-  static inline PDCPL_CONSTEXPR_20 std::string wc_string_{
-    "A really long\n"
-    "sequence of words over many\n"
-    "long lines\n"
-    "\n"
-    "Also a bad\n"
-    "haiku"
-  };
-  // number of words, chars, lines
-  static inline constexpr std::size_t wc_words_ = 14;
-  static inline PDCPL_CONSTEXPR_20 std::size_t wc_chars_ = wc_string_.size();
-  static inline constexpr std::size_t wc_lines_ = 6;
-};
-
-/**
- * Test that `pdcpl_strwc` works as expected.
- */
-TEST_F(StringTest, StringWordCountTest)
-{
-  pdcpl_wcresults res;
-  // if something goes wrong, the test will abort
-  ASSERT_FALSE(pdcpl_strwc(wc_string_.c_str(), &res));
-  EXPECT_EQ(res.nc, wc_chars_);
-  EXPECT_EQ(res.nl, wc_lines_);
-  EXPECT_EQ(res.nw, wc_words_);
-}
-
-/**
- * Test that `pdcpl_fwc` works as expected.
- *
- * @note Requires POSIX.1-2008 `fmemopen` to be available.
- */
-TEST_F(StringTest, FileWordCountTest)
-{
-#if defined(_WIN32) || defined(PDCPL_POSIX_1_2008)
-  pdcpl_wcresults res;
-  // get managed FILE* from the string's char buffer (no null terminator)
-#if defined(_WIN32)
-  pdcpl::unique_file file{pdcpl_win_tempfile(NULL)};
-  ASSERT_TRUE(file) << pdcpl::errno_message() << ", " << pdcpl::hresult_message();
-  // since Win32 has no fmemopen equivalent, we manually write to this file.
-  // note that the Win32 version of fputs is not documented to set errno
-  ASSERT_NE(EOF, std::fputs(wc_string_.c_str(), file.get()));
-  // rewind so we can read from the beginning of the file
-  std::rewind(file.get());
-#else
-  pdcpl::unique_file file{fmemopen((void*) wc_string_.c_str(), wc_chars_, "r")};
-  ASSERT_TRUE(file) << pdcpl::errno_message();
-#endif  // !defined(_WIN32)
-  // check that results are as expected
-  ASSERT_FALSE(pdcpl_fwc(file.get(), &res));
-  EXPECT_EQ(res.nc, wc_chars_);
-  EXPECT_EQ(res.nl, wc_lines_);
-  EXPECT_EQ(res.nw, wc_words_);
-#else
-  GTEST_SKIP();
-#endif  // !defined(_WIN32) && !defined(PDCPL_POSIX_1_2008)
-}
-
-#if defined(_WIN32) || defined(PDCPL_POSIX_1_2008)
-/**
  * Split a string by delimiters into a substring vector.
  *
  * @param str String to split by delimiters
@@ -163,31 +97,124 @@ auto string_split(const std::string& str, const char* delims)
   }
   return substrs;
 }
-#endif  // !defined(_WIN32) && !defined(PDCPL_POSIX_1_2008)
 
 /**
- * Test that `pdcpl_getword` works as expected.
+ * Test fixture for parametrized testing of word getting or counting.
+ *
+ * Currently has tests for `pdcpl_strwc`, `pdcpl_fwc`, `pdcpl_getword`.
+ */
+class WordTest : public ::testing::TestWithParam<
+  std::tuple<std::string, std::vector<std::string>, std::size_t>> {
+public:
+  /**
+   * Create an input for `WordTest` parametrized tests.
+   *
+   * Number of words is determined by counting number of elements retrieved by
+   * using `string_split`, tokenizing by spaces or newlines.
+   *
+   * @param s Input string
+   * @returns Tuple of `s`, vector of words in `s`, number of lines in `s`
+   */
+  static ParamType CreateInput(const std::string& s)
+  {
+    return {
+      s,
+      string_split(s, " \n"),
+      // need cast since std::count returns [signed] iterator difference_type
+      static_cast<decltype(s.size())>(1 + std::count(s.cbegin(), s.end(), '\n'))
+    };
+  }
+};
+
+/**
+ * Test that `pdcpl_strwc` works as expected.
+ */
+TEST_P(WordTest, StringWordCountTest)
+{
+  // input string, word vector, line count
+  const auto& [input, words, n_lines] = GetParam();
+  // if something goes wrong, the test will abort
+  pdcpl_wcresults res;
+  ASSERT_FALSE(pdcpl_strwc(input.c_str(), &res));
+  EXPECT_EQ(res.nc, input.size());
+  EXPECT_EQ(res.nl, n_lines);
+  EXPECT_EQ(res.nw, words.size());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+  StringTest,
+  WordTest,
+  ::testing::Values(
+    WordTest::CreateInput(
+      "A really long\n"
+      "sequence of words over many\n"
+      "long lines\n"
+      "\n"
+      "Also a bad\n"
+      "haiku"
+    )
+  )
+);
+
+/**
+ * Test that `pdcpl_fwc` works as expected.
  *
  * @note Requires POSIX.1-2008 `fmemopen` to be available.
  */
-TEST_F(StringTest, FileGetWordTest)
+TEST_P(WordTest, FileWordCountTest)
 {
 #if defined(_WIN32) || defined(PDCPL_POSIX_1_2008)
+  // input string, word vector, line count
+  const auto& [input, words, n_lines] = GetParam();
+  pdcpl_wcresults res;
   // get managed FILE* from the string's char buffer (no null terminator)
 #if defined(_WIN32)
   pdcpl::unique_file file{pdcpl_win_tempfile(NULL)};
   ASSERT_TRUE(file) << pdcpl::errno_message() << ", " << pdcpl::hresult_message();
   // since Win32 has no fmemopen equivalent, we manually write to this file.
   // note that the Win32 version of fputs is not documented to set errno
-  ASSERT_NE(EOF, std::fputs(wc_string_.c_str(), file.get()));
+  ASSERT_NE(EOF, std::fputs(input.c_str(), file.get()));
   // rewind so we can read from the beginning of the file
   std::rewind(file.get());
 #else
-  pdcpl::unique_file file{fmemopen((void*) wc_string_.c_str(), wc_chars_, "r")};
+  pdcpl::unique_file file{fmemopen((void*) input.c_str(), input.size(), "r")};
   ASSERT_TRUE(file) << pdcpl::errno_message();
 #endif  // !defined(_WIN32)
-  // expected vector of words to get
-  const auto exp_words = string_split(wc_string_, " \n");
+  // check that results are as expected
+  ASSERT_FALSE(pdcpl_fwc(file.get(), &res));
+  EXPECT_EQ(res.nc, input.size());
+  EXPECT_EQ(res.nl, n_lines);
+  EXPECT_EQ(res.nw, words.size());
+#else
+  GTEST_SKIP();
+#endif  // !defined(_WIN32) && !defined(PDCPL_POSIX_1_2008)
+}
+
+/**
+ * Test that `pdcpl_getword` works as expected.
+ *
+ * @note Requires POSIX.1-2008 `fmemopen` to be available.
+ */
+TEST_P(WordTest, FileGetWordTest)
+{
+#if defined(_WIN32) || defined(PDCPL_POSIX_1_2008)
+  // input string, word vector
+  // const auto& [input, n_words, n_chars, n_lines] = GetParam();
+  const auto& input = std::get<0>(GetParam());
+  const auto& words = std::get<1>(GetParam());
+  // get managed FILE* from the string's char buffer (no null terminator)
+#if defined(_WIN32)
+  pdcpl::unique_file file{pdcpl_win_tempfile(NULL)};
+  ASSERT_TRUE(file) << pdcpl::errno_message() << ", " << pdcpl::hresult_message();
+  // since Win32 has no fmemopen equivalent, we manually write to this file.
+  // note that the Win32 version of fputs is not documented to set errno
+  ASSERT_NE(EOF, std::fputs(input.c_str(), file.get()));
+  // rewind so we can read from the beginning of the file
+  std::rewind(file.get());
+#else
+  pdcpl::unique_file file{fmemopen((void*) input.c_str(), input.size(), "r")};
+  ASSERT_TRUE(file) << pdcpl::errno_message();
+#endif  // !defined(_WIN32)
   // word buffer, word length, vector of words, status
   char* word;
   std::size_t word_len;
@@ -201,7 +228,7 @@ TEST_F(StringTest, FileGetWordTest)
     std::free(word);
   }
   // compare values
-  EXPECT_EQ(exp_words, act_words);
+  EXPECT_EQ(words, act_words);
 #else
   GTEST_SKIP();
 #endif  // !defined(_WIN32) && !defined(PDCPL_POSIX_1_2008)
