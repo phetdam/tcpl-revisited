@@ -152,6 +152,18 @@ INSTANTIATE_TEST_SUITE_P(
       "\n"
       "Also a bad\n"
       "haiku"
+    ),
+    WordTest::CreateInput(
+      "Many days and many nights\n"
+      "We journeyed past the deserts of the wasteland\n"
+      "\n"
+      "\n"
+      "Dealing with     really    bad      spacing          choices\n"
+      "\n"
+      "\n"
+      "\n"
+      "But somehow\n"
+      "managing to finish this poem"
     )
   )
 );
