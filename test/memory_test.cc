@@ -10,6 +10,7 @@
 #include <cstddef>
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 
 #include <gtest/gtest.h>
 
@@ -89,6 +90,25 @@ TEST_F(MemoryTest, BufferClearTest)
   ASSERT_FALSE(pdcpl_buffer_clear(&buffer)) << "buffer clear failed";
   PDCPL_EXPECT_NO_BUFFER_DATA(buffer);
   EXPECT_EQ(0, buffer.size);
+}
+
+/**
+ * Test that `pdcpl_buffer_copy` works as expected.
+ */
+TEST_F(MemoryTest, BufferCopyTest)
+{
+  // source buffer does not own the data here
+  static const char data[] = "hello";
+  auto src = pdcpl_buffer_new(0);
+  src.data = (void *) data;
+  src.size = std::strlen(data) + 1;
+  // copy contents to dst buffer
+  auto dst = pdcpl_buffer_new(0);
+  ASSERT_FALSE(pdcpl_buffer_copy(&src, &dst));
+  // buffer contents should be equal and are comparable as strings
+  EXPECT_STREQ((const char*) src.data, (const char*) dst.data);
+  // clean up dst
+  ASSERT_FALSE(pdcpl_buffer_clear(&dst));
 }
 
 /**

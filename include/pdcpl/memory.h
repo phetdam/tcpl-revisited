@@ -13,6 +13,7 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "pdcpl/common.h"
 #include "pdcpl/dllexport.h"
@@ -167,6 +168,36 @@ pdcpl_buffer_clear(pdcpl_buffer *buf)
   free(buf->data);
   buf->data = NULL;
   buf->size = 0;
+  return 0;
+}
+
+/**
+ * Copy the contents of `src` to an uninitialized buffer `dst`.
+ *
+ * The contents of `src->data` are copied to a new buffer at `dst->data` and
+ * `dst->size` takes the value of `src->size` on success. `dst` should not
+ * manage any buffer at all--if `dst->data` points to an existing buffer, it is
+ * not freed, which would constitute a memory leak.
+ *
+ * @param src Address to source buffer
+ * @param dst Address to uninitialized destination buffer
+ * @returns 0 on success, -EINVAL if `src` or `dst` are `NULL` or if `src` is
+ *  not a valid source buffer
+ */
+PDCPL_INLINE int
+pdcpl_buffer_copy(const pdcpl_buffer *src, pdcpl_buffer *dst)
+{
+  // don't allow copying from an uninitialized buffer
+  if (!src || !dst || (src && !pdcpl_buffer_ready(src)))
+    return -EINVAL;
+  // try to allocate new memory for dst
+  void *data = malloc(src->size);
+  if (!data)
+    return -ENOMEM;
+  // if successful, copy buffer contents, buffer pointer and size + exit
+  memcpy(data, src->data, src->size);
+  dst->data = data;
+  dst->size = src->size;
   return 0;
 }
 
