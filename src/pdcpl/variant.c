@@ -92,7 +92,7 @@ PDCPL_VARIANT_INIT_DECL(string_ref, char *)
 /**
  * Initialize a `pdcpl_variant` with an arbitrary data buffer.
  *
- * String contents are copied to a new memory buffer and owned.
+ * Buffer contents are copied to a new memory buffer and owned.
  *
  * @param vt Variant to initialize
  * @param val Buffer to initialize with
@@ -100,18 +100,18 @@ PDCPL_VARIANT_INIT_DECL(string_ref, char *)
  * @returns 0 on success, -EINVAL if `vt` or `buf` are `NULL` or if `size` is
  *  zero, -ENOMEM if `malloc` fails when allocating buffer
  */
-PDCPL_VARIANT_INIT_DECL_EX(void, void *, size_t size)
+PDCPL_VARIANT_INIT_DECL_EX(void, const void *, size_t size)
 {
   if (!vt || !val || !size)
     return -EINVAL;
   vt->flags = pdcpl_variant_void | pdcpl_variant_mem_own;
   // -ENOMEM if malloc fails
-  vt->data.v_b = malloc(size);
-  if (!vt->data.v_b)
+  vt->data.v.b = malloc(size);
+  if (!vt->data.v.b)
     return -ENOMEM;
   // otherwise copy the buffer and size
-  memcpy(vt->data.v_b, val, size);
-  vt->data.v_z = size;
+  memcpy(vt->data.v.b, val, size);
+  vt->data.v.z = size;
   return 0;
 }
 
@@ -130,8 +130,8 @@ PDCPL_VARIANT_INIT_DECL_EX(void_ref, void *, size_t size)
   if (!vt || !val || !size)
     return -EINVAL;
   vt->flags = pdcpl_variant_void | pdcpl_variant_mem_borrow;
-  vt->data.v_b = val;
-  vt->data.v_z = size;
+  vt->data.v.b = val;
+  vt->data.v.z = size;
   return 0;
 }
 
@@ -156,7 +156,7 @@ pdcpl_variant_free(pdcpl_variant *vt)
     }
     // free void * buffer
     else if (vt->flags & pdcpl_variant_void) {
-      free(vt->data.v_b);
+      free(vt->data.v.b);
       goto success;
     }
     // error, so return -EINVAL

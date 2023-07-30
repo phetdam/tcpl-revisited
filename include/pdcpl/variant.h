@@ -57,10 +57,10 @@ typedef struct {
     float f;
     char *s;
     // for void * buffers, need to know the buffer size too
-    struct {
-      void *v_b;
-      size_t v_z;
-    };
+    struct buffer {
+      void *b;
+      size_t z;
+    } v;
   } data;
 } pdcpl_variant;
 
@@ -182,7 +182,7 @@ PDCPL_VARIANT_INIT_DECL(string_ref, char *);
 /**
  * Initialize a `pdcpl_variant` with an arbitrary data buffer.
  *
- * String contents are copied to a new memory buffer and owned.
+ * Buffer contents are copied to a new memory buffer and owned.
  *
  * @param vt Variant to initialize
  * @param val Buffer to initialize with
@@ -191,7 +191,7 @@ PDCPL_VARIANT_INIT_DECL(string_ref, char *);
  *  zero, -ENOMEM if `malloc` fails when allocating buffer
  */
 PDCPL_PUBLIC
-PDCPL_VARIANT_INIT_DECL_EX(void, void *, size_t size);
+PDCPL_VARIANT_INIT_DECL_EX(void, const void *, size_t size);
 
 /**
  * Initialize a `pdcpl_variant` with an arbitrary data buffer.
