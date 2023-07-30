@@ -34,8 +34,8 @@ enum {
   pdcpl_variant_string,    // char *
   pdcpl_variant_void,      // void *
   // memory ownership flags
-  pdcpl_variant_mem_own = 0x10000,    // memory owned
-  pdcpl_variant_mem_borrow            // memory borrowed
+  pdcpl_variant_mem_own = 0x10000,      // memory owned
+  pdcpl_variant_mem_borrow = 0x20000    // memory borrowed
 };
 
 /**
