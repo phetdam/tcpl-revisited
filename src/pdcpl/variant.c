@@ -139,7 +139,8 @@ PDCPL_VARIANT_INIT_DECL_EX(void_ref, void *, size_t size)
  * Free a `pdcpl_variant`.
  *
  * @param vt Variant to free
- * @returns 0 on success
+ * @returns 0 on success, -EINVAL if `vt` is `NULL` or if flags indicate memory
+ *  ownership but no type flag has been set to indicate how to free
  */
 int
 pdcpl_variant_free(pdcpl_variant *vt)
