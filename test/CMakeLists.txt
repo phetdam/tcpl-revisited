@@ -8,6 +8,7 @@ add_executable(
     misc_test.cc
     string_test_1.cc
     string_test_2.cc
+    variant_test.cc
 )
 target_link_libraries(pdcpl_test PRIVATE GTest::gtest_main pdcpl)
 # on Windows, there are additional link dependencies. also, we need to copy the

@@ -25,14 +25,14 @@ PDCPL_EXTERN_C_BEGIN
  */
 enum {
   // available types
-  pdcpl_variant_char,      // char
-  pdcpl_variant_int,       // int
-  pdcpl_variant_uint,      // unsigned int
-  pdcpl_variant_size,      // size_t
-  pdcpl_variant_double,    // double
-  pdcpl_variant_float,     // float
-  pdcpl_variant_string,    // char *
-  pdcpl_variant_void,      // void *
+  pdcpl_variant_char = 0x1,       // char
+  pdcpl_variant_int = 0x2,        // int
+  pdcpl_variant_uint = 0x4,       // unsigned int
+  pdcpl_variant_size = 0x8,       // size_t
+  pdcpl_variant_double = 0x10,    // double
+  pdcpl_variant_float = 0x20,     // float
+  pdcpl_variant_string = 0x40,    // char *
+  pdcpl_variant_void = 0x80,      // void *
   // memory ownership flags
   pdcpl_variant_mem_own = 0x10000,      // memory owned
   pdcpl_variant_mem_borrow = 0x20000    // memory borrowed
