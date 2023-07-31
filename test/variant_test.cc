@@ -11,6 +11,7 @@
 
 #include <cerrno>
 #include <cstdint>
+#include <cstring>
 #include <string>
 
 namespace {
@@ -110,11 +111,41 @@ TEST_F(VariantTest, StringTest)
 TEST_F(VariantTest, StringRefTest)
 {
   // PDCPL_VARIANT_INIT(string_ref) value type is char*, not const char*, so we
-  // create a static char array with the contains of the string literal
+  // create a static char array from the contents of the string literal
   static char value[] = "hello";
   pdcpl_variant vt;
   ASSERT_FALSE(PDCPL_VARIANT_INIT(string_ref)(&vt, value));
   EXPECT_STREQ(value, vt.data.s);
+  ASSERT_FALSE(pdcpl_variant_free(&vt));
+}
+
+/**
+ * Test that variant works with owned void buffer.
+ */
+TEST_F(VariantTest, VoidTest)
+{
+  constexpr const char* value = "buffer text";
+  const auto bufsiz = std::strlen(value) + 1;
+  pdcpl_variant vt;
+  ASSERT_FALSE(PDCPL_VARIANT_INIT(void)(&vt, value, bufsiz));
+  EXPECT_STREQ(value, static_cast<const char*>(vt.data.v.b));
+  EXPECT_EQ(bufsiz, vt.data.v.z);
+  ASSERT_FALSE(pdcpl_variant_free(&vt));
+}
+
+/**
+ * Test that variant works with unowned void buffer.
+ */
+TEST_F(VariantTest, VoidRefTest)
+{
+  // PDCPL_VARIANT_INIT(void_ref) value type is void*, not const void*, so we
+  // again create a static char array from the contents of the string literal
+  static char value[] = "unowned buffer text";
+  const auto bufsiz = std::strlen(value) + 1;
+  pdcpl_variant vt;
+  ASSERT_FALSE(PDCPL_VARIANT_INIT(void_ref)(&vt, value, bufsiz));
+  EXPECT_STREQ(value, (const char*) vt.data.v.b);
+  EXPECT_EQ(bufsiz, vt.data.v.z);
   ASSERT_FALSE(pdcpl_variant_free(&vt));
 }
 
