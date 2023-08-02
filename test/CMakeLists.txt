@@ -4,6 +4,7 @@ add_executable(
     pdcpl_test
     bitwise_test.cc
     file_test.cc
+    math_test.cc
     memory_test.cc
     misc_test.cc
     string_test_1.cc
