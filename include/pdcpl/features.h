@@ -50,4 +50,24 @@
 #define PDCPL_GNU
 #endif  // _GNU_SOURCE
 
+// test for C standard features
+#ifdef __STDC_VERSION__
+// C89
+#if __STDC_VERSION__ >= 199409L
+#define PDCPL_HAS_C89
+#endif  // __STDC_VERSION__ < 199409L
+// C99
+#if __STDC_VERSION__ >= 199901L
+#define PDCPL_HAS_C99
+#endif  // __STDC_VERSION__ < 199001L
+// C11
+#if __STDC_VERSION__ >= 201112L
+#define PDCPL_HAS_C11
+#endif  // __STDC_VERSION__ < 201112L
+// C17
+#if __STDC_VERSION__ >= 201710L
+#define PDCPL_HAS_C17
+#endif  // __STDC_VERSION__ < 201710L
+#endif  // __STDC_VERSION__
+
 #endif  // PDCPL_FEATURE_H_
