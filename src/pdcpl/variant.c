@@ -14,6 +14,7 @@
 #include <string.h>
 
 #include "pdcpl/common.h"
+#include "pdcpl/math.h"
 
 /**
  * Macro templating the body of `pdcpl_variant` scalar init functions.
@@ -132,6 +133,76 @@ PDCPL_VARIANT_INIT_DECL_EX(void_ref, void *, size_t size)
   vt->flags = pdcpl_variant_void | pdcpl_variant_mem_borrow;
   vt->data.v.b = val;
   vt->data.v.z = size;
+  return 0;
+}
+
+/**
+ * Comparison function for two variants.
+ *
+ * Determines which of the two sorts lexicographically before the other. If the
+ * two variants have different intrinsic types, they are considered tied.
+ *
+ * @param va First variant
+ * @param vb Second variant
+ * @returns If `va`, `vb` have the same intrinsic type, < 0 when `va` sorts
+ *  before `vb`, > 0 when `vb` sorts before `va`, 0 if `va` and `vb` are tied,
+ *  if they have different intrinsic types, or on error.
+ */
+int
+pdcpl_variant_compare(const pdcpl_variant* va, const pdcpl_variant *vb)
+{
+  // if any pointer is NULL we just treat as tie
+  if (!va || !vb)
+    return 0;
+  // attempt to get shared type. if unequal types, this is zero
+  unsigned int vtype = pdcpl_variant_shared_type(va, vb);
+  if (!vtype)
+    return 0;
+  // otherwise, go down the list of types
+  switch (vtype) {
+    case pdcpl_variant_char:
+      return (int) va->data.c - (int) vb->data.c;
+    case pdcpl_variant_int:
+      return va->data.i - vb->data.i;
+    // avoid sign problems with unsigned types by manually comparing
+    case pdcpl_variant_uint:
+      if (va->data.u < vb->data.u)
+        return -1;
+      if (va->data.u > vb->data.u)
+        return 1;
+      return 0;
+    case pdcpl_variant_size:
+      if (va->data.z < vb->data.z)
+        return -1;
+      if (va->data.z > vb->data.z)
+        return 1;
+      return 0;
+    // use epsilon-based comparison functions for floats
+    case pdcpl_variant_double:
+      if (pdcpl_double_lt(va->data.d, vb->data.d))
+        return -1;
+      if (pdcpl_double_gt(va->data.d, vb->data.d))
+        return 1;
+      return 0;
+    case pdcpl_variant_float:
+      if (pdcpl_float_lt(va->data.f, vb->data.f))
+        return -1;
+      if (pdcpl_float_gt(va->data.f, vb->data.f))
+        return 1;
+      return 0;
+    // use strcmp for strings
+    case pdcpl_variant_string:
+      return strcmp(va->data.s, vb->data.s);
+    case pdcpl_variant_void:
+      // if sizes are different, shorter buffer goes first
+      if (va->data.v.z < vb->data.v.z)
+        return -1;
+      if (va->data.v.z > vb->data.v.z)
+        return 1;
+      // use memcmp for buffers if sizes are the same
+      return memcmp(va->data.v.b, vb->data.v.b, va->data.v.z);
+  }
+  // unknown enum value, so just return zero
   return 0;
 }
 

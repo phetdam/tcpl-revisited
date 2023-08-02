@@ -11,6 +11,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <string.h>
 
 #include "pdcpl/common.h"
 #include "pdcpl/dllexport.h"
@@ -205,6 +206,37 @@ PDCPL_VARIANT_INIT_DECL_EX(void, const void *, size_t size);
  */
 PDCPL_PUBLIC
 PDCPL_VARIANT_INIT_DECL_EX(void_ref, void *, size_t size);
+
+/**
+ * Check if two variants have the same type.
+ *
+ * Memory ownership flags are not relevant and are ignored.
+ *
+ * @param va First variant
+ * @param vb Second variant
+ * @returns Nonzero value if variants are the same type, otherwise zero
+ */
+PDCPL_INLINE unsigned int
+pdcpl_variant_shared_type(const pdcpl_variant *va, const pdcpl_variant *vb)
+{
+  return va->flags & vb->flags & ~(pdcpl_variant_mem_own | pdcpl_variant_mem_borrow);
+}
+
+/**
+ * Comparison function for two variants.
+ *
+ * Determines which of the two sorts lexicographically before the other. If the
+ * two variants have different intrinsic types, they are considered tied.
+ *
+ * @param va First variant
+ * @param vb Second variant
+ * @returns If `va`, `vb` have the same intrinsic type, < 0 when `va` sorts
+ *  before `vb`, > 0 when `vb` sorts before `va`, 0 if `va` and `vb` are tied,
+ *  if they have different intrinsic types, or on error.
+ */
+PDCPL_PUBLIC
+int
+pdcpl_variant_compare(const pdcpl_variant* va, const pdcpl_variant *vb);
 
 /**
  * Typedef for `pdcpl_variant` free function.
