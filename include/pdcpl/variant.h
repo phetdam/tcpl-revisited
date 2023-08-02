@@ -11,7 +11,6 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
-#include <string.h>
 
 #include "pdcpl/common.h"
 #include "pdcpl/dllexport.h"
