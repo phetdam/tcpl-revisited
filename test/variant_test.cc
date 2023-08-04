@@ -13,6 +13,7 @@
 #include <cstdint>
 #include <cstring>
 #include <string>
+#include <tuple>
 
 namespace {
 
@@ -162,5 +163,64 @@ TEST_F(VariantTest, FreeErrorTest)
   // errors if type owning memory is not one of those known to own memory
   EXPECT_EQ(-EINVAL, pdcpl_variant_free(&vt));
 }
+
+/**
+ * Test fixture for parametrized testing of `pdcpl_variant_shared_type`.
+ */
+class SharedTypeTest : public ::testing::TestWithParam<
+  std::tuple<pdcpl_variant, pdcpl_variant, unsigned int>> {
+public:
+  /**
+   * Create an input for `SharedTypeTest` parametrized tests.
+   *
+   * The returned `pdcpl_variant` structs do not have any data fields
+   * initialized and are invalid for general use outside the associated tests.
+   *
+   * @param aflags Flags for first variant
+   * @param bflags Flags for second variant
+   * @param target Target flags; should only have a single type bit set
+   */
+  static ParamType
+  CreateInput(unsigned int aflags, unsigned int bflags, unsigned int target)
+  {
+    pdcpl_variant va, vb;
+    va.flags = aflags;
+    vb.flags = bflags;
+    return {va, vb, target};
+  }
+};
+
+/**
+ * Test that `pdcpl_variant_shared_type` works properly.
+ */
+TEST_P(SharedTypeTest, Test)
+{
+  const auto& [va, vb, expected] = GetParam();
+  EXPECT_EQ(expected, pdcpl_variant_shared_type(&va, &vb));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+  VariantTest,
+  SharedTypeTest,
+  ::testing::Values(
+    SharedTypeTest::CreateInput(pdcpl_variant_char, pdcpl_variant_int, 0U),
+    SharedTypeTest::CreateInput(
+      pdcpl_variant_uint, pdcpl_variant_uint, pdcpl_variant_uint
+    ),
+    SharedTypeTest::CreateInput(
+      pdcpl_variant_string | pdcpl_variant_mem_own,
+      pdcpl_variant_string | pdcpl_variant_mem_borrow,
+      pdcpl_variant_string
+    ),
+    SharedTypeTest::CreateInput(
+      pdcpl_variant_void | pdcpl_variant_mem_own,
+      pdcpl_variant_string | pdcpl_variant_mem_borrow,
+      0U
+    ),
+    SharedTypeTest::CreateInput(
+      pdcpl_variant_string | pdcpl_variant_mem_borrow, pdcpl_variant_char, 0U
+    )
+  )
+);
 
 }  // namespace
