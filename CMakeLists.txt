@@ -94,11 +94,11 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(GTEST_MIN_VERSION 1.10)
 find_package(GTest ${GTEST_MIN_VERSION})
 
+enable_testing()
 add_subdirectory(src)
 
 # only add tests if Google Test was found
 if(GTest_FOUND)
-    enable_testing()
     add_subdirectory(test)
 else()
     message(
