@@ -10,6 +10,11 @@ cmake_minimum_required(VERSION 3.21)
 #   cmake -S . -B build_windows -G Ninja && cmake --build build_windows -j
 #
 
+# use new DOWNLOAD_EXTRACT_TIMESTAMP behavior for newer CMake versions
+if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.24)
+    cmake_policy(SET CMP0135 NEW)
+endif()
+
 # project version values and full version
 set(PDCPL_VERSION_MAJOR 0)
 set(PDCPL_VERSION_MINOR 1)
@@ -91,18 +96,67 @@ include(AddStandalone)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-set(GTEST_MIN_VERSION 1.10)
-find_package(GTest ${GTEST_MIN_VERSION})
+# Google Test [minimum] version to use. allow user override
+if(NOT PDCPL_GTEST_VERSION)
+    set(PDCPL_GTEST_VERSION 1.10.0)
+endif()
+# require major.minor.patch semantic version
+if(NOT PDCPL_GTEST_VERSION MATCHES ^[0-9]+\.[0-9]+\.[0-9]+$)
+    message(
+        FATAL_ERROR
+        "Google Test version ${PDCPL_GTEST_VERSION} invalid; must be of the \
+format [major].[minor].[patch]"
+    )
+endif()
+# find Google Test to enable testing. also allow use of FetchContent, which is
+# convenient for CI/CD workflows or when on a system like Windows where there's
+# no real way to "install" Google Test anywhere and GTEST_ROOT needs to be set.
+if(FETCH_GTEST)
+    # URL prefix to the release archive
+    set(
+        GTEST_RELEASE_PREFIX
+        https://github.com/google/googletest/archive/refs/tags
+    )
+    # Google changed release format from "release-x.y.z" to "vx.y.z" for 1.13.0+
+    if(PDCPL_GTEST_VERSION VERSION_GREATER_EQUAL 1.13.0)
+        set(GTEST_ARCHIVE_PREFIX "v")
+    else()
+        set(GTEST_ARCHIVE_PREFIX "release-")
+    endif()
+    # full path for convenience
+    set(
+        GTEST_ARCHIVE_PATH
+        ${GTEST_RELEASE_PREFIX}/${GTEST_ARCHIVE_PREFIX}${PDCPL_GTEST_VERSION}.zip
+    )
+    # build Google Test from source as a subdirectory
+    include(FetchContent)
+    message(
+        STATUS
+        "Fetching Google Test ${PDCPL_GTEST_VERSION} from ${GTEST_ARCHIVE_PATH}"
+    )
+    FetchContent_Declare(googletest URL ${GTEST_ARCHIVE_PATH})
+    # required on Windows to force linking against shared VC++ C runtime
+    if(WIN32)
+        set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+    endif()
+    FetchContent_MakeAvailable(googletest)
+    # indicate that Google Test was found
+    set(PDCPL_GTEST_FOUND TRUE)
+else()
+    find_package(GTest ${PDCPL_GTEST_VERSION})
+    # for consistency when using FetchContent
+    set(PDCPL_GTEST_FOUND GTest_FOUND)
+endif()
 
 add_subdirectory(src)
 
 # only add tests if Google Test was found
-if(GTest_FOUND)
+if(PDCPL_GTEST_FOUND)
     enable_testing()
     add_subdirectory(test)
 else()
     message(
         WARNING
-        "Google Test >=${GTEST_MIN_VERSION} not found. No tests will be built."
+        "Google Test >=${PDCPL_GTEST_VERSION} not found. No tests will be built."
     )
 endif()
