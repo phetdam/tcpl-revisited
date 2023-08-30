@@ -14,7 +14,8 @@ add_test(NAME 1.4 COMMAND 1.4)
 pdcpl_add_standalone(1.5)
 add_test(NAME 1.5 COMMAND 1.5)
 pdcpl_add_standalone(1.6)
-# no printf known to CMD
+# no printf known to CMD. shell tests skipped on Windows for now since there
+# are issues with CMD quoting of the command-line arguments.
 if(WIN32)
     message(WARNING "1.6: test addition skipped")
 else()
@@ -29,8 +30,31 @@ else()
     add_test(NAME 1.8 COMMAND sh -c "./1.8 < ${CMAKE_SOURCE_DIR}/CMakeLists.txt")
 endif()
 pdcpl_add_standalone(1.9)
+if(WIN32)
+    message(WARNING "1.9: test addition skipped")
+else()
+    add_test(NAME 1.9 COMMAND sh -c "echo 'i    say hello  goodbye' | ./1.9")
+endif()
 pdcpl_add_standalone(1.10)
+if(WIN32)
+    message(WARNING "1.10: test addition skipped")
+else()
+    add_test(
+        NAME 1.10
+        COMMAND sh -c
+            "printf \"hello\\tto the  \\b.\\\\hack\\\\slash\\n\" | ./1.10"
+    )
+endif()
 pdcpl_add_standalone(1.12)
+if(WIN32)
+    message(WARNING "1.12: test addition skipped")
+else()
+    add_test(
+        NAME 1.12
+        COMMAND sh -c
+            "printf \"hello from  \\n   the other\\nside  \\n\\n\\n\" | ./1.12"
+    )
+endif()
 pdcpl_add_standalone(1.16 pdcpl)
 pdcpl_add_standalone(1.17 pdcpl)
 pdcpl_add_standalone(1.19 pdcpl)
