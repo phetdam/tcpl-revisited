@@ -80,7 +80,7 @@ typedef int (*pdcpl_cliopt_action)(int argc, char **argv, int argi);
  * Although in a `pdcpl_cliopt_action` the `argi` index is guaranteed to be
  * less than `argc`, if `argi` equals `argc - 1`, then there are no arguments
  * to consume for this option. This macro is useful to immediately return the
- * `PDCPL_CLIOPT_ERROR_ARGS_TOO_FEW` error if he option requires arguments.
+ * `PDCPL_CLIOPT_ERROR_ARGS_TOO_FEW` error if the option requires arguments.
  */
 #define PDCPL_CLIOPT_ACTION_ARGI_GUARD \
   if (argi + 1 >= argc) \
@@ -96,7 +96,7 @@ typedef int (*pdcpl_cliopt_action)(int argc, char **argv, int argi);
 /**
  * Perform no-ops on the `pdcpl_cliopt_action` input variables.
  *
- * This is useful to suppress overeager compiler warnings about unreferened
+ * This is useful to suppress overeager compiler warnings about unreferenced
  * formal parameters, for example as issued by MSVC when using /Wall.
  */
 #define PDCPL_CLIOPT_ACTION_NO_WARN_UNUSED \
