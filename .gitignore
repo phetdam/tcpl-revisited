@@ -3,3 +3,5 @@
 # ignore build directories
 /build
 /build_windows*
+# ignore callgrind profile
+/callgrind.out.*
