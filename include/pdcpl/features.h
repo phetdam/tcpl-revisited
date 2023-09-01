@@ -15,6 +15,18 @@
 #endif  // !__has_include(<unistd.h>)
 #endif
 
+// test for BSD/default source definitions
+#ifdef _BSD_SOURCE
+#define PDCPL_BSD_SOURCE
+#endif  // _BSD_SOURCE
+#ifdef _DEFAULT_SOURCE
+#define PDCPL_DEFAULT_SOURCE
+#endif  // _DEFAULT_SOURCE
+// convenient helper so we don't need to use _BSD_SOURCE || _DEFAULT_SOURCE
+#if defined(PDCPL_BSD_SOURCE) || defined(PDCPL_DEFAULT_SOURCE)
+#define PDCPL_BSD_DEFAULT_SOURCE
+#endif  // !defined(PDCPL_BSD_SOURCE) && !defined(PDCPL_DEFAULT_SOURCE)
+
 // test for POSIX features
 #ifdef _POSIX_C_SOURCE
 // we have some subset of POSIX features
@@ -47,7 +59,7 @@
 
 // test for GNU features
 #ifdef _GNU_SOURCE
-#define PDCPL_GNU
+#define PDCPL_GNU_SOURCE
 #endif  // _GNU_SOURCE
 
 // test for C standard features
