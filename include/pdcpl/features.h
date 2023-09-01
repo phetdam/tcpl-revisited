@@ -5,8 +5,8 @@
  * @copyright MIT License
  */
 
-#ifndef PDCPL_FEATURE_H_
-#define PDCPL_FEATURE_H_
+#ifndef PDCPL_FEATURES_H_
+#define PDCPL_FEATURES_H_
 
 // test for POSIX unistd.h
 #if defined(__has_include)
@@ -82,4 +82,4 @@
 #endif  // __STDC_VERSION__ < 201710L
 #endif  // __STDC_VERSION__
 
-#endif  // PDCPL_FEATURE_H_
+#endif  // PDCPL_FEATURES_H_
