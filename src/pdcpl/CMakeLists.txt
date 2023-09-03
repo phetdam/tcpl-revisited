@@ -6,9 +6,10 @@ add_library(
 )
 # we could use lazy Windows __declspec(dllexport), __declspec(dllimport)
 # handling by using set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON), but we opt not to
-# do this to make our code build-system neutral.
+# do this to make our code build-system neutral. also, if we want to use
+# -fvisibility=hidden later on, then this is also helpful for *nix platforms.
+set_target_properties(pdcpl PROPERTIES DEFINE_SYMBOL PDCPL_BUILD_DLL)
 if(WIN32)
-    target_compile_definitions(pdcpl PRIVATE PDCPL_BUILD_DLL)
     # CMake adds this by default, but it's good to be explicit
     target_link_libraries(pdcpl PRIVATE kernel32)
 endif()

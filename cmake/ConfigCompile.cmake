@@ -31,7 +31,6 @@ if(MSVC)
         # const value not used
         /wd5264
         # /Od applied by default when using Debug config, /O2 for Release
-        $<$<NOT:$<CONFIG:Release>>:/DEBUG>
     )
     # note: does not work correctly for Windows for the test runner, which will
     # hang indefinitely with CPU constantly spinning. it is possible that
