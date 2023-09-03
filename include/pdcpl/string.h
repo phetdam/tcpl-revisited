@@ -18,6 +18,7 @@
 
 #include "pdcpl/common.h"
 #include "pdcpl/dllexport.h"
+#include "pdcpl/sa.h"
 
 PDCPL_EXTERN_C_BEGIN
 
@@ -177,7 +178,7 @@ typedef struct {
  */
 PDCPL_PUBLIC
 int
-pdcpl_strwc(const char *s, pdcpl_wcresults *rp);
+pdcpl_strwc(PDCPL_SA(Opt(In)) const char *s, PDCPL_SA(Out) pdcpl_wcresults *rp);
 
 /**
  * Count words, chars, and lines from a `FILE *` stream and save the results.
@@ -188,7 +189,7 @@ pdcpl_strwc(const char *s, pdcpl_wcresults *rp);
  */
 PDCPL_PUBLIC
 int
-pdcpl_fwc(FILE *f, pdcpl_wcresults *rp);
+pdcpl_fwc(PDCPL_SA(Opt(In)) FILE *f, PDCPL_SA(Out) pdcpl_wcresults *rp);
 
 /**
  * Read a word from a `FILE *` stream to a buffer.
@@ -209,7 +210,10 @@ pdcpl_fwc(FILE *f, pdcpl_wcresults *rp);
  */
 PDCPL_PUBLIC
 int
-pdcpl_getword(FILE *f, char **wp, size_t *ncp);
+pdcpl_getword(
+  PDCPL_SA(In) FILE *f,
+  PDCPL_SA(Opt(Out)) char **wp,
+  PDCPL_SA(Opt(Out)) size_t *ncp);
 
 /**
  * Read an arbitrary line from a `FILE *` stream to a buffer.
@@ -231,7 +235,10 @@ pdcpl_getword(FILE *f, char **wp, size_t *ncp);
  */
 PDCPL_PUBLIC
 int
-pdcpl_getline(FILE *f, char **sp, size_t *ncp);
+pdcpl_getline(
+  PDCPL_SA(In) FILE *f,
+  PDCPL_SA(Opt(Out)) char **sp,
+  PDCPL_SA(Opt(Out)) size_t *ncp);
 
 /**
  * Write a reversed copy of a string `s` to a buffer.
@@ -246,7 +253,10 @@ pdcpl_getline(FILE *f, char **sp, size_t *ncp);
  */
 PDCPL_PUBLIC
 int
-pdcpl_strrev(const char *s, char **srp, size_t *ncp);
+pdcpl_strrev(
+  PDCPL_SA(Opt(In)) const char *s,
+  PDCPL_SA(Opt(Out)) char **srp,
+  PDCPL_SA(Opt(Out)) size_t *ncp);
 
 /**
  * Compute the next tab stop from the current column position.
@@ -290,7 +300,12 @@ pdcpl_next_tab_size(size_t col, unsigned int tab_size)
  */
 PDCPL_PUBLIC
 int
-pdcpl_detab(FILE *in, FILE *out, unsigned int spaces, size_t *nrp, size_t *nwp);
+pdcpl_detab(
+  PDCPL_SA(In) FILE *in,
+  PDCPL_SA(Out) FILE *out,
+  unsigned int spaces,
+  PDCPL_SA(Opt(Out)) size_t *nrp,
+  PDCPL_SA(Opt(Out)) size_t *nwp);
 
 /**
  * Return the hex value if valid hex character, -EINVAL otherwise.
@@ -323,7 +338,7 @@ pdcpl_hexval(char c)
  */
 PDCPL_PUBLIC
 int
-pdcpl_htoj(const char *s, intmax_t *out);
+pdcpl_htoj(PDCPL_SA(In) const char *s, PDCPL_SA(Out) intmax_t *out);
 
 /**
  * Convert a string of hex digits into the equivalent integer value.
@@ -336,7 +351,7 @@ pdcpl_htoj(const char *s, intmax_t *out);
  *  `s` is empty or misspecified (not a valid hex string).
  */
 PDCPL_INLINE int
-pdcpl_htoi(const char *s, int *out)
+pdcpl_htoi(PDCPL_SA(In) const char *s, PDCPL_SA(Out) int *out)
 {
   if (!out)
     return -EINVAL;
@@ -361,7 +376,10 @@ pdcpl_htoi(const char *s, int *out)
  */
 PDCPL_PUBLIC
 int
-pdcpl_strsq(const char *s, char **op, const char *ds);
+pdcpl_strsq(
+  PDCPL_SA(In) const char *s,
+  PDCPL_SA(Out) char **op,
+  PDCPL_SA(In) const char *ds);
 
 /**
  * Return lowercase equivalent to an uppercase ASCII character.
@@ -391,7 +409,10 @@ pdcpl_tolower(char c)
  */
 PDCPL_PUBLIC
 int
-pdcpl_strexpand(const char *in, char **op, size_t *nwp);
+pdcpl_strexpand(
+  PDCPL_SA(In) const char *in,
+  PDCPL_SA(Out) char **op,
+  PDCPL_SA(Opt(Out)) size_t *nwp);
 
 /**
  * Convert a signed integral value to a character string.
@@ -405,7 +426,8 @@ pdcpl_strexpand(const char *in, char **op, size_t *nwp);
  */
 PDCPL_PUBLIC
 int
-pdcpl_jtoa(ptrdiff_t x, char **sp, size_t *ncp);
+pdcpl_jtoa(
+  ptrdiff_t x, PDCPL_SA(Out) char **sp, PDCPL_SA(Opt(Out)) size_t *ncp);
 
 /**
  * Convert a signed integral value to a character string.
@@ -418,7 +440,7 @@ pdcpl_jtoa(ptrdiff_t x, char **sp, size_t *ncp);
  * @returns 0 on succes, -EINVAL if `sp` is `NULL`, -ENOMEM if `malloc` fails
  */
 PDCPL_INLINE int
-pdcpl_itoa(int x, char **sp, size_t *ncp)
+pdcpl_itoa(int x, PDCPL_SA(Out) char **sp, PDCPL_SA(Opt(Out)) size_t *ncp)
 {
   return pdcpl_jtoa(x, sp, ncp);
 }
@@ -434,7 +456,10 @@ pdcpl_itoa(int x, char **sp, size_t *ncp)
  */
 PDCPL_PUBLIC
 int
-pdcpl_strfind(const char *s, const char *ss, size_t *pp);
+pdcpl_strfind(
+  PDCPL_SA(In) const char *s,
+  PDCPL_SA(In) const char *ss,
+  PDCPL_SA(Out) size_t *pp);
 
 /**
  * Get the index of the rightmost occurrence of `ss` in `s`.
@@ -447,7 +472,10 @@ pdcpl_strfind(const char *s, const char *ss, size_t *pp);
  */
 PDCPL_PUBLIC
 int
-pdcpl_strrfind(const char *s, const char *ss, size_t *pp);
+pdcpl_strrfind(
+  PDCPL_SA(In) const char *s,
+  PDCPL_SA(In) const char *ss,
+  PDCPL_SA(Out) size_t *pp);
 
 /**
  * Concatenate two strings together into a new string.
@@ -459,7 +487,11 @@ pdcpl_strrfind(const char *s, const char *ss, size_t *pp);
  */
 PDCPL_PUBLIC
 int
-pdcpl_strcat(const char *s1, const char *s2, char **op, size_t *ncp);
+pdcpl_strcat(
+  PDCPL_SA(In) const char *s1,
+  PDCPL_SA(In) const char *s2,
+  PDCPL_SA(Out) char **op,
+  PDCPL_SA(Opt(Out)) size_t *ncp);
 
 PDCPL_EXTERN_C_END
 

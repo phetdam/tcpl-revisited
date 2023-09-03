@@ -19,6 +19,7 @@
 
 #include "pdcpl/memory.h"
 #include "pdcpl/warnings.h"
+#include "pdcpl/sa.h"
 
 /**
  * Return columns needed to fit a specified signed int with specified padding.
@@ -56,7 +57,7 @@ PDCPL_MSVC_WARNING_ENABLE()
  * @returns 0 if no error, -EINVAL if `rp` is `NULL`
  */
 int
-pdcpl_strwc(const char *s, pdcpl_wcresults *rp)
+pdcpl_strwc(PDCPL_SA(Opt(In)) const char *s, PDCPL_SA(Out) pdcpl_wcresults *rp)
 {
   if (!rp)
     return -EINVAL;
@@ -93,7 +94,7 @@ pdcpl_strwc(const char *s, pdcpl_wcresults *rp)
  * @returns 0 if no error, -EINVAL if `rp` is `NULL`
  */
 int
-pdcpl_fwc(FILE *f, pdcpl_wcresults *rp)
+pdcpl_fwc(PDCPL_SA(Opt(In)) FILE *f, PDCPL_SA(Out) pdcpl_wcresults *rp)
 {
   if (!rp)
     return -EINVAL;
@@ -138,7 +139,10 @@ pdcpl_fwc(FILE *f, pdcpl_wcresults *rp)
  *  word read exceeds `SIZE_MAX - 1`, -ENOMEM if buffer [re]allocation fails
  */
 int
-pdcpl_getword(FILE *f, char **wp, size_t *ncp)
+pdcpl_getword(
+  PDCPL_SA(In) FILE *f,
+  PDCPL_SA(Opt(Out)) char **wp,
+  PDCPL_SA(Opt(Out)) size_t *ncp)
 {
   // ncp allowed to be NULL
   if (!f || !wp)
@@ -216,7 +220,10 @@ error:
  *  line read exceeds `SIZE_MAX - 1`, -ENOMEM if buffer `(m|re)alloc` fails
  */
 int
-pdcpl_getline(FILE *f, char **sp, size_t *ncp)
+pdcpl_getline(
+  PDCPL_SA(In) FILE *f,
+  PDCPL_SA(Opt(Out)) char **sp,
+  PDCPL_SA(Opt(Out)) size_t *ncp)
 {
   // we allow ncp to be NULL
   if (!f || !sp)
@@ -297,7 +304,10 @@ error:
  * @returns 0 if no error, -EINVAL if `srp` is `NULL`, -ENOMEM if malloc fails
  */
 int
-pdcpl_strrev(const char *s, char **srp, size_t *ncp)
+pdcpl_strrev(
+  PDCPL_SA(Opt(In)) const char *s,
+  PDCPL_SA(Opt(Out)) char **srp,
+  PDCPL_SA(Opt(Out)) size_t *ncp)
 {
   // allow no-op if input string is NULL
   if (!s)
@@ -336,7 +346,12 @@ pdcpl_strrev(const char *s, char **srp, size_t *ncp)
  * @returns 0 on success, -errno if there is a stream error
  */
 int
-pdcpl_detab(FILE *in, FILE *out, unsigned int spaces, size_t *nrp, size_t *nwp)
+pdcpl_detab(
+  PDCPL_SA(In) FILE *in,
+  PDCPL_SA(Out) FILE *out,
+  unsigned int spaces,
+  PDCPL_SA(Opt(Out)) size_t *nrp,
+  PDCPL_SA(Opt(Out)) size_t *nwp)
 {
   // we allow ncp, nwp to be optional
   if (!in || !out || !spaces)
@@ -393,7 +408,7 @@ pdcpl_detab(FILE *in, FILE *out, unsigned int spaces, size_t *nrp, size_t *nwp)
  *  `s` is empty or misspecified (not a valid hex string).
  */
 int
-pdcpl_htoj(const char *s, intmax_t *out)
+pdcpl_htoj(PDCPL_SA(In) const char *s, PDCPL_SA(Out) intmax_t *out)
 {
   if (!s || !out)
     return -EINVAL;
@@ -447,7 +462,10 @@ pdcpl_htoj(const char *s, intmax_t *out)
  *  of the memory allocation operations fail
  */
 int
-pdcpl_strsq(const char *s, char **op, const char *ds)
+pdcpl_strsq(
+  PDCPL_SA(In) const char *s,
+  PDCPL_SA(Out) char **op,
+  PDCPL_SA(In) const char *ds)
 {
   if (!s || !op || !ds)
     return -EINVAL;
@@ -514,7 +532,10 @@ pdcpl_strsq(const char *s, char **op, const char *ds)
  *  is not enough memory to expand or reallocate the output buffer
  */
 int
-pdcpl_strexpand(const char *in, char **op, size_t *nwp)
+pdcpl_strexpand(
+  PDCPL_SA(In) const char *in,
+  PDCPL_SA(Out) char **op,
+  PDCPL_SA(Opt(Out)) size_t *nwp)
 {
   if (!in || !op)
     return -EINVAL;
@@ -587,7 +608,8 @@ error:
  * @returns 0 on succes, -EINVAL if `sp` is `NULL`, -ENOMEM if `malloc` fails
  */
 int
-pdcpl_jtoa(ptrdiff_t x, char **sp, size_t *ncp)
+pdcpl_jtoa(
+  ptrdiff_t x, PDCPL_SA(Out) char **sp, PDCPL_SA(Opt(Out)) size_t *ncp)
 {
   if (!sp)
     return -EINVAL;
@@ -624,7 +646,10 @@ pdcpl_jtoa(ptrdiff_t x, char **sp, size_t *ncp)
  * @param pp Address of `size_t` to write leftmost occurrence index to
  */
 int
-pdcpl_strfind(const char *s, const char *ss, size_t *pp)
+pdcpl_strfind(
+  PDCPL_SA(In) const char *s,
+  PDCPL_SA(In) const char *ss,
+  PDCPL_SA(Out) size_t *pp)
 {
   if (!s || !ss || !pp)
     return -EINVAL;
@@ -664,7 +689,10 @@ no_match:
  * @param pp Address of `size_t` to write rightmost occurrence index to
  */
 int
-pdcpl_strrfind(const char *s, const char *ss, size_t *pp)
+pdcpl_strrfind(
+  PDCPL_SA(In) const char *s,
+  PDCPL_SA(In) const char *ss,
+  PDCPL_SA(Out) size_t *pp)
 {
   if (!s || !ss || !pp)
     return -EINVAL;
@@ -710,7 +738,11 @@ no_match:
  * @param ncp Address to `size_t` to write output string length (can be `NULL`)
  */
 int
-pdcpl_strcat(const char *s1, const char *s2, char **op, size_t *ncp)
+pdcpl_strcat(
+  PDCPL_SA(In) const char *s1,
+  PDCPL_SA(In) const char *s2,
+  PDCPL_SA(Out) char **op,
+  PDCPL_SA(Opt(Out)) size_t *ncp)
 {
   if (!s1 || !s2)
     return -EINVAL;
