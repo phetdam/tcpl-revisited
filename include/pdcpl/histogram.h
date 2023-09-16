@@ -98,8 +98,7 @@ typedef struct {
  * @param value Value to bucket
  * @returns 0 on success, -1 if `value < dp->bmin`, 1 if `value >= d->bmax`
  */
-PDCPL_PUBLIC
-int
+PDCPL_PUBLIC int
 pdcpl_histdata_bucket(pdcpl_histdata *dp, double value);
 
 PDCPL_EXTERN_C_END

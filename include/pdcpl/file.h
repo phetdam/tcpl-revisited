@@ -32,8 +32,7 @@ PDCPL_EXTERN_C_BEGIN
  *  `E_OUTOFMEMORY` if buffer cannot be allocated, or
  *  `HRESULT_FROM_WIN32(GetLastError())` if a Win32 call failed
  */
-PDCPL_PUBLIC
-HRESULT
+PDCPL_PUBLIC HRESULT
 pdcpl_win_gettempdir(char **path);
 
 /**
@@ -44,8 +43,7 @@ pdcpl_win_gettempdir(char **path);
  *  `E_OUTOFMEMORY` if buffer[s] cannot be allocated, or
  *  `HRESULT_FROM_WIN32(GetLastError())` if a Win32 call failed
  */
-PDCPL_PUBLIC
-HRESULT
+PDCPL_PUBLIC HRESULT
 pdcpl_win_gettempfilename(char **path);
 
 /**
@@ -60,8 +58,7 @@ pdcpl_win_gettempfilename(char **path);
  * @returns `S_OK` on success, `E_INVALIDARG` if `file_handle` is `NULL`,
  *  `HRESULT_FROM_WIN32(GetLastError())` on file creation or other Win32 error
  */
-PDCPL_PUBLIC
-HRESULT
+PDCPL_PUBLIC HRESULT
 pdcpl_win_gettempfh(LPHANDLE file_handle, DWORD access, DWORD sharing);
 
 /**
@@ -76,8 +73,7 @@ pdcpl_win_gettempfh(LPHANDLE file_handle, DWORD access, DWORD sharing);
  *  `HRESULT_FROM_WIN32(GetLastError())` if `pdcpl_win_gettempfh` fails, or a
  *  generic `E_FAIL` if `_open_osfhandle` fails
  */
-PDCPL_PUBLIC
-HRESULT
+PDCPL_PUBLIC HRESULT
 pdcpl_win_gettempfd(int *fd, int flags);
 #endif  // _WIN32
 
@@ -91,8 +87,7 @@ pdcpl_win_gettempfd(int *fd, int flags);
  * @param mode Open mode, e.g. `"r"`, `"w+"`, etc.
  * @returns File stream, `NULL` on error. If `NULL`, check `errno` for status.
  */
-PDCPL_PUBLIC
-FILE *
+PDCPL_PUBLIC FILE *
 pdcpl_fdopen(int fd, const char *mode);
 #endif  // !defined(_WIN32) && !defined(PDCPL_POSIX)
 
@@ -107,8 +102,7 @@ pdcpl_fdopen(int fd, const char *mode);
  * @returns File stream, `NULL` on error. If `NULL`, check `errno` for status
  *  and `*win_err` if `win_err` was specified and not `NULL`.
  */
-PDCPL_PUBLIC
-FILE *
+PDCPL_PUBLIC FILE *
 pdcpl_win_tempfile(HRESULT *win_err);
 #endif  // _WIN32
 

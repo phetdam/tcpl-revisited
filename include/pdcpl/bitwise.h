@@ -33,8 +33,7 @@ PDCPL_EXTERN_C_BEGIN
  *
  * @param x Value to count 1-bits for
  */
-PDCPL_PUBLIC
-unsigned short
+PDCPL_PUBLIC unsigned short
 pdcpl_bitcount(unsigned int x);
 
 /**
@@ -126,8 +125,7 @@ pdcpl_invbits(
  * @param x Value to rotate
  * @param n Number of bits to rotate by
  */
-PDCPL_PUBLIC
-unsigned int
+PDCPL_PUBLIC unsigned int
 pdcpl_rrotbits(unsigned int x, unsigned short n);
 
 PDCPL_EXTERN_C_END

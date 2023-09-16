@@ -233,8 +233,7 @@ pdcpl_variant_shared_type(const pdcpl_variant *va, const pdcpl_variant *vb)
  *  before `vb`, > 0 when `vb` sorts before `va`, 0 if `va` and `vb` are tied,
  *  if they have different intrinsic types, or on error.
  */
-PDCPL_PUBLIC
-int
+PDCPL_PUBLIC int
 pdcpl_variant_compare(const pdcpl_variant* va, const pdcpl_variant *vb);
 
 /**
@@ -251,8 +250,7 @@ typedef int (*pdcpl_variant_free_function)(pdcpl_variant *);
  * @returns 0 on success, -EINVAL if `vt` is `NULL` or if flags indicate memory
  *  ownership but no type flag has been set to indicate how to free
  */
-PDCPL_PUBLIC
-int
+PDCPL_PUBLIC int
 pdcpl_variant_free(pdcpl_variant *vt);
 
 PDCPL_EXTERN_C_END

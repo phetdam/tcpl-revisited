@@ -86,8 +86,7 @@ pdcpl_isesc(int c)
  * @param value Value to get print width for
  * @param padding Padding to apply on both sides of the print width
  */
-PDCPL_PUBLIC
-unsigned short
+PDCPL_PUBLIC unsigned short
 pdcpl_printpwtd(ptrdiff_t value, unsigned short padding);
 
 /**
@@ -176,8 +175,7 @@ typedef struct {
  * @param rp Pointer to results struct
  * @returns 0 if no error, -EINVAL if `rp` is `NULL`
  */
-PDCPL_PUBLIC
-int
+PDCPL_PUBLIC int
 pdcpl_strwc(PDCPL_SA(Opt(In)) const char *s, PDCPL_SA(Out) pdcpl_wcresults *rp);
 
 /**
@@ -187,8 +185,7 @@ pdcpl_strwc(PDCPL_SA(Opt(In)) const char *s, PDCPL_SA(Out) pdcpl_wcresults *rp);
  * @param rp Pointer to results struct
  * @returns 0 if no error, -EINVAL if `rp` is `NULL`
  */
-PDCPL_PUBLIC
-int
+PDCPL_PUBLIC int
 pdcpl_fwc(PDCPL_SA(Opt(In)) FILE *f, PDCPL_SA(Out) pdcpl_wcresults *rp);
 
 /**
@@ -208,8 +205,7 @@ pdcpl_fwc(PDCPL_SA(Opt(In)) FILE *f, PDCPL_SA(Out) pdcpl_wcresults *rp);
  * @returns 0 if no error, -EINVAL if `f` or `wp` are `NULL`, -ERANGE if the
  *  word read exceeds `SIZE_MAX - 1`, -ENOMEM if buffer [re]allocation fails
  */
-PDCPL_PUBLIC
-int
+PDCPL_PUBLIC int
 pdcpl_getword(
   PDCPL_SA(In) FILE *f,
   PDCPL_SA(Opt(Out)) char **wp,
@@ -233,8 +229,7 @@ pdcpl_getword(
  * @returns 0 if no error, -EINVAL if `f` or `sp` are `NULL`, -ERANGE if the
  *  line read exceeds `SIZE_MAX - 1`, -ENOMEM if buffer `(m|re)alloc` fails
  */
-PDCPL_PUBLIC
-int
+PDCPL_PUBLIC int
 pdcpl_getline(
   PDCPL_SA(In) FILE *f,
   PDCPL_SA(Opt(Out)) char **sp,
@@ -251,8 +246,7 @@ pdcpl_getline(
  * @param ncp Address of a `size_t` giving the string length (can be `NULL`)
  * @returns 0 if no error, -EINVAL if `srp` is `NULL`, -ENOMEM if malloc fails
  */
-PDCPL_PUBLIC
-int
+PDCPL_PUBLIC int
 pdcpl_strrev(
   PDCPL_SA(Opt(In)) const char *s,
   PDCPL_SA(Opt(Out)) char **srp,
@@ -298,8 +292,7 @@ pdcpl_next_tab_size(size_t col, unsigned int tab_size)
  * @param nwp Address to write number of chars written (can be `NULL`)
  * @returns 0 on success, -errno if there is a stream error
  */
-PDCPL_PUBLIC
-int
+PDCPL_PUBLIC int
 pdcpl_detab(
   PDCPL_SA(In) FILE *in,
   PDCPL_SA(Out) FILE *out,
@@ -336,8 +329,7 @@ pdcpl_hexval(char c)
  * @returns 0 on success, -EINVAL if `out` or `s` are `NULL` as well as if
  *  `s` is empty or misspecified (not a valid hex string).
  */
-PDCPL_PUBLIC
-int
+PDCPL_PUBLIC int
 pdcpl_htoj(PDCPL_SA(In) const char *s, PDCPL_SA(Out) intmax_t *out);
 
 /**
@@ -374,8 +366,7 @@ pdcpl_htoi(PDCPL_SA(In) const char *s, PDCPL_SA(Out) int *out)
  * @returns 0 on success, -EINVAL if any parameters are `NULL`, -ENOMEM if any
  *  of the memory allocation operations fail
  */
-PDCPL_PUBLIC
-int
+PDCPL_PUBLIC int
 pdcpl_strsq(
   PDCPL_SA(In) const char *s,
   PDCPL_SA(Out) char **op,
@@ -407,8 +398,7 @@ pdcpl_tolower(char c)
  * @returns 0 on success, -EINVAL if `in` or `op` are `NULL`, -ENOMEM if there
  *  is not enough memory to expand or reallocate the output buffer
  */
-PDCPL_PUBLIC
-int
+PDCPL_PUBLIC int
 pdcpl_strexpand(
   PDCPL_SA(In) const char *in,
   PDCPL_SA(Out) char **op,
@@ -424,8 +414,7 @@ pdcpl_strexpand(
  * @param ncp Address of `size_t` to write string length to (can be `NULL`)
  * @returns 0 on succes, -EINVAL if `sp` is `NULL`, -ENOMEM if `malloc` fails
  */
-PDCPL_PUBLIC
-int
+PDCPL_PUBLIC int
 pdcpl_jtoa(
   ptrdiff_t x, PDCPL_SA(Out) char **sp, PDCPL_SA(Opt(Out)) size_t *ncp);
 
@@ -454,8 +443,7 @@ pdcpl_itoa(int x, PDCPL_SA(Out) char **sp, PDCPL_SA(Opt(Out)) size_t *ncp)
  * @param ss String to search for within `s`
  * @param pp Address of `size_t` to write leftmost occurrence index to
  */
-PDCPL_PUBLIC
-int
+PDCPL_PUBLIC int
 pdcpl_strfind(
   PDCPL_SA(In) const char *s,
   PDCPL_SA(In) const char *ss,
@@ -470,8 +458,7 @@ pdcpl_strfind(
  * @param ss String to search for within `s`
  * @param pp Address of `size_t` to write rightmost occurrence index to
  */
-PDCPL_PUBLIC
-int
+PDCPL_PUBLIC int
 pdcpl_strrfind(
   PDCPL_SA(In) const char *s,
   PDCPL_SA(In) const char *ss,
@@ -485,8 +472,7 @@ pdcpl_strrfind(
  * @param op Address to `char *` to write the output string
  * @param ncp Address to `size_t` to write output string length (can be `NULL`)
  */
-PDCPL_PUBLIC
-int
+PDCPL_PUBLIC int
 pdcpl_strcat(
   PDCPL_SA(In) const char *s1,
   PDCPL_SA(In) const char *s2,
