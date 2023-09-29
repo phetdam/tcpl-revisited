@@ -33,6 +33,9 @@ project(
     LANGUAGES C CXX
 )
 
+# build shared libraries by default
+option(BUILD_SHARED_LIBS "Build pdcpl libraries as shared" ON)
+
 # set some system information variables used for the version info. note the
 # relevant CMake variables used will be empty if used before project()
 set(PDCPL_SYSTEM_NAME ${CMAKE_SYSTEM_NAME})
