@@ -84,15 +84,15 @@ input:
  * Currently this only supports C declarations.
  */
 stmt:
-  SEMICOLON
+  ";"
 | decln
 
 /* C declarations rule.
  *
- * We follow the declaration specification in Appendix A, section 8 of The C
- * Programming Language, although this grammar does not allow definitions. That
- * is, the init_declr (init-declarator) rule does not allow initializers. We
- * also simplify the declaration rule to only allow on declaration specifier.
+ * We follow a modified version of the declaration specification in Appendix A,
+ * section 8 of The C Programming Language, as we do not allow definitions.
+ * That is, the init_declr (init-declarator) rule does not allow initializers.
+ * The declaration rule alow only allows one declaration specifier.
  */
 decln:
   decl_spec init_dclrs ";"
