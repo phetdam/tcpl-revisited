@@ -10,7 +10,7 @@
   #include <sstream>
   #include <string>
 
-  #include "bdcl/dcl_parser.h"
+  #include "bdcl/dcl_parser_impl.h"
 %}
 
 /* C++ LR parser using variants handling complete symbols with error reporting.
@@ -37,7 +37,7 @@
 %define api.location.file none
 /* parser class is yy::dcl_parser, not the usual yy::parser */
 %define api.parser.class { dcl_parser }
-%param { bdcl::dcl_parser& parser }
+%param { bdcl::dcl_parser_impl& parser }
 
 /* Token definitions */
 %token STAR "*"

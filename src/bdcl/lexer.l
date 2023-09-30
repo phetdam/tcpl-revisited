@@ -35,7 +35,7 @@
   #include <cstring>
   #include <string>
 
-  #include "bdcl/dcl_parser.h"
+  #include "bdcl/dcl_parser_impl.h"
 
   /**
    * User-defined action run after token match but before rule action.
@@ -99,7 +99,7 @@ NEWLINES    \n+
 
 %{
   // location setup code to run before scanning. PDCPL_BDCL_YYLEX is a friend
-  // of the bdcl::dcl_parser class so we can update location_ directly
+  // of the bdcl::dcl_parser_impl class so we can update location_ directly
   auto& loc = parser.location_;
   // move start position onto previous end position
   loc.step();
@@ -176,7 +176,7 @@ namespace bdcl {
  * @param enable_debug `true` to turn on lexer tracing, default `false`
  * @returns `true` on success, `false` on failure and sets `last_error_`
  */
-bool dcl_parser::lex_setup(
+bool dcl_parser_impl::lex_setup(
   const std::string& input_file, bool enable_tracing) noexcept
 {
   // enable/disable debugging. yy_flex_debug is not even exported in the
@@ -202,7 +202,7 @@ bool dcl_parser::lex_setup(
  * @param input_file Input file passed to `lex_setup`. Used in error reporting.
  * @returns `true` on success, `false` on failure and sets `last_error_`
  */
-bool dcl_parser::lex_cleanup(const std::string& input_file) noexcept
+bool dcl_parser_impl::lex_cleanup(const std::string& input_file) noexcept
 {
   if (yyin != stdin && std::fclose(yyin)) {
     last_error_ =

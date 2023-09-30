@@ -13,23 +13,16 @@ set(BDCL_PARSER_INPUT ${BDCL_PARSER_PREFIX}.y)
 set(BDCL_PARSER_HEADER ${BDCL_PARSER_PREFIX}.yy.h)
 set(BDCL_PARSER_SOURCE ${BDCL_PARSER_PREFIX}.yy.cc)
 
-# generate parser using Bison. header goes to include dir, source to src dir.
-# more or less the same formula used in infix-calculator with some changes.
+# generate parser using Bison. header + source both go to source dir. more or
+# less the same formula used in infix-calculator with some changes.
 add_custom_command(
     OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/${BDCL_PARSER_SOURCE}
     COMMAND
         ${PDCPL_BISON} -Wall
-            # use historical --defines for Bison 3.5.1. Bison requires that the
-            # header is in the same directory as the generated source, so after
-            # generation, we then copy the header to the include dir. note that
-            # api.include.header only has effect for C, not C++, parsers
+            # use historical --defines for Bison 3.5.1
             --defines=${CMAKE_CURRENT_SOURCE_DIR}/${BDCL_PARSER_HEADER}
             -o ${CMAKE_CURRENT_SOURCE_DIR}/${BDCL_PARSER_SOURCE}
             ${CMAKE_CURRENT_SOURCE_DIR}/${BDCL_PARSER_INPUT}
-    COMMAND
-        ${CMAKE_COMMAND} -E copy_if_different
-            ${CMAKE_CURRENT_SOURCE_DIR}/${BDCL_PARSER_HEADER}
-            ${BDCL_NAMESPACE_INCLUDE_DIR}/${BDCL_PARSER_HEADER}
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${BDCL_PARSER_INPUT}
     COMMENT "Running Bison to build parser ${BDCL_PARSER_SOURCE}"
     VERBATIM
@@ -71,7 +64,18 @@ if(PDCPL_FLEX_FOUND AND PDCPL_BISON_FOUND)
         )
     endif()
     # build bdcl as a separate library. could be static or shared
-    add_library(bdcl ${BDCL_LEXER_SOURCE} ${BDCL_PARSER_SOURCE})
+    add_library(
+        bdcl_lib
+            ${BDCL_LEXER_SOURCE}
+            ${BDCL_PARSER_SOURCE}
+            dcl_parser.cc
+            dcl_parser_impl.cc
+    )
+    set_target_properties(
+        bdcl_lib PROPERTIES
+            OUTPUT_NAME bdcl
+            DEFINE_SYMBOL BDCL_BUILD_DLL
+    )
 else()
     # for formatted warning message, need leading spaces
     message(
