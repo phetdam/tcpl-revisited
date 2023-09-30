@@ -5,3 +5,5 @@
 /build_windows*
 # ignore callgrind profile
 /callgrind.out.*
+# ignore Flex/Bison generated C/C++ files
+*.yy.*
