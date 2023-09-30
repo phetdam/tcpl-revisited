@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION ${CMAKE_MINIMUM_REQUIRED_VERSION})
 
+# add Bison-generated C declaration parser library
+add_subdirectory(bdcl)
 # add run-time library first
 add_subdirectory(pdcpl)
 

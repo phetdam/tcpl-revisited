@@ -96,6 +96,9 @@ set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 # add compiler options and function for "standalone" executables
 include(ConfigCompile)
 include(AddStandalone)
+# find Flex + Bison if possible. PDCPL_FLEX_FOUND and PDCPL_BISON_FOUND will be
+# set to either true or false depending on if they are found or not
+include(FindFlexBison)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
