@@ -87,7 +87,7 @@ stmt:
   ";"
 | decln
 
-/* C declarations rule.
+/* C declaration rule.
  *
  * We follow a modified version of the declaration specification in Appendix A,
  * section 8 of The C Programming Language, as we do not allow definitions.
