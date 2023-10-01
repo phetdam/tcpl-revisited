@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION ${CMAKE_MINIMUM_REQUIRED_VERSION})
 
+# add pdcpl support library
 add_library(
     pdcpl
     bitwise.c file.c histogram.c memory.c string.c variant.c
