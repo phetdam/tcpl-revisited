@@ -10,29 +10,29 @@ cmake_minimum_required(VERSION ${CMAKE_MINIMUM_REQUIRED_VERSION})
 # Arguments:
 #   target
 #       Name of the output target
-#   ...
+#   REQUIRES ...
 #       Names of targets to link against using the PRIVATE interface
 #
 function(pdcpl_add_standalone target)
-    foreach(ARG ${ARGV})
-        # add executable for the exercise
-        if(ARG STREQUAL ${target})
-            add_executable(${target} ${target}.c)
-        # treat all other args as libraries to link against
-        else()
-            target_link_libraries(${target} PRIVATE ${ARG})
+    # parse REQUIRES multi-value argument after target. ARGN contains all the
+    # arguments that are after the first required argument target
+    set(MULTI_VALUE_ARGS REQUIRES)
+    cmake_parse_arguments(TARGET "" "" "${MULTI_VALUE_ARGS}" ${ARGN})
+    # add executable for the exercise
+    add_executable(${target} ${target}.c)
+    # link against any specified library targets. note list is expanded
+    if(DEFINED TARGET_REQUIRES)
+        target_link_libraries(${target} PRIVATE ${TARGET_REQUIRES})
+        # on Windows, copy DLLs to the executable location so they can be found
+        if(WIN32)
+            add_custom_command(
+                TARGET ${target} POST_BUILD
+                COMMAND
+                    ${CMAKE_COMMAND} -E copy_if_different
+                        $<TARGET_RUNTIME_DLLS:${target}>
+                        $<TARGET_FILE_DIR:${target}>
+                COMMAND_EXPAND_LISTS
+            )
         endif()
-    endforeach()
-    # on Windows, we copy DLLs to the executable location so they can be found.
-    # if there were any targets to link against, ARGN > 1.
-    if(WIN32 AND (ARGC GREATER 1))
-        add_custom_command(
-            TARGET ${target} POST_BUILD
-            COMMAND
-                ${CMAKE_COMMAND} -E copy_if_different
-                    $<TARGET_RUNTIME_DLLS:${target}>
-                    $<TARGET_FILE_DIR:${target}>
-            COMMAND_EXPAND_LISTS
-        )
     endif()
 endfunction()
