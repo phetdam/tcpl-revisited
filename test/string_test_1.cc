@@ -23,11 +23,11 @@
 
 #include <gtest/gtest.h>
 
+#include "pdcpl/common.h"
+#include "pdcpl/errno.hh"
 #include "pdcpl/features.h"
 #include "pdcpl/file.h"
-#include "pdcpl/cpp/errno.h"
-#include "pdcpl/cpp/common.h"
-#include "pdcpl/cpp/memory.h"
+#include "pdcpl/memory.hh"
 
 // tests reading from an in-memory buffer as a FILE* need fmemopen
 #ifdef PDCPL_POSIX_1_2008
@@ -40,7 +40,7 @@
 #ifdef _WIN32
 #include <cstdio>  // std::fputs
 
-#include "pdcpl/cpp/hresult.h"
+#include "pdcpl/hresult.hh"
 #endif  // _WIN32
 
 namespace {

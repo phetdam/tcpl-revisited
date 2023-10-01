@@ -1,14 +1,14 @@
 /**
- * @file cpp/hresult.h
+ * @file hresult.hh
  * @author Derek Huang
  * @brief C++ header for HRESULT helpers
  */
 
-#ifndef PDCPL_CPP_HRESULT_H_
-#define PDCPL_CPP_HRESULT_H_
+#ifndef PDCPL_HRESULT_HH_
+#define PDCPL_HRESULT_HH_
 
 #ifndef _WIN32
-#error "cpp/hresult.h is only available on Windows"
+#error "hresult.hh is only available on Windows"
 #endif  // _WIN32
 
 #ifndef WIN32_LEAN_AND_MEAN
@@ -48,4 +48,4 @@ inline auto hresult_message(const std::string& prefix)
 // don't pollute translation units
 #undef WIN32_LEAN_AND_MEAN
 
-#endif  // PDCPL_CPP_HRESULT_H_
+#endif  // PDCPL_HRESULT_HH_

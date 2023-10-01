@@ -24,13 +24,13 @@
 
 #include <gtest/gtest.h>
 
+#include "pdcpl/errno.hh"
 #include "pdcpl/features.h"
+#include "pdcpl/memory.hh"
 #include "pdcpl/warnings.h"
-#include "pdcpl/cpp/errno.h"
-#include "pdcpl/cpp/memory.h"
 
 #ifdef _WIN32
-#include "pdcpl/cpp/hresult.h"
+#include "pdcpl/hresult.hh"
 #endif  // _WIN32
 
 #ifdef PDCPL_POSIX_1_2008

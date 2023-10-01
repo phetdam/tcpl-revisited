@@ -1,12 +1,12 @@
 /**
- * @file cpp/errno.h
+ * @file errno.hh
  * @author Derek Huang
  * @brief C++ header for errno helpers
  * @copyright MIT License
  */
 
-#ifndef PDCPL_CPP_ERRNO_H_
-#define PDCPL_CPP_ERRNO_H_
+#ifndef PDCPL_ERRNO_HH_
+#define PDCPL_ERRNO_HH_
 
 #include <cerrno>
 #include <cstring>
@@ -40,4 +40,4 @@ inline auto errno_message(const std::string& prefix)
 
 }  // namespace pdcpl
 
-#endif  // PDCPL_CPP_ERRNO_H_
+#endif  // PDCPL_ERRNO_HH_

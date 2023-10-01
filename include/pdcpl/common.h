@@ -35,4 +35,28 @@
 // macro to indicate extern inline, i.e. never static inline
 #define PDCPL_EXTERN_INLINE inline
 
+// macros for the C++ version numbers
+#define PDCPL_CPP_14 201402L
+#define PDCPL_CPP_17 201703L
+#define PDCPL_CPP_20 202002L
+
+// C++ only section; none of these macros are defined when compiling C
+#ifdef __cplusplus
+
+// correct C++ integer value even when /Zc:__cplusplus is not defined.
+#if defined(_MSC_VER)
+#define PDCPL_CPLUSPLUS _MSVC_LANG
+#else
+#define PDCPL_CPLUSPLUS __cplusplus
+#endif  // !defined(_MSC_VER)
+
+// support for pre-C++20 constexpr
+#if PDCPL_CPLUSPLUS >= PDCPL_CPP_20
+#define PDCPL_CONSTEXPR_20 constexpr
+#else
+#define PDCPL_CONSTEXPR_20 const
+#endif  // __cplusplus < PDCPL_CPP_20
+
+#endif  // __cplusplus
+
 #endif  // PDCPL_COMMON_H_

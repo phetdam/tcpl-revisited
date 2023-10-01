@@ -1,12 +1,12 @@
 /**
- * @file cpp/memory.h
+ * @file memory.hh
  * @author Derek Huang
  * @brief C++ header for memory management helpers
  * @copyright MIT License
  */
 
-#ifndef PDCPL_CPP_MEMORY_H_
-#define PDCPL_CPP_MEMORY_H_
+#ifndef PDCPL_MEMORY_HH_
+#define PDCPL_MEMORY_HH_
 
 #ifdef _WIN32
 #ifndef WIN32_LEAN_AND_MEAN
@@ -177,4 +177,4 @@ private:
 #undef WIN32_LEAN_AND_MEAN
 #endif  // _WIN32
 
-#endif  // PDCPL_CPP_MEMORY_H_
+#endif  // PDCPL_MEMORY_HH_
