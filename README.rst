@@ -38,6 +38,16 @@ To build release binaries for this project, simply use the command
 
 Simply typing ``./build.sh`` will build unoptimized binaries with debug symbols.
 
+By default, the ``pdcpl`` support library is built as a shared library,
+requiring that ``PDCPL_DLL`` be defined during compilation. To explicitly
+request that ``pdcpl`` be built as a static library, one should specify
+``-DBUILD_SHARED_LIBS=0``. E.g. to build release binaries with ``pdcpl`` built
+as a static library, one can use the command
+
+.. code:: bash
+
+   ./build.sh -c Release -Ca -DBUILD_SHARED_LIBS=0
+
 Windows
 ~~~~~~~
 
@@ -63,6 +73,18 @@ the ``-a`` flag, e.g. to build 64-bit release binaries instead of the default
    build -a x64 -c Release
 
 Currently, the Visual Studio toolset used will be whichever is the default.
+
+By default, the ``pdcpl`` support library is built as a shared library,
+requiring that ``PDCPL_DLL`` be defined during compilation. To explicitly
+request that ``pdcpl`` be built as a static library, one should specify
+``-DBUILD_SHARED_LIBS=0``. E.g. to build 32-bit release binaries with ``pdcpl``
+built as a static library, one can use the command
+
+.. code:: shell
+
+   build -c Release -Ca "-DBUILD_SHARED_LIBS=0"
+
+The extra double quotes are needed to prevent the ``=`` from confusing CMD.
 
 Building unit tests
 -------------------
