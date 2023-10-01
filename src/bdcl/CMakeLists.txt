@@ -1,8 +1,5 @@
 cmake_minimum_required(VERSION ${CMAKE_MINIMUM_REQUIRED_VERSION})
 
-# bdcl namespace include directory
-set(BDCL_NAMESPACE_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/include/bdcl)
-
 # file prefixes and names for the lexer and parser
 set(BDCL_LEXER_PREFIX lexer)
 set(BDCL_LEXER_INPUT ${BDCL_LEXER_PREFIX}.l)
