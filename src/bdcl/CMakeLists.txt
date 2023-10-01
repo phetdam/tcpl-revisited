@@ -39,14 +39,6 @@ add_custom_command(
     COMMENT "Running Flex to build lexer ${BDCL_LEXER_SOURCE}"
     VERBATIM
 )
-# MSVC complains that a conditional expression in the Bison-generated parser
-# source is constant, so we silence it just for this source file
-if(MSVC)
-    set_source_files_properties(
-        ${BDCL_PARSER_SOURCE} PROPERTIES
-        COMPILE_OPTIONS /wd4127
-    )
-endif()
 # only build if both Flex and Bison are found
 if(PDCPL_FLEX_FOUND AND PDCPL_BISON_FOUND)
     # MSVC complains that a conditional expression in the Bison-generated
