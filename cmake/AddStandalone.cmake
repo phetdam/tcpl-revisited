@@ -24,12 +24,17 @@ function(pdcpl_add_standalone target)
     if(DEFINED TARGET_REQUIRES)
         target_link_libraries(${target} PRIVATE ${TARGET_REQUIRES})
         # on Windows, copy DLLs to the executable location so they can be found
+        # during runtime. we also copy the target itself if different in order
+        # to ensure that even if there are no DLL dependencies, the
+        # copy_if_different will still succeed instead of erroring.
         if(WIN32)
             add_custom_command(
                 TARGET ${target} POST_BUILD
                 COMMAND
                     ${CMAKE_COMMAND} -E copy_if_different
-                        $<TARGET_RUNTIME_DLLS:${target}>
+                        # sources
+                        $<TARGET_RUNTIME_DLLS:${target}> $<TARGET_FILE:${target}>
+                        # destination
                         $<TARGET_FILE_DIR:${target}>
                 COMMAND_EXPAND_LISTS
             )

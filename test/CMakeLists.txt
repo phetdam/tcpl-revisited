@@ -21,7 +21,11 @@ if(WIN32)
         TARGET pdcpl_test POST_BUILD
         COMMAND
             ${CMAKE_COMMAND} -E copy_if_different
-                $<TARGET_RUNTIME_DLLS:pdcpl_test> $<TARGET_FILE_DIR:pdcpl_test>
+                # sources. copy target itself so that in case DLL list is empty
+                # we will not get some ugly CMake error
+                $<TARGET_RUNTIME_DLLS:pdcpl_test> $<TARGET_FILE:pdcpl_test>
+                # destination
+                $<TARGET_FILE_DIR:pdcpl_test>
         COMMAND_EXPAND_LISTS
     )
 endif()

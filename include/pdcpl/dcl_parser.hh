@@ -5,16 +5,16 @@
  * @copyright MIT License
  */
 
-#ifndef BDCL_DCL_PARSER_H_
-#define BDCL_DCL_PARSER_H_
+#ifndef PDCPL_DCL_PARSER_H_
+#define PDCPL_DCL_PARSER_H_
 
 #include <memory>
 #include <string>
 
-#include "bdcl/dllexport.h"
+#include "pdcpl/dllexport.h"
 #include "pdcpl/warnings.h"
 
-namespace bdcl {
+namespace pdcpl {
 
 // forward declaration for the implementation class
 class dcl_parser_impl;
@@ -25,7 +25,7 @@ class dcl_parser_impl;
  * PIMPL is used to keep the Flex + Bison generated implementation internal to
  * provide a stable ABI, which is more important on Windows than Linux.
  */
-class BDCL_PUBLIC dcl_parser {
+class PDCPL_BCDP_PUBLIC dcl_parser {  // PDCPL_BCDP_PUBLIC
 public:
   /**
    * Ctor.
@@ -119,6 +119,6 @@ PDCPL_MSVC_WARNING_DISABLE(4251)
 PDCPL_MSVC_WARNING_ENABLE()
 };
 
-}  // namespace bdcl
+}  // namespace pdcpl
 
-#endif  // BDCL_DCL_PARSER_H_
+#endif  // PDCPL_DCL_PARSER_H_

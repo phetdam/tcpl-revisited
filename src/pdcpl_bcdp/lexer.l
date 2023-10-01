@@ -1,8 +1,8 @@
 /*
- * bdcl/lexer.l
+ * lexer.l
  *
  * Author: Derek Huang
- * Summary: Flex input for bdcl lexer
+ * Summary: Flex input for pdcpl C declaration lexer
  * Copyright: MIT License
  */
 
@@ -47,7 +47,7 @@
    */
   #define YY_USER_ACTION loc.columns(yyleng);
 
-  namespace bdcl {
+  namespace pdcpl {
 
   /**
    * Throw `yy::dcl_parser::syntax_error` given location and bad token.
@@ -56,12 +56,12 @@
    * @param token Unknown token text
    */
   [[noreturn]]
-  void unknown_token_throw(const yy::location& loc, const std::string& token)
+  void unknown_dcl_token_throw(const yy::location& loc, const std::string& token)
   {
     throw yy::dcl_parser::syntax_error{loc, "Unrecognized token '" + token + "'"};
   }
 
-  }  // namespace bdcl
+  }  // namespace pdcpl
 %}
 
 /* Start conditions */
@@ -161,13 +161,13 @@ NEWLINES    \n+
   /* Identifier */
 {IDEN}                 return yy::dcl_parser::make_IDEN(yytext, loc);
   /* Unknown token, so throw. Bison will catch the error. */
-.                      bdcl::unknown_token_throw(loc, yytext);
+.                      pdcpl::unknown_dcl_token_throw(loc, yytext);
   /* With Bison locations turned on make_YYEOF needs to be explicitly used */
 <<EOF>>                return yy::dcl_parser::make_YYEOF(loc);
 
 %%
 
-namespace bdcl {
+namespace pdcpl {
 
 /**
  * Perform setup for the Flex lexer.
@@ -212,4 +212,4 @@ bool dcl_parser_impl::lex_cleanup(const std::string& input_file) noexcept
   return true;
 }
 
-}  // namespace bdcl
+}  // namespace pdcpl

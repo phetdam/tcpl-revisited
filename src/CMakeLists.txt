@@ -2,10 +2,10 @@ cmake_minimum_required(VERSION ${CMAKE_MINIMUM_REQUIRED_VERSION})
 
 # current source directory can be treated as "private" include directory
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-# add Bison-generated C declaration parser library
-add_subdirectory(bdcl)
-# add run-time library first
+# add run-time library
 add_subdirectory(pdcpl)
+# add Bison-generated C declaration parser library
+add_subdirectory(pdcpl_bcdp)
 
 pdcpl_add_standalone(1.1)
 pdcpl_add_standalone(1.2)

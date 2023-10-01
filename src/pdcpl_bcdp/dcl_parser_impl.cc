@@ -5,9 +5,9 @@
  * @copyright MIT License
  */
 
-#include "bdcl/dcl_parser_impl.h"
+#include "dcl_parser_impl.h"
 
-namespace bdcl {
+namespace pdcpl {
 
 /**
  * Parse the specified input file.
@@ -36,4 +36,4 @@ bool dcl_parser_impl::parse(
   return !status;
 }
 
-}  // namespace bdcl
+}  // namespace pdcpl

@@ -5,11 +5,11 @@
  * @copyright MIT License
  */
 
-#include "bdcl/dcl_parser.h"
+#include "pdcpl/dcl_parser.hh"
 
-#include "bdcl/dcl_parser_impl.h"
+#include "dcl_parser_impl.h"
 
-namespace bdcl {
+namespace pdcpl {
 
 /**
  * Ctor.
@@ -45,4 +45,4 @@ const std::string& dcl_parser::last_error() const noexcept
   return impl_->last_error();
 }
 
-}  // namespace bdcl
+}  // namespace pdcpl

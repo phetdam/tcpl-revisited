@@ -1,8 +1,8 @@
 /*
- * bdcl/parser.y
+ * parser.y
  *
  * Author: Derek Huang
- * Summary: Bison input for bdcl parser
+ * Summary: Bison input for pdcpl C declaration parser
  * Copyright: MIT License
  */
 
@@ -22,8 +22,8 @@
 
 /* C++ LR parser using variants handling complete symbols with error reporting.
  *
- * Location tracking is enabled and as recommended by the Bison documentation,
- * the parser's parse() function takes the bdcl dcl_parser as a parameter.
+ * Location tracking is enabled and as recommended by Bison documentation, the
+ * parser's parse() function takes the pdcpl_bcdp dcl_parser as a parameter.
  *
  * Requiring Bison 3.2 stops unnecessary stack.hh generation. For Bison 3.6+,
  * it is better for parse.error to have the value of detailed. Lookahead
@@ -44,7 +44,7 @@
 %define api.location.file none
 /* parser class is yy::dcl_parser, not the usual yy::parser */
 %define api.parser.class { dcl_parser }
-%param { bdcl::dcl_parser_impl& parser }
+%param { pdcpl::dcl_parser_impl& parser }
 
 /* Token definitions */
 %token STAR "*"

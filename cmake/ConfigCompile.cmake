@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION ${CMAKE_MINIMUM_REQUIRED_VERSION})
 
+# if building shared libraries, define PDCPL_DLL
+if(BUILD_SHARED_LIBS)
+    add_compile_definitions(PDCPL_DLL)
+endif()
 if(MSVC)
     # stop MSVC from warning about unsafe functions, C is unsafe by nature
     add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
