@@ -17,7 +17,7 @@
   #include <sstream>
   #include <string>
 
-  #include "dcl_parser_impl.h"
+  #include "dcl_parser_impl.hh"
 %}
 
 /* C++ LR parser using variants handling complete symbols with error reporting.

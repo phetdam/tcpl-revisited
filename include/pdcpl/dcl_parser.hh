@@ -25,7 +25,7 @@ class dcl_parser_impl;
  * PIMPL is used to keep the Flex + Bison generated implementation internal to
  * provide a stable ABI, which is more important on Windows than Linux.
  */
-class PDCPL_BCDP_PUBLIC dcl_parser {  // PDCPL_BCDP_PUBLIC
+class PDCPL_BCDP_PUBLIC dcl_parser {
 public:
   /**
    * Ctor.

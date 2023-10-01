@@ -35,7 +35,7 @@
   #include <cstring>
   #include <string>
 
-  #include "dcl_parser_impl.h"
+  #include "dcl_parser_impl.hh"
 
   /**
    * User-defined action run after token match but before rule action.

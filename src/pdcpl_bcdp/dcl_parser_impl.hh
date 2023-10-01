@@ -1,12 +1,12 @@
 /**
- * @file dcl_parser_impl.h
+ * @file dcl_parser_impl.hh
  * @author Derek Huang
  * @brief C++ parser implementation for simplified C declarations
  * @copyright MIT License
  */
 
-#ifndef PDCPL_BCDP_DCL_PARSER_IMPL_H_
-#define PDCPL_BCDP_DCL_PARSER_IMPL_H_
+#ifndef PDCPL_BCDP_DCL_PARSER_IMPL_HH_
+#define PDCPL_BCDP_DCL_PARSER_IMPL_HH_
 
 #include <string>
 
@@ -28,7 +28,7 @@ namespace pdcpl { class dcl_parser_impl; }  // namespace pdcpl
  * header is included in a translation unit, so we disable when including.
  */
 PDCPL_MSVC_WARNING_DISABLE(4065)
-#include "parser.yy.h"
+#include "parser.yy.hh"
 PDCPL_MSVC_WARNING_ENABLE()
 
 /**
@@ -127,4 +127,4 @@ private:
 
 }  // namespace pdcpl
 
-#endif  // PDCPL_BCDP_DCL_PARSER_IMPL_H_
+#endif  // PDCPL_BCDP_DCL_PARSER_IMPL_HH_

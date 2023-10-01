@@ -5,7 +5,9 @@
  * @copyright MIT License
  */
 
-#include "dcl_parser_impl.h"
+#include "dcl_parser_impl.hh"
+
+#include <string>
 
 namespace pdcpl {
 

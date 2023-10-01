@@ -7,7 +7,7 @@
 
 #include "pdcpl/dcl_parser.hh"
 
-#include "dcl_parser_impl.h"
+#include "dcl_parser_impl.hh"
 
 namespace pdcpl {
 
