@@ -207,15 +207,27 @@ array_spec:
   "[" "]"
 | "[" DIGITS "]"
 
+/* C optional parameter specifiers.
+ *
+ * Supports empty or void for no parameters, a normal list of parameter
+ * specifiers, and a list of parameter specifiers with variadic arguments.
+ */
 maybe_param_specs:
   %empty
 | param_specs
 | param_specs "," "..."
 
+/* C parameter specifiers */
 param_specs:
   param_spec
 | param_specs "," param_spec
 
+/* C parameter specifier.
+ *
+ * TODO: Need to define something like direct-abstract-declarator as The C
+ * Programming Language book has, i.e. a `dir_declr` and `dclr` that don't
+ * resolve into an identifier, as otherwise we can't support the full syntax.
+ */
 param_spec:
   decl_spec
 | decl_spec dclr
