@@ -7,6 +7,13 @@
  */
 
 %{
+  // on Windows, any header that transitively includes limits.h causes MSVC to
+  // emit C4668, warning that __STDC_WANT_SECURE_LIB__ is not defined and has
+  // been replaced with 0. corecrt.h defines __STDC_WANT_SECURE_LIB__ to 1
+  #ifdef _WIN32
+  #include <corecrt.h>
+  #endif  // _WIN32
+
   #include <sstream>
   #include <string>
 
