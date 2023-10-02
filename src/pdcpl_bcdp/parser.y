@@ -193,7 +193,8 @@ ptr_specs:
 
 /* C pointer specifier */
 ptr_spec:
-  "*" type_qual
+  "*"
+| "*" type_qual
 
 /* C direct declarator.
  *
