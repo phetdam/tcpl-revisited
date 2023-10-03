@@ -8,6 +8,7 @@
 #ifndef PDCPL_DCL_PARSER_H_
 #define PDCPL_DCL_PARSER_H_
 
+#include <filesystem>
 #include <memory>
 #include <string>
 
@@ -55,7 +56,7 @@ public:
    * @param enable_trace `true` to enable lexer and parser tracing
    * @returns `true` on success, `false` on failure
    */
-  bool parse(const std::string& input_file, bool enable_trace = false)
+  bool parse(const std::filesystem::path& input_file, bool enable_trace = false)
   {
     return parse(input_file, enable_trace, enable_trace);
   }
@@ -68,7 +69,10 @@ public:
    * @param trace_parser `true` to enable parser tracing
    * @returns `true` on success, `false` on failure
    */
-  bool parse(const std::string& input_file, bool trace_lexer, bool trace_parser);
+  bool parse(
+    const std::filesystem::path& input_file,
+    bool trace_lexer,
+    bool trace_parser);
 
   /**
    * Parse input from `stdin`.
@@ -88,7 +92,8 @@ public:
    * @param enable_trace `true` to enable lexer and parser tracing
    * @returns `true` on success, `false` on failure
    */
-  auto operator()(const std::string& input_file, bool enable_trace = false)
+  auto operator()(
+    const std::filesystem::path& input_file, bool enable_trace = false)
   {
     return parse(input_file, enable_trace);
   }
@@ -102,7 +107,9 @@ public:
    * @returns `true` on success, `false` on failure
    */
   auto operator()(
-    const std::string& input_file, bool trace_lexer, bool trace_parser)
+    const std::filesystem::path& input_file,
+    bool trace_lexer,
+    bool trace_parser)
   {
     return parse(input_file, trace_lexer, trace_parser);
   }

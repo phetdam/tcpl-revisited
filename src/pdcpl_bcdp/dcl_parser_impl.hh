@@ -8,6 +8,7 @@
 #ifndef PDCPL_BCDP_DCL_PARSER_IMPL_HH_
 #define PDCPL_BCDP_DCL_PARSER_IMPL_HH_
 
+#include <filesystem>
 #include <string>
 
 #include "pdcpl/warnings.h"
@@ -82,7 +83,10 @@ public:
    * @param trace_parser `true` to enable parser tracing
    * @returns `true` on success, `false` on failure
    */
-  bool parse(const std::string& input_file, bool trace_lexer, bool trace_parser);
+  bool parse(
+    const std::filesystem::path& input_file,
+    bool trace_lexer,
+    bool trace_parser);
 
   // allow lexer to access to the parse driver members to update location +
   // error. we use (::PDCPL_BCDP_YYLEX) to tell compiler PDCPL_BCDP_YYLEX is in

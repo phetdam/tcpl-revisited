@@ -32,7 +32,7 @@ dcl_parser::~dcl_parser() = default;
  * @returns `true` on success, `false` on failure
  */
 bool dcl_parser::parse(
-  const std::string& input_file, bool trace_lexer, bool trace_parser)
+  const std::filesystem::path& input_file, bool trace_lexer, bool trace_parser)
 {
   return impl_->parse(input_file, trace_lexer, trace_parser);
 }
