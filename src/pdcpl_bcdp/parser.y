@@ -151,6 +151,10 @@ type_spec:
 | "enum" IDEN
 | IDEN
 
+/* "Implied" int.
+ *
+ * Supports the C practice of defaulting to int as a type.
+ */
 implied_int:
   %empty
 | "int"
@@ -182,14 +186,19 @@ init_dclr:
 
 /* C declarator.
  *
- * This handles are the pointer specifiers before parsing direct declarator.
+ * This handles the pointer specifiers before parsing direct declarator.
  */
 dclr:
-  ptr_specs dir_declr
+  maybe_ptr_specs dir_declr
+
+/* C optional pointer specifiers */
+maybe_ptr_specs:
+  %empty
+| ptr_specs
 
 /* C pointer specifiers */
 ptr_specs:
-  %empty
+  ptr_spec
 | ptr_specs ptr_spec
 
 /* C pointer specifier */
@@ -218,18 +227,20 @@ array_spec:
 
 /* C optional parameter specifiers.
  *
- * Supports empty or void for no parameters, a normal list of parameter
- * specifiers, and a list of parameter specifiers with variadic arguments.
+ * Supports an empty parameter list for pre-ANSI C unspecified parameters.
  */
 maybe_param_specs:
   %empty
 | param_specs
-| param_specs "," "..."
 
-/* C parameter specifiers */
+/* C parameter specifiers.
+ *
+ * Supports variadic arguments.
+ */
 param_specs:
   param_spec
 | param_specs "," param_spec
+| param_specs "," "..."
 
 /* C parameter specifier.
  *
@@ -238,8 +249,20 @@ param_specs:
  * resolve into an identifier, as otherwise we can't support the full syntax.
  */
 param_spec:
-  decl_spec
-| decl_spec dclr
+  qual_type_spec
+| qual_type_spec dclr
+| qual_type_spec a_dclr
+
+a_dclr:
+  ptr_specs
+| maybe_ptr_specs a_dir_dclr
+
+a_dir_dclr:
+  "(" a_dclr ")"
+| array_spec
+| a_dir_dclr array_spec
+| "(" maybe_param_specs ")"
+| a_dir_dclr "(" maybe_param_specs ")"
 
 %%
 
