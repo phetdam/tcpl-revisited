@@ -157,6 +157,9 @@ NEWLINES    \n+
 "unsigned"             return yy::dcl_parser::make_S_UNSIGNED(loc);
   /* Variadic args specifier */
 "..."                  return yy::dcl_parser::make_T_VARIADIC(loc);
+  /* Type qualifiers */
+"const"                return yy::dcl_parser::make_Q_CONST(loc);
+"volatile"             return yy::dcl_parser::make_Q_VOLATILE(loc);
   /* Identifier */
 {IDEN}                 return yy::dcl_parser::make_IDEN(yytext, loc);
   /* Unknown token, so throw. Bison will catch the error. */
