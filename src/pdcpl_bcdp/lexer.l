@@ -85,7 +85,7 @@ LETTERS     {LETTER}+
 ALNUM       ({DIGIT}|{LETTER})
 ALNUMS      {ALNUM}+
 /* Identifier */
-IDEN        ({LETTER}|_)({ALNUM}|_)+
+IDEN        ({LETTER}|_)({ALNUM}|_)*
 /*
  * Treat blanks and newlines separately for accurate location tracking. This is
  * because newlines require that the current column is reset and the current
@@ -107,15 +107,13 @@ NEWLINES    \n+
 
   /* Ignore C block comments */
 "/*"                   BEGIN(C_COMMENT);
-  /* Possible end of C block comment */
-  /* <C_COMMENT>"*"         BEGIN(C_COMMENT_END); */
 <C_COMMENT>[^*\n]*
   /* Extra blank lines allowed in C block comment */
 <C_COMMENT>\n          loc.lines(yyleng); loc.step();
-<C_COMMENT>"*/"        BEGIN(INITIAL);
   /* Matched end of C block comment */
-  /* <C_COMMENT_END>"/"     loc.step(); BEGIN(INITIAL); */
-  /* <C_COMMENT_END>[^/]    BEGIN(C_COMMENT); */
+<C_COMMENT>"*/"        BEGIN(INITIAL);
+  /* Lone star, ignore */
+<C_COMMENT>"*"
   /* Ignore C++ line comments */
 "//"                   BEGIN(CXX_COMMENT);
 <CXX_COMMENT>[^\n]*

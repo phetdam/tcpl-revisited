@@ -143,6 +143,7 @@ type_spec:
 | sign_spec implied_int
 | length_spec implied_int
 | sign_spec length_spec implied_int
+| "int"
 | "double"
 | "long" "double"
 | "float"
