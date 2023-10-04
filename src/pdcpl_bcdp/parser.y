@@ -244,19 +244,27 @@ param_specs:
 
 /* C parameter specifier.
  *
- * TODO: Need to define something like direct-abstract-declarator as The C
- * Programming Language book has, i.e. a `dir_declr` and `dclr` that don't
- * resolve into an identifier, as otherwise we can't support the full syntax.
+ * Each parameter specifier is a qualified type specifier with or without a
+ * concrete or abstract declarator. Abstract declarators have no identifier.
  */
 param_spec:
   qual_type_spec
 | qual_type_spec dclr
 | qual_type_spec a_dclr
 
+/* C abstract declarator.
+ *
+ * The main difference from the [concrete] declarator is that the abstract
+ * declarator does not contain an identifier.
+ */
 a_dclr:
   ptr_specs
 | maybe_ptr_specs a_dir_dclr
 
+/* C direct abstract declarator.
+ *
+ * Similar to the direct declarator, but again does not resolve to identifier.
+ */
 a_dir_dclr:
   "(" a_dclr ")"
 | array_spec
