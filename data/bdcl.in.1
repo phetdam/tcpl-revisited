@@ -1,0 +1,28 @@
+/*
+ * bdcl.in.1
+ *
+ * Author: Derek Huang
+ * Copyright: MIT License
+ */
+
+/*
+ * Example declarations from section 5.12 of The C Programming Language
+ * modified to be suitable for processing as part of an actual C program.
+ *
+ * Comments are added to give context if necessary.
+ */
+
+// pointer to pointer to char
+char **argv;
+// pointer to array[13] of int
+int (*daytab)[13];
+// array[13] of pointer to int
+int *daytab_p[13];       // was daytab
+// function returning pointer to void
+void *comp();
+// pointer to function returning void
+void (*comp_p)();        // was comp
+// function returning pointer to array[] of function pointers returning char
+char (*(*x())[])();
+// array[3] of function pointers returning pointers to array[5] of char
+char (*(*y[3])())[5];    // was x

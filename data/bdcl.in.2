@@ -1,0 +1,18 @@
+/*
+ * bdcl.in.2
+ *
+ * Author: Derek Huang
+ * Copyright: MIT License
+ */
+
+/*
+ * Example declarations using content from section A8.8 of The C Programming
+ * Language as an example of abstract declarators used in function parameters.
+ */
+
+// function that takes pointer to a function taking two ints
+double *invoker(void (*)(int, int));
+// function taking a pointer to array[] of ints
+void array_ref_func(int (*)[]);
+// function taking an array[3] of pointers to int
+void const *ptr_array_func(int *[3]);
