@@ -61,10 +61,6 @@
 %token <std::string> DIGITS
 %token <std::string> IDEN
 /* storage class specifiers */
-<<<<<<< HEAD
-=======
-%token <std::string> STORAGE_SPEC
->>>>>>> master
 %token ST_AUTO "auto"
 %token ST_EXTERN "extern"
 %token ST_REGISTER "register"
@@ -132,19 +128,11 @@ decl_spec:
  * in The C Programming Language, we don't use typedef as a specifier.
  */
 storage_spec:
-<<<<<<< HEAD
   %empty      { $$ = pdcpl::cdcl_storage::st_auto; }
 | "auto"      { $$ = pdcpl::cdcl_storage::st_auto; }
 | "extern"    { $$ = pdcpl::cdcl_storage::st_extern; }
 | "register"  { $$ = pdcpl::cdcl_storage::st_register; }
 | "static"    { $$ = pdcpl::cdcl_storage::st_static; }
-=======
-  %empty
-| "auto"
-| "extern"
-| "register"
-| "static"
->>>>>>> master
 
 /* C qualified type specifier rule.
  *
