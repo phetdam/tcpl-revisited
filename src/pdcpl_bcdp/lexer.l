@@ -137,10 +137,10 @@ NEWLINES    \n+
   /* Digits */
 {DIGITS}               return yy::dcl_parser::make_DIGITS(yytext, loc);
   /* Storage specifiers */
-"auto"                 return yy::dcl_parser::make_STORAGE_SPEC(yytext, loc);
-"extern"               return yy::dcl_parser::make_STORAGE_SPEC(yytext, loc);
-"register"             return yy::dcl_parser::make_STORAGE_SPEC(yytext, loc);
-"static"               return yy::dcl_parser::make_STORAGE_SPEC(yytext, loc);
+"auto"                 return yy::dcl_parser::make_ST_AUTO(loc);
+"extern"               return yy::dcl_parser::make_ST_EXTERN(loc);
+"register"             return yy::dcl_parser::make_ST_REGISTER(loc);
+"static"               return yy::dcl_parser::make_ST_STATIC(loc);
   /* Type specifiers */
 "void"                 return yy::dcl_parser::make_T_VOID(loc);
 "char"                 return yy::dcl_parser::make_T_CHAR(loc);

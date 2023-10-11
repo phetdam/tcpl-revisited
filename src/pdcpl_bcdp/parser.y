@@ -57,8 +57,12 @@
 /* don't need digits' numerical value, so semantic type is std::string */
 %token <std::string> DIGITS
 %token <std::string> IDEN
-/* storage class specification */
+/* storage class specifiers */
 %token <std::string> STORAGE_SPEC
+%token ST_AUTO "auto"
+%token ST_EXTERN "extern"
+%token ST_REGISTER "register"
+%token ST_STATIC "static"
 /* type specifiers */
 %token T_VOID "void"
 %token T_CHAR "char"
@@ -115,7 +119,10 @@ decl_spec:
  */
 storage_spec:
   %empty
-| STORAGE_SPEC
+| "auto"
+| "extern"
+| "register"
+| "static"
 
 /* C qualified type specifier rule.
  *
