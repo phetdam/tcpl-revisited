@@ -1,12 +1,12 @@
 /**
- * @file dcl_parser.h
+ * @file cdcl_parser.h
  * @author Derek Huang
  * @brief C++ parser for simplified C declarations
  * @copyright MIT License
  */
 
-#ifndef PDCPL_DCL_PARSER_H_
-#define PDCPL_DCL_PARSER_H_
+#ifndef PDCPL_CDCL_PARSER_H_
+#define PDCPL_CDCL_PARSER_H_
 
 #include <filesystem>
 #include <memory>
@@ -18,7 +18,7 @@
 namespace pdcpl {
 
 // forward declaration for the implementation class
-class dcl_parser_impl;
+class cdcl_parser_impl;
 
 /**
  * Parse driver class for parsing C declarations.
@@ -26,17 +26,17 @@ class dcl_parser_impl;
  * PIMPL is used to keep the Flex + Bison generated implementation internal to
  * provide a stable ABI, which is more important on Windows than Linux.
  */
-class PDCPL_BCDP_PUBLIC dcl_parser {
+class PDCPL_BCDP_PUBLIC cdcl_parser {
 public:
   /**
    * Ctor.
    */
-  dcl_parser();
+  cdcl_parser();
 
   /**
    * Dtor.
    */
-  ~dcl_parser();
+  ~cdcl_parser();
 
   /**
    * Parse input from `stdin`.
@@ -122,10 +122,10 @@ public:
 private:
   // MSVC emits C4251 since STL types are not exported. not our problem however
 PDCPL_MSVC_WARNING_DISABLE(4251)
-  std::unique_ptr<dcl_parser_impl> impl_;
+  std::unique_ptr<cdcl_parser_impl> impl_;
 PDCPL_MSVC_WARNING_ENABLE()
 };
 
 }  // namespace pdcpl
 
-#endif  // PDCPL_DCL_PARSER_H_
+#endif  // PDCPL_CDCL_PARSER_H_

@@ -57,8 +57,8 @@ if(PDCPL_FLEX_FOUND AND PDCPL_BISON_FOUND)
         pdcpl_bcdp
             ${PDCPL_BCDP_LEXER_SOURCE}
             ${PDCPL_BCDP_PARSER_SOURCE}
-            dcl_parser.cc
-            dcl_parser_impl.cc
+            cdcl_parser.cc
+            cdcl_parser_impl.cc
     )
     set_target_properties(
         pdcpl_bcdp
