@@ -92,7 +92,7 @@ input:
  */
 stmt:
   ";"
-| decln
+| dcln
 
 /* C declaration rule.
  *
@@ -101,7 +101,7 @@ stmt:
  * That is, the init_declr (init-declarator) rule does not allow initializers.
  * The declaration rule alow only allows one declaration specifier.
  */
-decln:
+dcln:
   decl_spec init_dclrs ";"
 
 /* C declaration specifier rule. */
