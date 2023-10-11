@@ -145,8 +145,8 @@ storage_spec:
  */
 qual_type_spec:
   type_spec              { $$ = {$1}; }
-| type_qual type_spec    { $$ = {$1, $2}; }
-| type_spec type_qual    { $$ = {$2, $1}; }
+| type_qual type_spec    { $$ = {$1, std::move($2)}; }
+| type_spec type_qual    { $$ = {$2, std::move($1)}; }
 
 /* C type qualifier rule */
 type_qual:

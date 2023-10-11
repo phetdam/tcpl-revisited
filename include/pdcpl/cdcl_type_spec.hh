@@ -9,6 +9,7 @@
 #define PDCPL_CDCL_TYPE_SPEC_HH_
 
 #include <string>
+#include <utility>
 
 namespace pdcpl {
 
@@ -91,6 +92,10 @@ public:
 
   cdcl_qtype_spec(cdcl_qual qual, const cdcl_type_spec& spec)
     : qual_{qual}, spec_{spec}
+  {}
+
+  cdcl_qtype_spec(cdcl_qual qual, cdcl_type_spec&& spec)
+    : qual_{qual}, spec_{std::move(spec)}
   {}
 
   const auto& spec() const noexcept { return spec_; }
