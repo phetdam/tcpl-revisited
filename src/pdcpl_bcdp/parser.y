@@ -15,8 +15,11 @@
   #endif  // _WIN32
 
   #include <sstream>
+  #include <stdexcept>
   #include <string>
+  #include <utility>
 
+  #include "dcl_parser_dcln.hh"
   #include "dcl_parser_impl.hh"
 %}
 
@@ -57,8 +60,11 @@
 /* don't need digits' numerical value, so semantic type is std::string */
 %token <std::string> DIGITS
 %token <std::string> IDEN
-/* storage class specification */
-%token <std::string> STORAGE_SPEC
+/* storage class specifiers */
+%token ST_AUTO "auto"
+%token ST_EXTERN "extern"
+%token ST_REGISTER "register"
+%token ST_STATIC "static"
 /* type specifiers */
 %token T_VOID "void"
 %token T_CHAR "char"
@@ -78,6 +84,14 @@
 %token Q_VOLATILE "volatile"
 /* variadic args specifier */
 %token T_VARIADIC "..."
+
+/* Nonterminal token definitions */
+%nterm <std::vector<pdcpl::dcl_parser_dclr>> init_dclrs
+%nterm <pdcpl::dcl_parser_dclr> init_dclr
+%nterm <pdcpl::cdcl_type_spec> type_spec
+%nterm <pdcpl::cdcl_type_qual> type_qual
+%nterm <pdcpl::cdcl_qual_type_spec> qual_type_spec
+%nterm <pdcpl::cdcl_storage> storage_spec
 
 %%
 
@@ -102,7 +116,7 @@ stmt:
  * The declaration rule alow only allows one declaration specifier.
  */
 dcln:
-  decl_spec init_dclrs ";"
+  decl_spec init_dclrs ";"  /* { parser.insert($1, $2); } */
 
 /* C declaration specifier rule. */
 decl_spec:
@@ -114,22 +128,25 @@ decl_spec:
  * in The C Programming Language, we don't use typedef as a specifier.
  */
 storage_spec:
-  %empty
-| STORAGE_SPEC
+  %empty      { $$ = pdcpl::cdcl_storage::st_auto; }
+| "auto"      { $$ = pdcpl::cdcl_storage::st_auto; }
+| "extern"    { $$ = pdcpl::cdcl_storage::st_extern; }
+| "register"  { $$ = pdcpl::cdcl_storage::st_register; }
+| "static"    { $$ = pdcpl::cdcl_storage::st_static; }
 
 /* C qualified type specifier rule.
  *
  * Like with actual C, we can have const T, T const, or just T for a type T.
  */
 qual_type_spec:
-  type_spec
-| type_qual type_spec
-| type_spec type_qual
+  type_spec            { $$ = {pdcpl::cdcl_type_qual::qnone, $1}; }
+| type_qual type_spec  { $$ = {$1, $2}; }
+| type_spec type_qual  { $$ = {$2, $1}; }
 
 /* C type qualifier rule */
 type_qual:
-  "const"
-| "volatile"
+  "const"     { $$ = pdcpl::cdcl_type_qual::qconst; }
+| "volatile"  { $$ = pdcpl::cdcl_type_qual::qvolatile; }
 
 /* C type specifier rule.
  *
@@ -137,19 +154,19 @@ type_qual:
  * and "long", "long int", and "signed long int" can be parsed to long int.
  */
 type_spec:
-  "void"
-| "char"
-| sign_spec "char"
+  "void"                             { $$ = pdcpl::cdcl_type::gvoid; }
+| "char"                             { $$ = pdcpl::cdcl_type::gchar; }
+| sign_spec "char"                   { $$ = pdcpl::cdcl_type::gvoid; }
 | sign_spec implied_int
 | length_spec implied_int
 | sign_spec length_spec implied_int
-| "int"
-| "double"
-| "long" "double"
-| "float"
-| "struct" IDEN
-| "enum" IDEN
-| IDEN
+| "int"                              { $$ = pdcpl::cdcl_type::sint; }
+| "double"                           { $$ = pdcpl::cdcl_type::gdouble; }
+| "long" "double"                    { $$ = pdcpl::cdcl_type::gldouble; }
+| "float"                            { $$ = pdcpl::cdcl_type::gfloat; }
+| "struct" IDEN                      { $$ = {$2, pdcpl::cdcl_type::gstruct}; }
+| "enum" IDEN                        { $$ = {$2, pdcpl::cdcl_type::genum}; }
+| IDEN                               { $$ = {$2, pdcpl::cdcl_type::gudt}; }
 
 /* "Implied" int.
  *
@@ -174,15 +191,15 @@ length_spec:
 
 /* C init declarators rule */
 init_dclrs:
-  init_dclr
-| init_dclrs "," init_dclr
+  init_dclr                 { $$.emplace_back($1); }
+| init_dclrs "," init_dclr  { $$.emplace_back($3); }
 
 /* C init declarator.
  *
  * For simplicity, this does not support initialization statements.
  */
 init_dclr:
-  dclr
+  dclr  { $$ = std::move($1); }
 
 /* C declarator.
  *

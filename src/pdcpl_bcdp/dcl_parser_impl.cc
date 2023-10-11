@@ -7,7 +7,10 @@
 
 #include "dcl_parser_impl.hh"
 
+#include <stdexcept>
 #include <string>
+
+#include "dcl_parser_dcln.hh"
 
 namespace pdcpl {
 
@@ -38,6 +41,13 @@ bool dcl_parser_impl::parse(
     return false;
   // last_error_ should already have been set if parsing is failing
   return !status;
+}
+
+void dcl_parser_impl::insert(const dcl_parser_decln& dcln)
+{
+  if (results_.find(dcln.iden()) != results_.end())
+    throw std::runtime_error{"Redefinition of identifier " + dcln.iden()};
+  results_.emplace(dcln.iden(), dcln);
 }
 
 }  // namespace pdcpl

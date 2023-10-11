@@ -10,8 +10,12 @@
 
 #include <filesystem>
 #include <string>
+#include <unordered_map>
+#include <vector>
 
 #include "pdcpl/warnings.h"
+
+#include "dcl_parser_dcln.hh"
 
 /**
  * Forward declaration to satisfy the `yy::dcl_parser` class definition.
@@ -76,6 +80,13 @@ namespace pdcpl {
 class dcl_parser_impl {
 public:
   /**
+   * Ctor.
+   *
+   * @param include_text `true` to include text results, which slows parsing.
+   */
+  dcl_parser_impl(bool include_text = false) : include_text_{include_text} {}
+
+  /**
    * Parse the specified input file.
    *
    * @param input_file File to read input from, empty or "-" for `stdin`
@@ -105,9 +116,28 @@ public:
    */
   const auto& last_error() const noexcept { return last_error_; }
 
+  /**
+   * Return `true` if text results were parsed, `false` otherwise.
+   */
+  auto include_text() const noexcept { return include_text_; }
+
+  const auto& results() const noexcept { return results_; }
+
+  auto& results() noexcept { return results_; }
+
+  void insert(const std::vector<dcl_parser_dclr>& dclrs)
+  {
+    for (const auto& dclr : dclrs)
+      insert(dclr);
+  }
+
+  void insert(const dcl_parser_dclr& dclr);
+
 private:
   yy::location location_;
   std::string last_error_;
+  bool include_text_;
+  std::unordered_map<std::string, dcl_parser_dcln> results_;
 
   /**
    * Perform setup for the Flex lexer.
