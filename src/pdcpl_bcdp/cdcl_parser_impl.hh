@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "pdcpl/cdcl_type_spec.hh"
+#include "pdcpl/cdcl_dcln_spec.hh"
 #include "pdcpl/warnings.h"
 
 // #include "dcl_parser_dcln.hh"

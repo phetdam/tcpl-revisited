@@ -21,6 +21,7 @@
   #include <vector>
 
   #include "cdcl_parser_impl.hh"
+  #include "pdcpl/cdcl_dcln_spec.hh"
   #include "pdcpl/cdcl_type_spec.hh"
 
   namespace pdcpl {
@@ -97,6 +98,7 @@
 %nterm <pdcpl::cdcl_qual> type_qual
 %nterm <pdcpl::cdcl_qtype_spec> qual_type_spec
 %nterm <pdcpl::cdcl_storage> storage_spec
+%nterm <pdcpl::cdcl_dcl_spec> dcl_spec
 
 %%
 
@@ -121,11 +123,11 @@ stmt:
  * The declaration rule alow only allows one declaration specifier.
  */
 dcln:
-  decl_spec init_dclrs ";"  /* { parser.insert($1, $2); } */
+  dcl_spec init_dclrs ";"  /* { parser.insert($1, $2); } */
 
 /* C declaration specifier rule. */
-decl_spec:
-  storage_spec qual_type_spec
+dcl_spec:
+  storage_spec qual_type_spec    { $$ = {$1, std::move($2)}; }
 
 /* C storage class specifier rule.
  *
