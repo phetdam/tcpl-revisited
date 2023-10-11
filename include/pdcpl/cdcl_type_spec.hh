@@ -20,7 +20,7 @@ namespace pdcpl {
  * type is signed, while "u" indicate the type is unsigned.
  */
 enum class cdcl_type {
-  gnone,     // no type, used for default construction of cdcl_type_spec
+  invalid,   // for use in default ctors
   gvoid,     // void
   gchar,     // char, sign is platform-dependent
   schar,     // signed char
@@ -43,6 +43,7 @@ enum class cdcl_type {
  * Enum indicating a type cv-qualifier.
  */
 enum class cdcl_qual {
+  invalid,   // for use in default ctors
   qnone,     // no qualifier
   qconst,    // const
   qvolatile  // volatile
@@ -52,6 +53,7 @@ enum class cdcl_qual {
  * Enum indicating a storage specifier.
  */
 enum class cdcl_storage {
+  invalid,      // for use in default ctors
   st_auto,      // auto
   st_extern,    // extern
   st_register,  // register
@@ -63,7 +65,7 @@ enum class cdcl_storage {
  */
 class cdcl_type_spec {
 public:
-  cdcl_type_spec() : cdcl_type_spec{cdcl_type::gnone} {}
+  cdcl_type_spec() : cdcl_type_spec{cdcl_type::invalid} {}
 
   cdcl_type_spec(cdcl_type type) : cdcl_type_spec{type, ""} {}
 
@@ -84,7 +86,7 @@ private:
  */
 class cdcl_qtype_spec {
 public:
-  cdcl_qtype_spec() : cdcl_qtype_spec{cdcl_qual::qnone, {}} {}
+  cdcl_qtype_spec() : qual_{cdcl_qual::invalid}, spec_{} {}
 
   cdcl_qtype_spec(const cdcl_type_spec& spec)
     : cdcl_qtype_spec{cdcl_qual::qnone, spec}
