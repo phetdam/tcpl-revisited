@@ -18,9 +18,14 @@
   #include <stdexcept>
   #include <string>
   #include <utility>
+  #include <vector>
 
-  #include "dcl_parser_dcln.hh"
   #include "cdcl_parser_impl.hh"
+  #include "pdcpl/cdcl_type_spec.hh"
+
+  namespace pdcpl {
+
+  }  // namespace pdcpl
 %}
 
 /* C++ LR parser using variants handling complete symbols with error reporting.
@@ -86,11 +91,11 @@
 %token T_VARIADIC "..."
 
 /* Nonterminal token definitions */
-%nterm <std::vector<pdcpl::dcl_parser_dclr>> init_dclrs
-%nterm <pdcpl::dcl_parser_dclr> init_dclr
+/* %nterm <std::vector<pdcpl::dcl_parser_dclr>> init_dclrs */
+/* %nterm <pdcpl::dcl_parser_dclr> init_dclr */
 %nterm <pdcpl::cdcl_type_spec> type_spec
-%nterm <pdcpl::cdcl_type_qual> type_qual
-%nterm <pdcpl::cdcl_qual_type_spec> qual_type_spec
+%nterm <pdcpl::cdcl_qual> type_qual
+%nterm <pdcpl::cdcl_qtype_spec> qual_type_spec
 %nterm <pdcpl::cdcl_storage> storage_spec
 
 %%
@@ -128,25 +133,25 @@ decl_spec:
  * in The C Programming Language, we don't use typedef as a specifier.
  */
 storage_spec:
-  %empty      { $$ = pdcpl::cdcl_storage::st_auto; }
-| "auto"      { $$ = pdcpl::cdcl_storage::st_auto; }
-| "extern"    { $$ = pdcpl::cdcl_storage::st_extern; }
-| "register"  { $$ = pdcpl::cdcl_storage::st_register; }
-| "static"    { $$ = pdcpl::cdcl_storage::st_static; }
+  %empty        { $$ = pdcpl::cdcl_storage::st_auto; }
+| "auto"        { $$ = pdcpl::cdcl_storage::st_auto; }
+| "extern"      { $$ = pdcpl::cdcl_storage::st_extern; }
+| "register"    { $$ = pdcpl::cdcl_storage::st_register; }
+| "static"      { $$ = pdcpl::cdcl_storage::st_static; }
 
 /* C qualified type specifier rule.
  *
  * Like with actual C, we can have const T, T const, or just T for a type T.
  */
 qual_type_spec:
-  type_spec            { $$ = {pdcpl::cdcl_type_qual::qnone, $1}; }
-| type_qual type_spec  { $$ = {$1, $2}; }
-| type_spec type_qual  { $$ = {$2, $1}; }
+  type_spec              { $$ = {$1}; }
+| type_qual type_spec    { $$ = {$1, $2}; }
+| type_spec type_qual    { $$ = {$2, $1}; }
 
 /* C type qualifier rule */
 type_qual:
-  "const"     { $$ = pdcpl::cdcl_type_qual::qconst; }
-| "volatile"  { $$ = pdcpl::cdcl_type_qual::qvolatile; }
+  "const"       { $$ = pdcpl::cdcl_qual::qconst; }
+| "volatile"    { $$ = pdcpl::cdcl_qual::qvolatile; }
 
 /* C type specifier rule.
  *
@@ -154,19 +159,25 @@ type_qual:
  * and "long", "long int", and "signed long int" can be parsed to long int.
  */
 type_spec:
-  "void"                             { $$ = pdcpl::cdcl_type::gvoid; }
-| "char"                             { $$ = pdcpl::cdcl_type::gchar; }
-| sign_spec "char"                   { $$ = pdcpl::cdcl_type::gvoid; }
-| sign_spec implied_int
-| length_spec implied_int
-| sign_spec length_spec implied_int
-| "int"                              { $$ = pdcpl::cdcl_type::sint; }
-| "double"                           { $$ = pdcpl::cdcl_type::gdouble; }
-| "long" "double"                    { $$ = pdcpl::cdcl_type::gldouble; }
-| "float"                            { $$ = pdcpl::cdcl_type::gfloat; }
-| "struct" IDEN                      { $$ = {$2, pdcpl::cdcl_type::gstruct}; }
-| "enum" IDEN                        { $$ = {$2, pdcpl::cdcl_type::genum}; }
-| IDEN                               { $$ = {$2, pdcpl::cdcl_type::gudt}; }
+  "void"                            { $$ = pdcpl::cdcl_type::gvoid; }
+| "char"                            { $$ = pdcpl::cdcl_type::gchar; }
+| "signed" "char"                   { $$ = pdcpl::cdcl_type::schar; }
+| "unsigned" "char"                 { $$ = pdcpl::cdcl_type::uchar; }
+| "signed" implied_int              { $$ = pdcpl::cdcl_type::sint; }
+| "unsigned" implied_int            { $$ = pdcpl::cdcl_type::uint; }
+| "short" implied_int               { $$ = pdcpl::cdcl_type::sshort; }
+| "long" implied_int                { $$ = pdcpl::cdcl_type::slong; }
+| "signed" "short" implied_int      { $$ = pdcpl::cdcl_type::sshort; }
+| "unsigned" "short" implied_int    { $$ = pdcpl::cdcl_type::ushort; }
+| "signed" "long" implied_int       { $$ = pdcpl::cdcl_type::slong; }
+| "unsigned" "long" implied_int     { $$ = pdcpl::cdcl_type::ulong; }
+| "int"                             { $$ = pdcpl::cdcl_type::sint; }
+| "double"                          { $$ = pdcpl::cdcl_type::gdouble; }
+| "long" "double"                   { $$ = pdcpl::cdcl_type::gldouble; }
+| "float"                           { $$ = pdcpl::cdcl_type::gfloat; }
+| "struct" IDEN                     { $$ = {pdcpl::cdcl_type::gstruct, $2}; }
+| "enum" IDEN                       { $$ = {pdcpl::cdcl_type::genum, $2}; }
+| IDEN                              { $$ = {pdcpl::cdcl_type::gtype, $1}; }
 
 /* "Implied" int.
  *
@@ -176,30 +187,17 @@ implied_int:
   %empty
 | "int"
 
-/* C sign specifier */
-sign_spec:
-  "signed"
-| "unsigned"
-
-/* C length specifier.
- *
- * For simplicity, long long is not supported.
- */
-length_spec:
-  "short"
-| "long"
-
 /* C init declarators rule */
 init_dclrs:
-  init_dclr                 { $$.emplace_back($1); }
-| init_dclrs "," init_dclr  { $$.emplace_back($3); }
+  init_dclr                 /* { $$ = {$1}; } */
+| init_dclrs "," init_dclr  /* { $$.emplace_back($3); } */
 
 /* C init declarator.
  *
  * For simplicity, this does not support initialization statements.
  */
 init_dclr:
-  dclr  { $$ = std::move($1); }
+  dclr  /* { $$ = std::move($1); } */
 
 /* C declarator.
  *

@@ -13,9 +13,10 @@
 #include <unordered_map>
 #include <vector>
 
+#include "pdcpl/cdcl_type_spec.hh"
 #include "pdcpl/warnings.h"
 
-#include "dcl_parser_dcln.hh"
+// #include "dcl_parser_dcln.hh"
 
 /**
  * Forward declaration to satisfy the `yy::cdcl_parser` class definition.
@@ -31,6 +32,8 @@ namespace pdcpl { class cdcl_parser_impl; }  // namespace pdcpl
  *
  * MSVC always emits C4065 (switch with default but no case labels) when this
  * header is included in a translation unit, so we disable when including.
+ *
+ * Any required headers should be included before this Bison-generated header.
  */
 PDCPL_MSVC_WARNING_DISABLE(4065)
 #include "parser.yy.hh"
@@ -84,7 +87,7 @@ public:
    *
    * @param include_text `true` to include text results, which slows parsing.
    */
-  dcl_parser_impl(bool include_text = false) : include_text_{include_text} {}
+  cdcl_parser_impl(bool include_text = false) : include_text_{include_text} {}
 
   /**
    * Parse the specified input file.
@@ -121,6 +124,7 @@ public:
    */
   auto include_text() const noexcept { return include_text_; }
 
+  /*
   const auto& results() const noexcept { return results_; }
 
   auto& results() noexcept { return results_; }
@@ -132,12 +136,13 @@ public:
   }
 
   void insert(const dcl_parser_dclr& dclr);
+  */
 
 private:
   yy::location location_;
   std::string last_error_;
   bool include_text_;
-  std::unordered_map<std::string, dcl_parser_dcln> results_;
+  // std::unordered_map<std::string, dcl_parser_dcln> results_;
 
   /**
    * Perform setup for the Flex lexer.
