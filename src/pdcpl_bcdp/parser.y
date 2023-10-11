@@ -58,7 +58,6 @@
 %token <std::string> DIGITS
 %token <std::string> IDEN
 /* storage class specifiers */
-%token <std::string> STORAGE_SPEC
 %token ST_AUTO "auto"
 %token ST_EXTERN "extern"
 %token ST_REGISTER "register"
