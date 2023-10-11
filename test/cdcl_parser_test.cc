@@ -1,11 +1,11 @@
 /**
- * @file dcl_parser_test.cc
+ * @file cdcl_parser_test.cc
  * @author Derek Huang
- * @brief dcl_parser.hh unit tests
+ * @brief cdcl_parser.hh unit tests
  * @copyright MIT License
  */
 
-#include "pdcpl/dcl_parser.hh"
+#include "pdcpl/cdcl_parser.hh"
 
 #include <cstring>
 #include <filesystem>
@@ -96,7 +96,7 @@ class DclParserParamTest
  */
 TEST_P(DclParserParamTest, PureParseTest)
 {
-  pdcpl::dcl_parser parser;
+  pdcpl::cdcl_parser parser;
   ASSERT_TRUE(parser(test_data_dir() / GetParam())) << parser.last_error();
 }
 

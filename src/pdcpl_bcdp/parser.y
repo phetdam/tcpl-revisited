@@ -17,13 +17,13 @@
   #include <sstream>
   #include <string>
 
-  #include "dcl_parser_impl.hh"
+  #include "cdcl_parser_impl.hh"
 %}
 
 /* C++ LR parser using variants handling complete symbols with error reporting.
  *
  * Location tracking is enabled and as recommended by Bison documentation, the
- * parser's parse() function takes the pdcpl_bcdp dcl_parser as a parameter.
+ * parser's parse() function takes the pdcpl_bcdp cdcl_parser as a parameter.
  *
  * Requiring Bison 3.2 stops unnecessary stack.hh generation. For Bison 3.6+,
  * it is better for parse.error to have the value of detailed. Lookahead
@@ -42,9 +42,9 @@
 %define parse.trace
 %locations
 %define api.location.file none
-/* parser class is yy::dcl_parser, not the usual yy::parser */
-%define api.parser.class { dcl_parser }
-%param { pdcpl::dcl_parser_impl& parser }
+/* parser class is yy::cdcl_parser, not the usual yy::parser */
+%define api.parser.class { cdcl_parser }
+%param { pdcpl::cdcl_parser_impl& parser }
 
 /* Token definitions */
 %token STAR "*"
@@ -291,7 +291,7 @@ namespace yy {
  * @param loc Bison error location
  * @param msg Bison exception error message
  */
-void dcl_parser::error(const location& loc, const std::string& msg)
+void cdcl_parser::error(const location& loc, const std::string& msg)
 {
   std::stringstream ss;
   ss << loc << ": " << msg;

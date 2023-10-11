@@ -35,7 +35,7 @@
   #include <cstring>
   #include <string>
 
-  #include "dcl_parser_impl.hh"
+  #include "cdcl_parser_impl.hh"
 
   /**
    * User-defined action run after token match but before rule action.
@@ -50,7 +50,7 @@
   namespace pdcpl {
 
   /**
-   * Throw `yy::dcl_parser::syntax_error` given location and bad token.
+   * Throw `yy::cdcl_parser::syntax_error` given location and bad token.
    *
    * @param loc Error location
    * @param token Unknown token text
@@ -58,7 +58,7 @@
   [[noreturn]]
   void unknown_dcl_token_throw(const yy::location& loc, const std::string& token)
   {
-    throw yy::dcl_parser::syntax_error{loc, "Unrecognized token '" + token + "'"};
+    throw yy::cdcl_parser::syntax_error{loc, "Unrecognized token '" + token + "'"};
   }
 
   }  // namespace pdcpl
@@ -99,7 +99,7 @@ NEWLINES    \n+
 
 %{
   // location setup code to run before scanning. PDCPL_BDCL_YYLEX is a friend
-  // of the bdcl::dcl_parser_impl class so we can update location_ directly
+  // of the bdcl::cdcl_parser_impl class so we can update location_ directly
   auto& loc = parser.location_;
   // move start position onto previous end position
   loc.step();
@@ -123,49 +123,49 @@ NEWLINES    \n+
   /* Ignore newlines */
 {NEWLINES}             loc.lines(yyleng); loc.step();
   /* Asterisks */
-"*"                    return yy::dcl_parser::make_STAR(loc);
+"*"                    return yy::cdcl_parser::make_STAR(loc);
   /* Parentheses */
-"("                    return yy::dcl_parser::make_LPAREN(loc);
-")"                    return yy::dcl_parser::make_RPAREN(loc);
+"("                    return yy::cdcl_parser::make_LPAREN(loc);
+")"                    return yy::cdcl_parser::make_RPAREN(loc);
   /* Angle brackets */
-"["                    return yy::dcl_parser::make_LANGLE(loc);
-"]"                    return yy::dcl_parser::make_RANGLE(loc);
+"["                    return yy::cdcl_parser::make_LANGLE(loc);
+"]"                    return yy::cdcl_parser::make_RANGLE(loc);
   /* Comma */
-","                    return yy::dcl_parser::make_COMMA(loc);
+","                    return yy::cdcl_parser::make_COMMA(loc);
   /* Semicolon */
-";"                    return yy::dcl_parser::make_SEMICOLON(loc);
+";"                    return yy::cdcl_parser::make_SEMICOLON(loc);
   /* Digits */
-{DIGITS}               return yy::dcl_parser::make_DIGITS(yytext, loc);
+{DIGITS}               return yy::cdcl_parser::make_DIGITS(yytext, loc);
   /* Storage specifiers */
-"auto"                 return yy::dcl_parser::make_ST_AUTO(loc);
-"extern"               return yy::dcl_parser::make_ST_EXTERN(loc);
-"register"             return yy::dcl_parser::make_ST_REGISTER(loc);
-"static"               return yy::dcl_parser::make_ST_STATIC(loc);
+"auto"                 return yy::cdcl_parser::make_ST_AUTO(loc);
+"extern"               return yy::cdcl_parser::make_ST_EXTERN(loc);
+"register"             return yy::cdcl_parser::make_ST_REGISTER(loc);
+"static"               return yy::cdcl_parser::make_ST_STATIC(loc);
   /* Type specifiers */
-"void"                 return yy::dcl_parser::make_T_VOID(loc);
-"char"                 return yy::dcl_parser::make_T_CHAR(loc);
-"int"                  return yy::dcl_parser::make_T_INT(loc);
-"double"               return yy::dcl_parser::make_T_DOUBLE(loc);
-"float"                return yy::dcl_parser::make_T_FLOAT(loc);
-"struct"               return yy::dcl_parser::make_T_STRUCT(loc);
-"enum"                 return yy::dcl_parser::make_T_ENUM(loc);
+"void"                 return yy::cdcl_parser::make_T_VOID(loc);
+"char"                 return yy::cdcl_parser::make_T_CHAR(loc);
+"int"                  return yy::cdcl_parser::make_T_INT(loc);
+"double"               return yy::cdcl_parser::make_T_DOUBLE(loc);
+"float"                return yy::cdcl_parser::make_T_FLOAT(loc);
+"struct"               return yy::cdcl_parser::make_T_STRUCT(loc);
+"enum"                 return yy::cdcl_parser::make_T_ENUM(loc);
   /* Length specifiers */
-"short"                return yy::dcl_parser::make_L_SHORT(loc);
-"long"                 return yy::dcl_parser::make_L_LONG(loc);
+"short"                return yy::cdcl_parser::make_L_SHORT(loc);
+"long"                 return yy::cdcl_parser::make_L_LONG(loc);
   /* Sign specifiers */
-"signed"               return yy::dcl_parser::make_S_SIGNED(loc);
-"unsigned"             return yy::dcl_parser::make_S_UNSIGNED(loc);
+"signed"               return yy::cdcl_parser::make_S_SIGNED(loc);
+"unsigned"             return yy::cdcl_parser::make_S_UNSIGNED(loc);
   /* Variadic args specifier */
-"..."                  return yy::dcl_parser::make_T_VARIADIC(loc);
+"..."                  return yy::cdcl_parser::make_T_VARIADIC(loc);
   /* Type qualifiers */
-"const"                return yy::dcl_parser::make_Q_CONST(loc);
-"volatile"             return yy::dcl_parser::make_Q_VOLATILE(loc);
+"const"                return yy::cdcl_parser::make_Q_CONST(loc);
+"volatile"             return yy::cdcl_parser::make_Q_VOLATILE(loc);
   /* Identifier */
-{IDEN}                 return yy::dcl_parser::make_IDEN(yytext, loc);
+{IDEN}                 return yy::cdcl_parser::make_IDEN(yytext, loc);
   /* Unknown token, so throw. Bison will catch the error. */
 .                      pdcpl::unknown_dcl_token_throw(loc, yytext);
   /* With Bison locations turned on make_YYEOF needs to be explicitly used */
-<<EOF>>                return yy::dcl_parser::make_YYEOF(loc);
+<<EOF>>                return yy::cdcl_parser::make_YYEOF(loc);
 
 %%
 
@@ -178,7 +178,7 @@ namespace pdcpl {
  * @param enable_debug `true` to turn on lexer tracing, default `false`
  * @returns `true` on success, `false` on failure and sets `last_error_`
  */
-bool dcl_parser_impl::lex_setup(
+bool cdcl_parser_impl::lex_setup(
   const std::string& input_file, bool enable_tracing) noexcept
 {
   // enable/disable debugging. yy_flex_debug is not even exported in the
@@ -204,7 +204,7 @@ bool dcl_parser_impl::lex_setup(
  * @param input_file Input file passed to `lex_setup`. Used in error reporting.
  * @returns `true` on success, `false` on failure and sets `last_error_`
  */
-bool dcl_parser_impl::lex_cleanup(const std::string& input_file) noexcept
+bool cdcl_parser_impl::lex_cleanup(const std::string& input_file) noexcept
 {
   if (yyin != stdin && std::fclose(yyin)) {
     last_error_ =

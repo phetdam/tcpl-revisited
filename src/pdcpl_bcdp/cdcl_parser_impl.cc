@@ -1,11 +1,11 @@
 /**
- * @file dcl_parser_impl.cc
+ * @file cdcl_parser_impl.cc
  * @author Derek Huang
  * @brief C++ parser implementation for simplified C declarations
  * @copyright MIT License
  */
 
-#include "dcl_parser_impl.hh"
+#include "cdcl_parser_impl.hh"
 
 #include <string>
 
@@ -19,7 +19,7 @@ namespace pdcpl {
  * @param trace_parser `true` to enable parser tracing
  * @returns `true` on success, `false` on failure
  */
-bool dcl_parser_impl::parse(
+bool cdcl_parser_impl::parse(
   const std::filesystem::path& input_file, bool trace_lexer, bool trace_parser)
 {
   // need string path
@@ -30,7 +30,7 @@ bool dcl_parser_impl::parse(
   // perform Flex lexer setup, create Bison parser, set debug level, parse
   if (!lex_setup(input_path_string, trace_lexer))
     return false;
-  yy::dcl_parser parser{*this};
+  yy::cdcl_parser parser{*this};
   parser.set_debug_level(trace_parser);
   auto status = parser.parse();
   // perform Flex lexer cleanup + return

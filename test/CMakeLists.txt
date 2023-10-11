@@ -16,7 +16,7 @@ target_link_libraries(pdcpl_test PRIVATE GTest::gtest_main pdcpl)
 # if Flex and Bison are available, pdcpl_bcdp will be built, so add its tests,
 # define path to the test data directory, link against pdcpl_bcdp library
 if(PDCPL_FLEX_FOUND AND PDCPL_BISON_FOUND)
-    target_sources(pdcpl_test PRIVATE dcl_parser_test.cc)
+    target_sources(pdcpl_test PRIVATE cdcl_parser_test.cc)
     target_compile_definitions(
         pdcpl_test
         PRIVATE PDCPL_BCDP_TEST_DIR="${CMAKE_SOURCE_DIR}/data"

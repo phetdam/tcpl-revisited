@@ -1,27 +1,27 @@
 /**
- * @file dcl_parser.cc
+ * @file cdcl_parser.cc
  * @author Derek Huang
  * @brief C++ parser for simplified C declarations
  * @copyright MIT License
  */
 
-#include "pdcpl/dcl_parser.hh"
+#include "pdcpl/cdcl_parser.hh"
 
-#include "dcl_parser_impl.hh"
+#include "cdcl_parser_impl.hh"
 
 namespace pdcpl {
 
 /**
  * Ctor.
  *
- * Simply default-constructs a new `dcl_parser_impl`.
+ * Simply default-constructs a new `cdcl_parser_impl`.
  */
-dcl_parser::dcl_parser() : impl_{new dcl_parser_impl} {}
+cdcl_parser::cdcl_parser() : impl_{new cdcl_parser_impl} {}
 
 /**
  * Dtor.
  */
-dcl_parser::~dcl_parser() = default;
+cdcl_parser::~cdcl_parser() = default;
 
 /**
  * Parse the specified input file.
@@ -31,7 +31,7 @@ dcl_parser::~dcl_parser() = default;
  * @param trace_parser `true` to enable parser tracing
  * @returns `true` on success, `false` on failure
  */
-bool dcl_parser::parse(
+bool cdcl_parser::parse(
   const std::filesystem::path& input_file, bool trace_lexer, bool trace_parser)
 {
   return impl_->parse(input_file, trace_lexer, trace_parser);
@@ -40,7 +40,7 @@ bool dcl_parser::parse(
 /**
  * Return last error encountered during parsing.
  */
-const std::string& dcl_parser::last_error() const noexcept
+const std::string& cdcl_parser::last_error() const noexcept
 {
   return impl_->last_error();
 }
