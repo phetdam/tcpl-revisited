@@ -206,7 +206,7 @@ init_dclr:
  * This handles the pointer specifiers before parsing direct declarator.
  */
 dclr:
-  maybe_ptr_specs dir_declr
+  maybe_ptr_specs dir_dclr
 
 /* C optional pointer specifiers */
 maybe_ptr_specs:
@@ -227,11 +227,11 @@ ptr_spec:
  *
  * Note that this recurses into the dclr rule when extra parentheses are seen.
  */
-dir_declr:
+dir_dclr:
   IDEN
 | "(" dclr ")"
-| dir_declr array_spec
-| dir_declr "(" maybe_param_specs ")"
+| dir_dclr array_spec
+| dir_dclr "(" maybe_param_specs ")"
 
 /* C array specifier.
  *
