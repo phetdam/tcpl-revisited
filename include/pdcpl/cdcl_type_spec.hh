@@ -43,10 +43,11 @@ enum class cdcl_type {
  * Enum indicating a type cv-qualifier.
  */
 enum class cdcl_qual {
-  invalid,   // for use in default ctors
-  qnone,     // no qualifier
-  qconst,    // const
-  qvolatile  // volatile
+  invalid,         // for use in default ctors
+  qnone,           // no qualifier
+  qconst,          // const
+  qvolatile,       // volatile
+  qconst_volatile  // const volatile
 };
 
 /**

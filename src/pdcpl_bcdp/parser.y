@@ -99,6 +99,7 @@
 %nterm <pdcpl::cdcl_qtype_spec> qual_type_spec
 %nterm <pdcpl::cdcl_storage> storage_spec
 %nterm <pdcpl::cdcl_dcl_spec> dcl_spec
+%nterm <pdcpl::cdcl_qual> ptr_spec
 
 %%
 
@@ -146,14 +147,15 @@ storage_spec:
  * Like with actual C, we can have const T, T const, or just T for a type T.
  */
 qual_type_spec:
-  type_spec              { $$ = {$1}; }
+  type_spec              { $$ = $1; }
 | type_qual type_spec    { $$ = {$1, std::move($2)}; }
 | type_spec type_qual    { $$ = {$2, std::move($1)}; }
 
 /* C type qualifier rule */
 type_qual:
-  "const"       { $$ = pdcpl::cdcl_qual::qconst; }
-| "volatile"    { $$ = pdcpl::cdcl_qual::qvolatile; }
+  "const"               { $$ = pdcpl::cdcl_qual::qconst; }
+| "volatile"            { $$ = pdcpl::cdcl_qual::qvolatile; }
+| "const" "volatile"    { $$ = pdcpl::cdcl_qual::qconst_volatile; }
 
 /* C type specifier rule.
  *
@@ -206,7 +208,7 @@ init_dclr:
  * This handles the pointer specifiers before parsing direct declarator.
  */
 dclr:
-  maybe_ptr_specs dir_dclr
+  maybe_ptr_specs dir_dclr  /* append ptr specs */
 
 /* C optional pointer specifiers */
 maybe_ptr_specs:
@@ -220,8 +222,8 @@ ptr_specs:
 
 /* C pointer specifier */
 ptr_spec:
-  "*"
-| "*" type_qual
+  "*"              { $$ = pdcpl::cdcl_qual::qnone; }
+| "*" type_qual    { $$ = $2; }
 
 /* C direct declarator.
  *
@@ -229,16 +231,16 @@ ptr_spec:
  */
 dir_dclr:
   IDEN
-| "(" dclr ")"
-| dir_dclr array_spec
-| dir_dclr "(" maybe_param_specs ")"
+| "(" dclr ")"            /* prepend dclr specs */
+| dir_dclr array_spec     /* append array spec */
+| dir_dclr "(" maybe_param_specs ")"  /* append function param spec pointer */
 
 /* C array specifier.
  *
  * This has been simplified so that instead of a constant expression, only
  * digits can be used as the argument between the brackets.
  */
-array_spec:
+array_spec:  /* size_t size, type_spec type */
   "[" "]"
 | "[" DIGITS "]"
 

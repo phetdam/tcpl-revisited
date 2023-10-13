@@ -16,6 +16,8 @@ namespace pdcpl {
 
 /**
  * C declaration specifier.
+ *
+ * Specifies both the storage type and the qualified type.
  */
 class cdcl_dcl_spec {
 public:
@@ -44,6 +46,20 @@ private:
   cdcl_storage storage_;
   cdcl_qtype_spec spec_;
 };
+
+/**
+ * C pointer specifier.
+ */
+/*
+class cdcl_ptr_spec {
+public:
+
+private:
+  cdcl_qual qual_;
+};
+*/
+
+// std::vector<cdcl_qual> ptr_quals_;
 
 }  // namespace pdcpl
 
