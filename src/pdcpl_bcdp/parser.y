@@ -156,6 +156,7 @@ type_qual:
   "const"               { $$ = pdcpl::cdcl_qual::qconst; }
 | "volatile"            { $$ = pdcpl::cdcl_qual::qvolatile; }
 | "const" "volatile"    { $$ = pdcpl::cdcl_qual::qconst_volatile; }
+| "volatile" "const"    { $$ = pdcpl::cdcl_qual::qconst_volatile; }
 
 /* C type specifier rule.
  *
