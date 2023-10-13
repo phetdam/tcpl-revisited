@@ -136,6 +136,7 @@ qual_type_spec:
 type_qual:
   "const"
 | "volatile"
+| "const" "volatile"
 
 /* C type specifier rule.
  *

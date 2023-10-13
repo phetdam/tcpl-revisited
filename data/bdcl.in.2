@@ -10,9 +10,9 @@
  * Language as an example of abstract declarators used in function parameters.
  */
 
-// function that takes pointer to a function taking two ints
-double *invoker(void (*)(int, int));
+// function that takes pointer to a function taking int and const int
+double *invoker(void (*)(int, const int));
 // function taking a pointer to array[] of ints
 void array_ref_func(int (*)[]);
-// function taking an array[3] of pointers to int
-void const *ptr_array_func(int *[3]);
+// function taking an array[3] of pointers to const volatile int
+void const *ptr_array_func(const volatile int *[3]);
