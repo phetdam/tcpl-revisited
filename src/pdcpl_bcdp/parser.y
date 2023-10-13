@@ -137,6 +137,7 @@ type_qual:
   "const"
 | "volatile"
 | "const" "volatile"
+| "volatile" "const"
 
 /* C type specifier rule.
  *

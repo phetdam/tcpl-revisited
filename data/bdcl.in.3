@@ -1,0 +1,23 @@
+/*
+ * bdcl.in.3
+ *
+ * Author: Derek Huang
+ * Copyright: MIT License
+ */
+
+/*
+ * Example declarations testing increasingly complex cv-qualified declarations.
+ */
+
+// a is pointer to const volatile double
+const volatile double *a;
+// b is const pointer to volatile unsigned int
+unsigned volatile *const b;
+// c is array[10] of const pointer to volatile unsigned short
+volatile unsigned short *c[10];
+// d is pointer to function returning pointer to const volatile unsigned long
+// taking pointer to array[] of const volatile signed short
+unsigned long volatile const *(*d)(const volatile signed short (*)[]);
+// e is array[5] of pointer to function returning pointer to volatile char
+// taking pointer to array[] of const pointer to const pointer of volatile int
+char volatile *(*e[5])(int volatile *const *const (*)[]);

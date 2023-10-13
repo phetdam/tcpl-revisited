@@ -103,7 +103,7 @@ TEST_P(DclParserParamTest, PureParseTest)
 INSTANTIATE_TEST_SUITE_P(
   ParseTest,
   DclParserParamTest,
-  ::testing::Values("bdcl.in.1", "bdcl.in.2")
+  ::testing::Values("bdcl.in.1", "bdcl.in.2", "bdcl.in.3")
 );
 
 }  // namespace
