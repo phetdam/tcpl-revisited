@@ -18,7 +18,6 @@
   #include <stdexcept>
   #include <string>
   #include <utility>
-  #include <vector>
 
   #include "cdcl_parser_impl.hh"
   #include "pdcpl/cdcl_dcln_spec.hh"
@@ -92,14 +91,19 @@
 %token T_VARIADIC "..."
 
 /* Nonterminal token definitions */
-/* %nterm <std::vector<pdcpl::dcl_parser_dclr>> init_dclrs */
-/* %nterm <pdcpl::dcl_parser_dclr> init_dclr */
 %nterm <pdcpl::cdcl_type_spec> type_spec
 %nterm <pdcpl::cdcl_qual> type_qual
 %nterm <pdcpl::cdcl_qtype_spec> qual_type_spec
 %nterm <pdcpl::cdcl_storage> storage_spec
 %nterm <pdcpl::cdcl_dcl_spec> dcl_spec
 %nterm <pdcpl::cdcl_qual> ptr_spec
+%nterm <pdcpl::cdcl_ptrs_spec> ptr_specs
+%nterm <pdcpl::cdcl_ptrs_spec> maybe_ptr_specs
+%nterm <pdcpl::cdcl_array_spec> array_spec
+%nterm <pdcpl::cdcl_dclr> dir_dclr
+%nterm <pdcpl::cdcl_dclr> dclr
+%nterm <pdcpl::cdcl_init_dclr> init_dclr
+%nterm <pdcpl::cdcl_init_dclrs> init_dclrs
 
 %%
 
@@ -144,7 +148,7 @@ storage_spec:
 
 /* C qualified type specifier rule.
  *
- * Like with actual C, we can have const T, T const, or just T for a type T.
+ * Like with actual C, we can have cv T, T cv, or just T for a type T.
  */
 qual_type_spec:
   type_spec              { $$ = $1; }
@@ -194,32 +198,32 @@ implied_int:
 
 /* C init declarators rule */
 init_dclrs:
-  init_dclr                 /* { $$ = {$1}; } */
-| init_dclrs "," init_dclr  /* { $$.emplace_back($3); } */
+  init_dclr                   { $$ = {$1}; }
+| init_dclrs "," init_dclr    { $$ = std::move($1); $$.append($3); }
 
 /* C init declarator.
  *
  * For simplicity, this does not support initialization statements.
  */
 init_dclr:
-  dclr  /* { $$ = std::move($1); } */
+  dclr    { $$ = std::move($1); }
 
 /* C declarator.
  *
  * This handles the pointer specifiers before parsing direct declarator.
  */
 dclr:
-  maybe_ptr_specs dir_dclr  /* append ptr specs */
+  maybe_ptr_specs dir_dclr    { $$ = std::move($2); $$.append($1); }
 
 /* C optional pointer specifiers */
 maybe_ptr_specs:
-  %empty
-| ptr_specs
+  %empty       { $$ = {}; }
+| ptr_specs    { $$ = std::move($1); }
 
 /* C pointer specifiers */
 ptr_specs:
-  ptr_spec
-| ptr_specs ptr_spec
+  ptr_spec              { $$ = {$1}; }
+| ptr_specs ptr_spec    { $$ = std::move($1); $$.append($2); }
 
 /* C pointer specifier */
 ptr_spec:
@@ -231,19 +235,19 @@ ptr_spec:
  * Note that this recurses into the dclr rule when extra parentheses are seen.
  */
 dir_dclr:
-  IDEN
-| "(" dclr ")"            /* prepend dclr specs */
-| dir_dclr array_spec     /* append array spec */
-| dir_dclr "(" maybe_param_specs ")"  /* append function param spec pointer */
+  IDEN                                  { $$ = $1; }
+| "(" dclr ")"                          { $$ = std::move($2); }
+| dir_dclr array_spec                   { $$ = std::move($1); $$.append($2); }
+| dir_dclr "(" maybe_param_specs ")"    { $$ = std::move($1); }
 
 /* C array specifier.
  *
  * This has been simplified so that instead of a constant expression, only
  * digits can be used as the argument between the brackets.
  */
-array_spec:  /* size_t size, type_spec type */
-  "[" "]"
-| "[" DIGITS "]"
+array_spec:
+  "[" "]"           { $$ = {}; }
+| "[" DIGITS "]"    { $$ = std::stoul($2); }
 
 /* C optional parameter specifiers.
  *

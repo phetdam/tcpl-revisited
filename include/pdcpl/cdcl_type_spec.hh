@@ -66,10 +66,26 @@ enum class cdcl_storage {
  */
 class cdcl_type_spec {
 public:
+  /**
+   * Default ctor.
+   *
+   * Required for use in Bison semantic actions.
+   */
   cdcl_type_spec() : cdcl_type_spec{cdcl_type::invalid} {}
 
+  /**
+   * Ctor for builtin tyoes with no identifier.
+   *
+   * @param type Type
+   */
   cdcl_type_spec(cdcl_type type) : cdcl_type_spec{type, ""} {}
 
+  /**
+   * Ctor.
+   *
+   * @param type Type
+   * @param iden Type identifier for struct, enum, or typedef
+   */
   cdcl_type_spec(cdcl_type type, const std::string& iden)
     : type_{type}, iden_{iden}
   {}
