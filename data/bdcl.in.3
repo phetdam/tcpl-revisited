@@ -14,7 +14,7 @@ const volatile double *a;
 // b is const pointer to volatile unsigned int
 unsigned volatile *const b;
 // c is array[10] of const pointer to volatile unsigned short
-volatile unsigned short *c[10];
+volatile unsigned short *const c[10];
 // d is pointer to function returning pointer to const volatile unsigned long
 // taking pointer to array[] of const volatile signed short
 unsigned long volatile const *(*d)(const volatile signed short (*)[]);
