@@ -11,10 +11,11 @@
 #include <filesystem>
 #include <string>
 #include <unordered_map>
+#include <variant>
 #include <vector>
 
-#include "pdcpl/cdcl_type_spec.hh"
 #include "pdcpl/cdcl_dcln_spec.hh"
+#include "pdcpl/cdcl_type_spec.hh"
 #include "pdcpl/warnings.h"
 
 // #include "dcl_parser_dcln.hh"
@@ -125,25 +126,44 @@ public:
    */
   auto include_text() const noexcept { return include_text_; }
 
-  /*
   const auto& results() const noexcept { return results_; }
 
   auto& results() noexcept { return results_; }
 
-  void insert(const std::vector<dcl_parser_dclr>& dclrs)
+  void insert(const cdcl_dcl_spec& dcl_spec, const cdcl_init_dclr& init_dclr)
   {
-    for (const auto& dclr : dclrs)
-      insert(dclr);
+    // currently only support declarations
+    if (!std::holds_alternative<cdcl_dclr>(init_dclr)) {
+      last_error_ = "init_dclr only support C declarators";
+      throw yy::cdcl_parser::syntax_error{location_, last_error_};
+    }
+    // create cdcl_dcln C declaration from dcl_spec and dclr
+    cdcl_dcln dcln{dcl_spec, std::get<cdcl_dclr>(init_dclr)};
+    // must have identifer and must not be duplicate declaration
+    const auto& iden = dcln.dclr().iden();
+    if (iden.empty()) {
+      last_error_ = "dcln is missing identifier";
+      throw yy::cdcl_parser::syntax_error{location_, last_error_};
+    }
+    if (results_.find(iden) != results_.end()) {
+      last_error_ = "identifier " + iden + " redeclared";
+      throw yy::cdcl_parser::syntax_error{location_, last_error_};
+    }
+    // otherwise, we can insert the declaration
+    results_.emplace(iden, dcln);
   }
 
-  void insert(const dcl_parser_dclr& dclr);
-  */
+  void insert(const cdcl_dcl_spec& dcl_spec, const cdcl_init_dclrs& init_dclrs)
+  {
+    for (const auto& init_dclr : init_dclrs)
+      insert(dcl_spec, init_dclr);
+  }
 
 private:
   yy::location location_;
   std::string last_error_;
   bool include_text_;
-  // std::unordered_map<std::string, dcl_parser_dcln> results_;
+  std::unordered_map<std::string, cdcl_dcln> results_;
 
   /**
    * Perform setup for the Flex lexer.

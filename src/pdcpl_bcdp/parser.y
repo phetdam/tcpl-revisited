@@ -128,7 +128,7 @@ stmt:
  * The declaration rule alow only allows one declaration specifier.
  */
 dcln:
-  dcl_spec init_dclrs ";"  /* { parser.insert($1, $2); } */
+  dcl_spec init_dclrs ";"    { parser.insert($1, $2); }
 
 /* C declaration specifier rule. */
 dcl_spec:

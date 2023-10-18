@@ -159,7 +159,7 @@ public:
  */
 class cdcl_dclr {
 public:
-  using container_type = std::vector<cdcl_qual>;
+  using container_type = std::vector<cdcl_dclr_spec>;
   using iterator = container_type::iterator;
   using const_iterator = container_type::const_iterator;
 
@@ -178,6 +178,8 @@ public:
   auto end() noexcept { return specs_.end(); }
 
   auto end() const noexcept { return specs_.end(); }
+
+  const auto& operator[](std::size_t i) const noexcept { return specs_[i]; }
 
   void append(const cdcl_dclr_spec& spec) { specs_.push_back(spec); }
 
@@ -205,7 +207,7 @@ public:
 
 private:
   std::string iden_;
-  std::vector<cdcl_dclr_spec> specs_;
+  container_type specs_;
 };
 
 /**
@@ -270,6 +272,8 @@ public:
 
   auto end() const noexcept { return init_dclrs_.end(); }
 
+  const auto& operator[](std::size_t i) const noexcept { return init_dclrs_[i]; }
+
   void append(const cdcl_init_dclr& init_dclr)
   {
     init_dclrs_.push_back(init_dclr);
@@ -282,6 +286,30 @@ public:
 
 private:
   container_type init_dclrs_;
+};
+
+/**
+ * C declaration.
+ */
+class cdcl_dcln {
+public:
+  cdcl_dcln() : dcl_spec_{}, dclr_{} {}
+
+  cdcl_dcln(const cdcl_dcl_spec& dcl_spec, const cdcl_dclr& dclr)
+    : dcl_spec_{dcl_spec}, dclr_{dclr}
+  {}
+
+  cdcl_dcln(cdcl_dcl_spec&& dcl_spec, cdcl_dclr&& dclr)
+    : dcl_spec_{dcl_spec}, dclr_{dclr}
+  {}
+
+  const auto& dcl_spec() const noexcept { return dcl_spec_; }
+
+  const auto& dclr() const noexcept { return dclr_; }
+
+private:
+  cdcl_dcl_spec dcl_spec_;
+  cdcl_dclr dclr_;
 };
 
 }  // namespace pdcpl
