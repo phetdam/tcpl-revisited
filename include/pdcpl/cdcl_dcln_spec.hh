@@ -9,6 +9,7 @@
 #define PDCPL_CDCL_DCLN_SPEC_HH_
 
 #include <cstdint>
+#include <memory>
 #include <ostream>
 #include <sstream>
 #include <stdexcept>
@@ -18,6 +19,8 @@
 #include <vector>
 
 #include "pdcpl/cdcl_type_spec.hh"
+#include "pdcpl/dllexport.h"
+#include "pdcpl/warnings.h"
 
 namespace pdcpl {
 
@@ -84,7 +87,7 @@ public:
 
   cdcl_ptrs_spec(const container_type& specs) : specs_{specs} {}
 
-  cdcl_ptrs_spec(container_type&& specs) : specs_{specs} {}
+  cdcl_ptrs_spec(container_type&& specs) : specs_{std::move(specs)} {}
 
   const auto& specs() const noexcept { return specs_; }
 
@@ -104,12 +107,94 @@ private:
   container_type specs_;
 };
 
+class cdcl_dclr;
+
+class PDCPL_BCDP_PUBLIC cdcl_param_spec {
+public:
+  cdcl_param_spec() = default;
+
+  cdcl_param_spec(const cdcl_qtype_spec& spec);
+
+  cdcl_param_spec(cdcl_qtype_spec&& spec);
+
+  cdcl_param_spec(const cdcl_qtype_spec& spec, const cdcl_dclr& dclr);
+
+  cdcl_param_spec(cdcl_qtype_spec&& spec, cdcl_dclr&& dclr);
+
+  cdcl_param_spec(cdcl_qtype_spec&& spec, std::unique_ptr<cdcl_dclr>&& dclr);
+
+  auto spec() const noexcept { return spec_; }
+
+  const std::shared_ptr<cdcl_dclr>& dclr() const noexcept;
+
+private:
+  PDCPL_MSVC_WARNING_DISABLE(4251)
+  cdcl_qtype_spec spec_;
+  std::shared_ptr<cdcl_dclr> dclr_;
+  PDCPL_MSVC_WARNING_ENABLE()
+};
+
+class cdcl_params_spec {
+public:
+  cdcl_params_spec() = default;
+
+  cdcl_params_spec(
+    const std::vector<cdcl_param_spec>& specs, bool variadic = false)
+    : specs_{specs}, variadic_{variadic}
+  {}
+
+  cdcl_params_spec(
+    const std::initializer_list<cdcl_param_spec>& specs, bool variadic = false)
+    : specs_{specs}, variadic_{variadic}
+  {}
+
+  cdcl_params_spec(
+    std::vector<cdcl_param_spec>&& specs, bool variadic = false)
+    : specs_{std::move(specs)}, variadic_{variadic}
+  {}
+
+  const auto& specs() const noexcept { return specs_; }
+
+  auto variadic() const noexcept { return variadic_; }
+
+  auto variadic(bool value) noexcept
+  {
+    auto old_value = variadic_;
+    variadic_ = value;
+    return old_value;
+  }
+
+  auto begin() noexcept { return specs_.begin(); }
+
+  auto begin() const noexcept { return specs_.begin(); }
+
+  auto end() noexcept { return specs_.end(); }
+
+  auto end() const noexcept { return specs_.end(); }
+
+  const auto& operator[](std::size_t i) const noexcept { return specs_[i]; }
+
+  void append(const cdcl_param_spec& spec) { specs_.push_back(spec); }
+
+  void append(cdcl_param_spec&& spec) { specs_.push_back(std::move(spec)); }
+
+private:
+  std::vector<cdcl_param_spec> specs_;
+  bool variadic_;
+};
+
+using cdcl_dclr_spec_variant = std::variant<
+  cdcl_array_spec, cdcl_ptrs_spec, cdcl_params_spec
+>;
+
+PDCPL_MSVC_WARNING_DISABLE(4251)
 /**
  * Variant for a declarator specifier.
  */
-class cdcl_dclr_spec : public std::variant<cdcl_array_spec, cdcl_ptrs_spec> {
+class PDCPL_BCDP_PUBLIC cdcl_dclr_spec : public cdcl_dclr_spec_variant {
+PDCPL_MSVC_WARNING_ENABLE()
 public:
-  using variant_type = std::variant<cdcl_array_spec, cdcl_ptrs_spec>;
+  using variant_type = cdcl_dclr_spec_variant;
   using variant_type::variant_type;
 
   /**
@@ -118,13 +203,13 @@ public:
    * Each `operator()` overload returns a string representation for each type.
    */
   struct printer {
-    auto operator()(const cdcl_array_spec& spec)
+    auto operator()(const cdcl_array_spec& spec) const
     {
       std::string size_spec = (!spec.size()) ? "" : std::to_string(spec.size());
       return "array[" + size_spec + "] of ";
     }
 
-    auto operator()(const cdcl_ptrs_spec& specs)
+    auto operator()(const cdcl_ptrs_spec& specs) const
     {
       std::stringstream ss;
       for (const auto spec : specs) {
@@ -148,6 +233,8 @@ public:
       }
       return ss.str();
     }
+
+    std::string operator()(const cdcl_params_spec& specs) const;
   };
 };
 
@@ -183,11 +270,17 @@ public:
 
   void append(const cdcl_dclr_spec& spec) { specs_.push_back(spec); }
 
-  void append(cdcl_dclr_spec&& spec) { specs_.push_back(spec); }
+  void append(cdcl_dclr_spec&& spec) { specs_.push_back(std::move(spec)); }
 
-  void prepend(const cdcl_dclr_spec& spec) { specs_.insert(specs_.begin(), spec); }
+  void prepend(const cdcl_dclr_spec& spec)
+  {
+    specs_.insert(specs_.begin(), spec);
+  }
 
-  void prepend(cdcl_dclr_spec&& spec) { specs_.insert(specs_.begin(), spec); }
+  void prepend(cdcl_dclr_spec&& spec)
+  {
+    specs_.insert(specs_.begin(), std::move(spec));
+  }
 
   auto& write(std::ostream& out) const
   {
@@ -227,7 +320,7 @@ public:
   using variant_type::variant_type;
 
   struct printer {
-    auto operator()(const cdcl_dclr& dclr)
+    auto operator()(const cdcl_dclr& dclr) const
     {
       return static_cast<std::string>(dclr);
     }
@@ -260,7 +353,9 @@ public:
 
   cdcl_init_dclrs(const container_type& init_dclrs) : init_dclrs_{init_dclrs} {}
 
-  cdcl_init_dclrs(container_type&& init_dclrs) : init_dclrs_{init_dclrs} {}
+  cdcl_init_dclrs(container_type&& init_dclrs)
+    : init_dclrs_{std::move(init_dclrs)}
+  {}
 
   const auto& init_dclrs() const noexcept { return init_dclrs_; }
 
@@ -272,7 +367,10 @@ public:
 
   auto end() const noexcept { return init_dclrs_.end(); }
 
-  const auto& operator[](std::size_t i) const noexcept { return init_dclrs_[i]; }
+  const auto& operator[](std::size_t i) const noexcept
+  {
+    return init_dclrs_[i];
+  }
 
   void append(const cdcl_init_dclr& init_dclr)
   {
@@ -300,7 +398,7 @@ public:
   {}
 
   cdcl_dcln(cdcl_dcl_spec&& dcl_spec, cdcl_dclr&& dclr)
-    : dcl_spec_{dcl_spec}, dclr_{dclr}
+    : dcl_spec_{std::move(dcl_spec)}, dclr_{std::move(dclr)}
   {}
 
   const auto& dcl_spec() const noexcept { return dcl_spec_; }

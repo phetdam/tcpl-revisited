@@ -102,8 +102,13 @@
 %nterm <pdcpl::cdcl_array_spec> array_spec
 %nterm <pdcpl::cdcl_dclr> dir_dclr
 %nterm <pdcpl::cdcl_dclr> dclr
+%nterm <pdcpl::cdcl_dclr> a_dir_dclr
+%nterm <pdcpl::cdcl_dclr> a_dclr
 %nterm <pdcpl::cdcl_init_dclr> init_dclr
 %nterm <pdcpl::cdcl_init_dclrs> init_dclrs
+%nterm <pdcpl::cdcl_param_spec> param_spec
+%nterm <pdcpl::cdcl_params_spec> param_specs
+%nterm <pdcpl::cdcl_params_spec> maybe_param_specs
 
 %%
 
@@ -206,7 +211,10 @@ init_dclrs:
  * For simplicity, this does not support initialization statements.
  */
 init_dclr:
-  dclr    { $$ = std::move($1); }
+  dclr {
+    $$ = std::move($1);
+    // std::cout << $$ << std::endl;
+  }
 
 /* C declarator.
  *
@@ -238,7 +246,7 @@ dir_dclr:
   IDEN                                  { $$ = $1; }
 | "(" dclr ")"                          { $$ = std::move($2); }
 | dir_dclr array_spec                   { $$ = std::move($1); $$.append($2); }
-| dir_dclr "(" maybe_param_specs ")"    { $$ = std::move($1); }
+| dir_dclr "(" maybe_param_specs ")"    { $$ = std::move($1); $$.append($3); }
 
 /* C array specifier.
  *
@@ -254,17 +262,25 @@ array_spec:
  * Supports an empty parameter list for pre-ANSI C unspecified parameters.
  */
 maybe_param_specs:
-  %empty
-| param_specs
+  %empty         { $$ = {}; }
+| param_specs    { $$ = std::move($1); }
 
 /* C parameter specifiers.
  *
  * Supports variadic arguments.
  */
 param_specs:
-  param_spec
-| param_specs "," param_spec
-| param_specs "," "..."
+  param_spec {
+    $$ = {$1};
+  }
+| param_specs "," param_spec {
+    $$ = std::move($1);
+    $$.append(std::move($3));
+  }
+| param_specs "," "..." {
+    $$ = std::move($1);
+    $$.variadic(true);
+  }
 
 /* C parameter specifier.
  *
@@ -272,9 +288,15 @@ param_specs:
  * concrete or abstract declarator. Abstract declarators have no identifier.
  */
 param_spec:
-  qual_type_spec
-| qual_type_spec dclr
-| qual_type_spec a_dclr
+  qual_type_spec {
+    $$ = std::move($1);
+  }
+| qual_type_spec dclr {
+    $$ = {std::move($1), std::move($2)};
+  }
+| qual_type_spec a_dclr {
+    $$ = {std::move($1), std::move($2)};
+  }
 
 /* C abstract declarator.
  *
@@ -282,19 +304,36 @@ param_spec:
  * declarator does not contain an identifier.
  */
 a_dclr:
-  ptr_specs
-| maybe_ptr_specs a_dir_dclr
+  ptr_specs {
+    $$.append(std::move($1));
+  }
+| maybe_ptr_specs a_dir_dclr {
+    $$ = std::move($2);
+    $$.append(std::move($1));
+  }
 
 /* C direct abstract declarator.
  *
  * Similar to the direct declarator, but again does not resolve to identifier.
  */
 a_dir_dclr:
-  "(" a_dclr ")"
-| array_spec
-| a_dir_dclr array_spec
-| "(" maybe_param_specs ")"
-| a_dir_dclr "(" maybe_param_specs ")"
+  "(" a_dclr ")" {
+    $$ = std::move($2);
+  }
+| array_spec {
+    $$.append(std::move($1));
+  }
+| a_dir_dclr array_spec {
+    $$ = std::move($1);
+    $$.append(std::move($2));
+  }
+| "(" maybe_param_specs ")" {
+    $$.append(std::move($2));
+  }
+| a_dir_dclr "(" maybe_param_specs ")" {
+    $$ = std::move($1);
+    $$.append(std::move($3));
+  }
 
 %%
 
