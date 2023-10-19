@@ -62,7 +62,7 @@ enum class cdcl_storage {
 };
 
 /**
- * C declaraton type specifier.
+ * C declaration type specifier.
  */
 class cdcl_type_spec {
 public:
@@ -90,7 +90,16 @@ public:
     : type_{type}, iden_{iden}
   {}
 
+  /**
+   * Return the declaration's type.
+   */
   auto type() const noexcept { return type_; }
+
+  /**
+   * Return the type's identifier.
+   *
+   * If empty, e.g. for builtin types, the type has no identifier.
+   */
   const auto& iden() const noexcept { return iden_; }
 
 private:
@@ -103,20 +112,56 @@ private:
  */
 class cdcl_qtype_spec {
 public:
+  /**
+   * Default ctor.
+   *
+   * Required for use in Bison semantic actions.
+   */
   cdcl_qtype_spec() : qual_{cdcl_qual::invalid}, spec_{} {}
 
+  /**
+   * Ctor.
+   *
+   * Constructs a none-qualified type specifier from a type specifier.
+   *
+   * @param spec Type specifier
+   */
   cdcl_qtype_spec(const cdcl_type_spec& spec)
     : cdcl_qtype_spec{cdcl_qual::qnone, spec}
   {}
 
+  /**
+   * Ctor.
+   *
+   * Constructs a qualified type specifier from a type specifier.
+   *
+   * @param qual Type qualifier
+   * @param spec Type specifier
+   */
   cdcl_qtype_spec(cdcl_qual qual, const cdcl_type_spec& spec)
     : qual_{qual}, spec_{spec}
   {}
 
+  /**
+   * Ctor.
+   *
+   * Constructs a qualified type specifier by moving from a type specifier.
+   *
+   * @param qual Type qualifier
+   * @param spec Type specifier
+   */
   cdcl_qtype_spec(cdcl_qual qual, cdcl_type_spec&& spec)
     : qual_{qual}, spec_{std::move(spec)}
   {}
 
+  /**
+   * Return type qualifier.
+   */
+  auto qual() const noexcept { return qual_; }
+
+  /**
+   * Return type specifier.
+   */
   const auto& spec() const noexcept { return spec_; }
 
 private:
