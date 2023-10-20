@@ -50,12 +50,29 @@ public:
   {}
 
   auto storage() const noexcept { return storage_; }
+
   const auto& spec() const noexcept { return spec_; }
+
+  auto& write(std::ostream& out) const
+  {
+    auto storage = cdcl_storage_printer(storage_);
+    out << storage;
+    // only print a separating space if not automatic storage
+    if (storage.size())
+      out << " ";
+    out << spec_;
+    return out;
+  }
 
 private:
   cdcl_storage storage_;
   cdcl_qtype_spec spec_;
 };
+
+inline auto& operator<<(std::ostream& out, const cdcl_dcl_spec& spec)
+{
+  return spec.write(out);
+}
 
 /**
  * C array specifier.
@@ -66,9 +83,21 @@ public:
 
   auto size() const noexcept { return size_; }
 
+  auto& write(std::ostream& out) const
+  {
+    std::string size_spec = (!size_) ? "" : std::to_string(size_);
+    out << "array[" + size_spec + "]";
+    return out;
+  }
+
 private:
   std::size_t size_;
 };
+
+inline auto& operator<<(std::ostream& out, const cdcl_array_spec& spec)
+{
+  return spec.write(out);
+}
 
 /**
  * C pointers specifier.
@@ -127,12 +156,19 @@ public:
 
   const std::shared_ptr<cdcl_dclr>& dclr() const noexcept;
 
+  std::ostream& write(std::ostream& out) const;
+
 private:
   PDCPL_MSVC_WARNING_DISABLE(4251)
   cdcl_qtype_spec spec_;
   std::shared_ptr<cdcl_dclr> dclr_;
   PDCPL_MSVC_WARNING_ENABLE()
 };
+
+inline auto& operator<<(std::ostream& out, const cdcl_param_spec& spec)
+{
+  return spec.write(out);
+}
 
 class cdcl_params_spec {
 public:
@@ -205,8 +241,9 @@ public:
   struct printer {
     auto operator()(const cdcl_array_spec& spec) const
     {
-      std::string size_spec = (!spec.size()) ? "" : std::to_string(spec.size());
-      return "array[" + size_spec + "] of ";
+      std::stringstream ss;
+      ss << spec << " of ";
+      return ss.str();
     }
 
     auto operator()(const cdcl_ptrs_spec& specs) const
@@ -284,8 +321,7 @@ public:
 
   auto& write(std::ostream& out) const
   {
-    auto iden = this->iden();
-    out << ((iden.empty()) ? "[?]" : iden) << ": ";
+    out << ((iden_.empty()) ? "[?]" : iden_) << ": ";
     for (const auto& spec : specs())
       out << std::visit(cdcl_dclr_spec::printer{}, spec);
     return out;
@@ -405,10 +441,21 @@ public:
 
   const auto& dclr() const noexcept { return dclr_; }
 
+  auto& write(std::ostream& out) const
+  {
+    out << dclr_ << " " << dcl_spec_;
+    return out;
+  }
+
 private:
   cdcl_dcl_spec dcl_spec_;
   cdcl_dclr dclr_;
 };
+
+inline auto& operator<<(std::ostream& out, const cdcl_dcln& dcln)
+{
+  return dcln.write(out);
+}
 
 }  // namespace pdcpl
 

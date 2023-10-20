@@ -7,6 +7,7 @@
 
 #include "pdcpl/cdcl_dcln_spec.hh"
 
+#include <ostream>
 #include <memory>
 #include <sstream>
 #include <variant>
@@ -43,6 +44,16 @@ const std::shared_ptr<cdcl_dclr>& cdcl_param_spec::dclr() const noexcept
   return dclr_;
 }
 
+std::ostream& cdcl_param_spec::write(std::ostream& out) const
+{
+  // write declarator if any
+  if (dclr_)
+    out << *dclr_;
+  // write qualified type specifier
+  out << spec_;
+  return out;
+}
+
 // cdcl_dclr_spec::printer operator() cannot be inline as a cdcl_dclr member
 // needs to be accessed and at time of class definition cdcl_dclr is incomplete
 
@@ -52,12 +63,9 @@ std::string cdcl_dclr_spec::printer::operator()(
   std::stringstream ss;
   ss << "function (";
   for (auto it = specs.begin(); it != specs.end(); it++) {
-    const auto& dclr = it->dclr();
-    if (dclr) {
-      dclr->write(ss);
-    }
-    // TODO: write type spec
-    ss << "[type]";
+    // write param specifier
+    ss << *it;
+    // add separating comma if necessary
     if (std::distance(it, specs.end()) > 1)
       ss << ", ";
   }

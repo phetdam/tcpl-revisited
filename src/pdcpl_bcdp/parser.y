@@ -133,11 +133,17 @@ stmt:
  * The declaration rule alow only allows one declaration specifier.
  */
 dcln:
-  dcl_spec init_dclrs ";"    { parser.insert($1, $2); }
+  dcl_spec init_dclrs ";" {
+    parser.insert($1, $2);
+    for (const auto& init_dclr : $2)
+      std::cout << init_dclr << $1 << std::endl;
+  }
 
 /* C declaration specifier rule. */
 dcl_spec:
-  storage_spec qual_type_spec    { $$ = {$1, std::move($2)}; }
+  storage_spec qual_type_spec {
+    $$ = {$1, std::move($2)};
+  }
 
 /* C storage class specifier rule.
  *
@@ -243,10 +249,20 @@ ptr_spec:
  * Note that this recurses into the dclr rule when extra parentheses are seen.
  */
 dir_dclr:
-  IDEN                                  { $$ = $1; }
-| "(" dclr ")"                          { $$ = std::move($2); }
-| dir_dclr array_spec                   { $$ = std::move($1); $$.append($2); }
-| dir_dclr "(" maybe_param_specs ")"    { $$ = std::move($1); $$.append($3); }
+  IDEN {
+    $$ = $1;
+  }
+| "(" dclr ")" {
+    $$ = std::move($2);
+  }
+| dir_dclr array_spec {
+    $$ = std::move($1);
+    $$.append(std::move($2));
+  }
+| dir_dclr "(" maybe_param_specs ")" {
+    $$ = std::move($1);
+    $$.append(std::move($3));
+  }
 
 /* C array specifier.
  *
@@ -270,14 +286,17 @@ maybe_param_specs:
  * Supports variadic arguments.
  */
 param_specs:
-  param_spec {
+  param_spec
+  {
     $$ = {$1};
   }
-| param_specs "," param_spec {
+| param_specs "," param_spec
+  {
     $$ = std::move($1);
     $$.append(std::move($3));
   }
-| param_specs "," "..." {
+| param_specs "," "..."
+  {
     $$ = std::move($1);
     $$.variadic(true);
   }
@@ -288,13 +307,16 @@ param_specs:
  * concrete or abstract declarator. Abstract declarators have no identifier.
  */
 param_spec:
-  qual_type_spec {
+  qual_type_spec
+  {
     $$ = std::move($1);
   }
-| qual_type_spec dclr {
+| qual_type_spec dclr
+  {
     $$ = {std::move($1), std::move($2)};
   }
-| qual_type_spec a_dclr {
+| qual_type_spec a_dclr
+  {
     $$ = {std::move($1), std::move($2)};
   }
 
@@ -304,10 +326,12 @@ param_spec:
  * declarator does not contain an identifier.
  */
 a_dclr:
-  ptr_specs {
+  ptr_specs
+  {
     $$.append(std::move($1));
   }
-| maybe_ptr_specs a_dir_dclr {
+| maybe_ptr_specs a_dir_dclr
+  {
     $$ = std::move($2);
     $$.append(std::move($1));
   }
@@ -317,20 +341,25 @@ a_dclr:
  * Similar to the direct declarator, but again does not resolve to identifier.
  */
 a_dir_dclr:
-  "(" a_dclr ")" {
+  "(" a_dclr ")"
+  {
     $$ = std::move($2);
   }
-| array_spec {
+| array_spec
+  {
     $$.append(std::move($1));
   }
-| a_dir_dclr array_spec {
+| a_dir_dclr array_spec
+  {
     $$ = std::move($1);
     $$.append(std::move($2));
   }
-| "(" maybe_param_specs ")" {
+| "(" maybe_param_specs ")"
+  {
     $$.append(std::move($2));
   }
-| a_dir_dclr "(" maybe_param_specs ")" {
+| a_dir_dclr "(" maybe_param_specs ")"
+  {
     $$ = std::move($1);
     $$.append(std::move($3));
   }
