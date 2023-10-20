@@ -56,10 +56,9 @@ public:
   auto& write(std::ostream& out) const
   {
     auto storage = cdcl_storage_printer(storage_);
-    out << storage;
-    // only print a separating space if not automatic storage
+    // only print if not automatic storage
     if (storage.size())
-      out << " ";
+      out << storage << " ";
     out << spec_;
     return out;
   }
@@ -86,7 +85,10 @@ public:
   auto& write(std::ostream& out) const
   {
     std::string size_spec = (!size_) ? "" : std::to_string(size_);
-    out << "array[" + size_spec + "]";
+    out << "array[";
+    if (size_)
+      out << size_;
+    out << "]";
     return out;
   }
 

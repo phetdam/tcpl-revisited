@@ -275,7 +275,7 @@ public:
   auto& write(std::ostream& out) const
   {
     auto qual = cdcl_qual_printer(qual_);
-    // only print a separating space if qualified
+    // only print if qualified
     if (qual.size())
       out << qual << " ";
     // write type specifier
