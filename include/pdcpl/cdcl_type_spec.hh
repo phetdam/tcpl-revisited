@@ -8,6 +8,8 @@
 #ifndef PDCPL_CDCL_TYPE_SPEC_HH_
 #define PDCPL_CDCL_TYPE_SPEC_HH_
 
+#include <ostream>
+#include <stdexcept>
 #include <string>
 #include <utility>
 
@@ -40,6 +42,53 @@ enum class cdcl_type {
 };
 
 /**
+ * Return a string representation for the specified `cdcl_type` value.
+ *
+ * @param type Type value to get string representation for
+ */
+inline std::string cdcl_type_printer(cdcl_type type)
+{
+  switch (type) {
+    case cdcl_type::invalid:
+      return "[invalid type]";
+    case cdcl_type::gvoid:
+      return "void";
+    case cdcl_type::gchar:
+      return "char";
+    case cdcl_type::schar:
+      return "signed char";
+    case cdcl_type::uchar:
+      return "unsigned char";
+    case cdcl_type::sint:
+      return "signed int";
+    case cdcl_type::uint:
+      return "unsigned int";
+    case cdcl_type::sshort:
+      return "signed short";
+    case cdcl_type::ushort:
+      return "unsigned short";
+    case cdcl_type::slong:
+      return "signed long";
+    case cdcl_type::ulong:
+      return "unsigned long";
+    case cdcl_type::gfloat:
+      return "float";
+    case cdcl_type::gdouble:
+      return "double";
+    case cdcl_type::gldouble:
+      return "long double";
+    case cdcl_type::genum:
+      return "enum";
+    case cdcl_type::gstruct:
+      return "struct";
+    case cdcl_type::gtype:
+      return "typedef";
+    default:
+      throw std::runtime_error{"cannot print unknown cdcl_type value"};
+  }
+}
+
+/**
  * Enum indicating a type cv-qualifier.
  */
 enum class cdcl_qual {
@@ -51,6 +100,29 @@ enum class cdcl_qual {
 };
 
 /**
+ * Return a string representation for the specified `cdcl_qual` value.
+ *
+ * @param qual Qualifier value to get string representation for
+ */
+inline std::string cdcl_qual_printer(cdcl_qual qual)
+{
+  switch (qual) {
+    case cdcl_qual::invalid:
+      return "[invalid cv-qualifier]";
+    case cdcl_qual::qnone:
+      return "";
+    case cdcl_qual::qconst:
+      return "const";
+    case cdcl_qual::qvolatile:
+      return "volatile";
+    case cdcl_qual::qconst_volatile:
+      return "const volatile";
+    default:
+      throw std::runtime_error{"cannot print unknown cdcl_qual value"};
+  }
+}
+
+/**
  * Enum indicating a storage specifier.
  */
 enum class cdcl_storage {
@@ -60,6 +132,29 @@ enum class cdcl_storage {
   st_register,  // register
   st_static     // static
 };
+
+/**
+ * Return a string representation for the specified `cdcl_storage` value.
+ *
+ * @param storage Storage specifier value to get string representation for
+ */
+inline std::string cdcl_storage_printer(cdcl_storage storage)
+{
+  switch (storage) {
+    case cdcl_storage::invalid:
+      return "[invalid storage qualifier]";
+    case cdcl_storage::st_auto:
+      return "";
+    case cdcl_storage::st_extern:
+      return "extern";
+    case cdcl_storage::st_register:
+      return "register";
+    case cdcl_storage::st_static:
+      return "static";
+    default:
+      throw std::runtime_error{"cannot print unknown cdcl_qual value"};
+  }
+}
 
 /**
  * C declaration type specifier.
@@ -102,10 +197,23 @@ public:
    */
   const auto& iden() const noexcept { return iden_; }
 
+  auto& write(std::ostream& out) const
+  {
+    out << cdcl_type_printer(type_);
+    if (iden_.size())
+      out << " " << iden_;
+    return out;
+  }
+
 private:
   cdcl_type type_;
   std::string iden_;
 };
+
+inline auto& operator<<(std::ostream& out, const cdcl_type_spec& spec)
+{
+  return spec.write(out);
+}
 
 /**
  * C declaration qualified type specifier.
@@ -164,10 +272,27 @@ public:
    */
   const auto& spec() const noexcept { return spec_; }
 
+  auto& write(std::ostream& out) const
+  {
+    auto qual = cdcl_qual_printer(qual_);
+    out << qual;
+    // only print a separating space if qualified
+    if (qual.size())
+      out << " ";
+    // write type specifier
+    out << spec_;
+    return out;
+  }
+
 private:
   cdcl_qual qual_;
   cdcl_type_spec spec_;
 };
+
+inline auto& operator<<(std::ostream& out, const cdcl_qtype_spec& spec)
+{
+  return spec.write(out);
+}
 
 }  // namespace pdcpl
 
