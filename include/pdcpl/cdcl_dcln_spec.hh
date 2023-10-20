@@ -321,8 +321,9 @@ public:
 
   auto& write(std::ostream& out) const
   {
-    out << ((iden_.empty()) ? "[?]" : iden_) << ": ";
-    for (const auto& spec : specs())
+    if (iden_.size())
+      out << iden_ << ": ";
+    for (const auto& spec : specs_)
       out << std::visit(cdcl_dclr_spec::printer{}, spec);
     return out;
   }
