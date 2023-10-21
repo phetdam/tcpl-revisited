@@ -21,7 +21,3 @@ unsigned long volatile const *(*d)(const volatile signed short (*)[]);
 // e is array[5] of pointer to function returning pointer to volatile char
 // taking pointer to array[] of const pointer to const pointer of volatile int
 char volatile *(*e[5])(int volatile *const *const (*)[]);
-// f is function returning const pointer to double taking pointer to function a
-// return pointer to const void that takes pointer to const double x and
-// pointer to array[] of array[] of pointer to const volatile int
-double *const f(const void *(*a)(const double *x, int volatile const* (*)[][]));

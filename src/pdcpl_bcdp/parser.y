@@ -15,17 +15,9 @@
   #endif  // _WIN32
 
   #include <sstream>
-  #include <stdexcept>
   #include <string>
-  #include <utility>
 
   #include "cdcl_parser_impl.hh"
-  #include "pdcpl/cdcl_dcln_spec.hh"
-  #include "pdcpl/cdcl_type_spec.hh"
-
-  namespace pdcpl {
-
-  }  // namespace pdcpl
 %}
 
 /* C++ LR parser using variants handling complete symbols with error reporting.
@@ -90,26 +82,6 @@
 /* variadic args specifier */
 %token T_VARIADIC "..."
 
-/* Nonterminal token definitions */
-%nterm <pdcpl::cdcl_qual> type_qual
-%nterm <pdcpl::cdcl_type_spec> type_spec
-%nterm <pdcpl::cdcl_qtype_spec> qual_type_spec
-%nterm <pdcpl::cdcl_storage> storage_spec
-%nterm <pdcpl::cdcl_dcl_spec> dcl_spec
-%nterm <pdcpl::cdcl_qual> ptr_spec
-%nterm <pdcpl::cdcl_ptrs_spec> ptr_specs
-%nterm <pdcpl::cdcl_ptrs_spec> maybe_ptr_specs
-%nterm <pdcpl::cdcl_array_spec> array_spec
-%nterm <pdcpl::cdcl_dclr> dir_dclr
-%nterm <pdcpl::cdcl_dclr> dclr
-%nterm <pdcpl::cdcl_dclr> a_dir_dclr
-%nterm <pdcpl::cdcl_dclr> a_dclr
-%nterm <pdcpl::cdcl_init_dclr> init_dclr
-%nterm <pdcpl::cdcl_init_dclrs> init_dclrs
-%nterm <pdcpl::cdcl_param_spec> param_spec
-%nterm <pdcpl::cdcl_params_spec> param_specs
-%nterm <pdcpl::cdcl_params_spec> maybe_param_specs
-
 %%
 
 /* Input rule */
@@ -129,23 +101,15 @@ stmt:
  *
  * We follow a modified version of the declaration specification in Appendix A,
  * section 8 of The C Programming Language, as we do not allow definitions.
- * That is, the init_dclr (init-declarator) rule does not allow initializers.
+ * That is, the init_declr (init-declarator) rule does not allow initializers.
  * The declaration rule alow only allows one declaration specifier.
  */
 dcln:
-  dcl_spec init_dclrs ";"
-  {
-    parser.insert($1, $2);
-    // for (const auto& init_dclr : $2)
-    //   std::cout << init_dclr << " " << $1 << std::endl;
-  }
+  decl_spec init_dclrs ";"
 
 /* C declaration specifier rule. */
-dcl_spec:
+decl_spec:
   storage_spec qual_type_spec
-  {
-    $$ = {$1, std::move($2)};
-  }
 
 /* C storage class specifier rule.
  *
@@ -154,62 +118,26 @@ dcl_spec:
  */
 storage_spec:
   %empty
-  {
-    $$ = pdcpl::cdcl_storage::st_auto;
-  }
 | "auto"
-  {
-    $$ = pdcpl::cdcl_storage::st_auto;
-  }
 | "extern"
-  {
-    $$ = pdcpl::cdcl_storage::st_extern;
-  }
 | "register"
-  {
-    $$ = pdcpl::cdcl_storage::st_register;
-  }
 | "static"
-  {
-    $$ = pdcpl::cdcl_storage::st_static;
-  }
 
 /* C qualified type specifier rule.
  *
- * Like with actual C, we can have cv T, T cv, or just T for a type T.
+ * Like with actual C, we can have const T, T const, or just T for a type T.
  */
 qual_type_spec:
   type_spec
-  {
-    $$ = $1;
-  }
 | type_qual type_spec
-  {
-    $$ = {$1, std::move($2)};
-  }
 | type_spec type_qual
-  {
-    $$ = {$2, std::move($1)};
-  }
 
 /* C type qualifier rule */
 type_qual:
   "const"
-  {
-    $$ = pdcpl::cdcl_qual::qconst;
-  }
 | "volatile"
-  {
-    $$ = pdcpl::cdcl_qual::qvolatile;
-  }
 | "const" "volatile"
-  {
-    $$ = pdcpl::cdcl_qual::qconst_volatile;
-  }
 | "volatile" "const"
-  {
-    $$ = pdcpl::cdcl_qual::qconst_volatile;
-  }
 
 /* C type specifier rule.
  *
@@ -218,81 +146,18 @@ type_qual:
  */
 type_spec:
   "void"
-  {
-    $$ = pdcpl::cdcl_type::gvoid;
-  }
 | "char"
-  {
-    $$ = pdcpl::cdcl_type::gchar;
-  }
-| "signed" "char"
-  {
-    $$ = pdcpl::cdcl_type::schar;
-  }
-| "unsigned" "char"
-  {
-    $$ = pdcpl::cdcl_type::uchar;
-  }
-| "signed" implied_int
-  {
-    $$ = pdcpl::cdcl_type::sint;
-  }
-| "unsigned" implied_int
-  {
-    $$ = pdcpl::cdcl_type::uint;
-  }
-| "short" implied_int
-  {
-    $$ = pdcpl::cdcl_type::sshort;
-  }
-| "long" implied_int
-  {
-    $$ = pdcpl::cdcl_type::slong;
-  }
-| "signed" "short" implied_int
-  {
-    $$ = pdcpl::cdcl_type::sshort;
-  }
-| "unsigned" "short" implied_int
-  {
-    $$ = pdcpl::cdcl_type::ushort;
-  }
-| "signed" "long" implied_int
-  {
-    $$ = pdcpl::cdcl_type::slong;
-  }
-| "unsigned" "long" implied_int
-  {
-    $$ = pdcpl::cdcl_type::ulong;
-  }
+| sign_spec "char"
+| sign_spec implied_int
+| length_spec implied_int
+| sign_spec length_spec implied_int
 | "int"
-  {
-    $$ = pdcpl::cdcl_type::sint;
-  }
 | "double"
-  {
-    $$ = pdcpl::cdcl_type::gdouble;
-  }
 | "long" "double"
-  {
-    $$ = pdcpl::cdcl_type::gldouble;
-  }
 | "float"
-  {
-    $$ = pdcpl::cdcl_type::gfloat;
-  }
 | "struct" IDEN
-  {
-    $$ = {pdcpl::cdcl_type::gstruct, $2};
-  }
 | "enum" IDEN
-  {
-    $$ = {pdcpl::cdcl_type::genum, $2};
-  }
 | IDEN
-  {
-    $$ = {pdcpl::cdcl_type::gtype, $1};
-  }
 
 /* "Implied" int.
  *
@@ -302,17 +167,23 @@ implied_int:
   %empty
 | "int"
 
+/* C sign specifier */
+sign_spec:
+  "signed"
+| "unsigned"
+
+/* C length specifier.
+ *
+ * For simplicity, long long is not supported.
+ */
+length_spec:
+  "short"
+| "long"
+
 /* C init declarators rule */
 init_dclrs:
   init_dclr
-  {
-    $$ = {$1};
-  }
 | init_dclrs "," init_dclr
-  {
-    $$ = std::move($1);
-    $$.append(std::move($3));
-  }
 
 /* C init declarator.
  *
@@ -320,81 +191,38 @@ init_dclrs:
  */
 init_dclr:
   dclr
-  {
-    $$ = std::move($1);
-  }
 
 /* C declarator.
  *
  * This handles the pointer specifiers before parsing direct declarator.
  */
 dclr:
-  maybe_ptr_specs dir_dclr
-  {
-    $$ = std::move($2);
-    // only add pointer specifiers if non-empty, otherwise when written to a
-    // stream one will see an extra space being printed before the type spec
-    if ($1.size())
-      $$.append(std::move($1));
-  }
+  maybe_ptr_specs dir_declr
 
 /* C optional pointer specifiers */
 maybe_ptr_specs:
   %empty
-  {
-    $$ = {};
-  }
 | ptr_specs
-  {
-    $$ = std::move($1);
-  }
 
 /* C pointer specifiers */
 ptr_specs:
   ptr_spec
-  {
-    $$ = {$1};
-  }
 | ptr_specs ptr_spec
-  {
-    $$ = std::move($1);
-    $$.append(std::move($2));
-  }
 
 /* C pointer specifier */
 ptr_spec:
   "*"
-  {
-    $$ = pdcpl::cdcl_qual::qnone;
-  }
 | "*" type_qual
-  {
-    $$ = $2;
-  }
 
 /* C direct declarator.
  *
  * Note that this recurses into the dclr rule when extra parentheses are seen.
  */
-dir_dclr:
+dir_declr:
   IDEN
-  {
-    $$ = $1;
-  }
 | "(" dclr ")"
-  {
-    $$ = std::move($2);
-  }
-| dir_dclr array_spec
-  {
-    $$ = std::move($1);
-    $$.append(std::move($2));
-  }
-| dir_dclr "(" maybe_param_specs ")"
-  {
-    $$ = std::move($1);
-    $$.append(std::move($3));
-  }
+| dir_declr array_spec
+| dir_declr "(" maybe_param_specs ")"
 
 /* C array specifier.
  *
@@ -403,13 +231,7 @@ dir_dclr:
  */
 array_spec:
   "[" "]"
-  {
-    $$ = {};
-  }
 | "[" DIGITS "]"
-  {
-    $$ = std::stoul($2);
-  }
 
 /* C optional parameter specifiers.
  *
@@ -417,13 +239,7 @@ array_spec:
  */
 maybe_param_specs:
   %empty
-  {
-    $$ = {};
-  }
 | param_specs
-  {
-    $$ = std::move($1);
-  }
 
 /* C parameter specifiers.
  *
@@ -431,19 +247,8 @@ maybe_param_specs:
  */
 param_specs:
   param_spec
-  {
-    $$ = {$1};
-  }
 | param_specs "," param_spec
-  {
-    $$ = std::move($1);
-    $$.append(std::move($3));
-  }
 | param_specs "," "..."
-  {
-    $$ = std::move($1);
-    $$.variadic(true);
-  }
 
 /* C parameter specifier.
  *
@@ -452,17 +257,8 @@ param_specs:
  */
 param_spec:
   qual_type_spec
-  {
-    $$ = std::move($1);
-  }
 | qual_type_spec dclr
-  {
-    $$ = {std::move($1), std::move($2)};
-  }
 | qual_type_spec a_dclr
-  {
-    $$ = {std::move($1), std::move($2)};
-  }
 
 /* C abstract declarator.
  *
@@ -471,17 +267,7 @@ param_spec:
  */
 a_dclr:
   ptr_specs
-  {
-    $$.append(std::move($1));
-  }
 | maybe_ptr_specs a_dir_dclr
-  {
-    $$ = std::move($2);
-    // only add pointer specifiers if non-empty, otherwise when written to a
-    // stream one will see an extra space being printed before the type spec
-    if ($1.size())
-      $$.append(std::move($1));
-  }
 
 /* C direct abstract declarator.
  *
@@ -489,27 +275,10 @@ a_dclr:
  */
 a_dir_dclr:
   "(" a_dclr ")"
-  {
-    $$ = std::move($2);
-  }
 | array_spec
-  {
-    $$.append(std::move($1));
-  }
 | a_dir_dclr array_spec
-  {
-    $$ = std::move($1);
-    $$.append(std::move($2));
-  }
 | "(" maybe_param_specs ")"
-  {
-    $$.append(std::move($2));
-  }
 | a_dir_dclr "(" maybe_param_specs ")"
-  {
-    $$ = std::move($1);
-    $$.append(std::move($3));
-  }
 
 %%
 
