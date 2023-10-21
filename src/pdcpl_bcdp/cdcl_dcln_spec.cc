@@ -48,7 +48,7 @@ std::ostream& cdcl_param_spec::write(std::ostream& out) const
 {
   // write declarator if any
   if (dclr_)
-    out << *dclr_;
+    out << *dclr_ << " ";
   // write qualified type specifier
   out << spec_;
   return out;
@@ -71,7 +71,7 @@ std::string cdcl_dclr_spec::printer::operator()(
   }
   if (specs.variadic())
     ss << ", ...";
-  ss << ") returning ";
+  ss << ") returning";
   return ss.str();
 }
 

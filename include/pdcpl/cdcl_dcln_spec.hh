@@ -9,6 +9,7 @@
 #define PDCPL_CDCL_DCLN_SPEC_HH_
 
 #include <cstdint>
+#include <iterator>
 #include <memory>
 #include <ostream>
 #include <sstream>
@@ -84,7 +85,6 @@ public:
 
   auto& write(std::ostream& out) const
   {
-    std::string size_spec = (!size_) ? "" : std::to_string(size_);
     out << "array[";
     if (size_)
       out << size_;
@@ -133,6 +133,8 @@ public:
   void append(cdcl_qual qual) { specs_.push_back(qual); }
 
   auto operator[](std::size_t i) const noexcept { return specs_[i]; };
+
+  auto size() const noexcept { return specs_.size(); }
 
 private:
   container_type specs_;
@@ -216,6 +218,8 @@ public:
 
   void append(cdcl_param_spec&& spec) { specs_.push_back(std::move(spec)); }
 
+  auto size() const noexcept { return specs_.size(); }
+
 private:
   std::vector<cdcl_param_spec> specs_;
   bool variadic_;
@@ -244,15 +248,18 @@ public:
     auto operator()(const cdcl_array_spec& spec) const
     {
       std::stringstream ss;
-      ss << spec << " of ";
+      ss << spec << " of";
       return ss.str();
     }
 
     auto operator()(const cdcl_ptrs_spec& specs) const
     {
       std::stringstream ss;
-      for (const auto spec : specs) {
-        switch (spec) {
+      // for (const auto spec : specs) {
+      for (auto it = specs.begin(); it != specs.end(); it++) {
+        if (std::distance(specs.begin(), it))
+          ss << " ";
+        switch (*it) {
           case cdcl_qual::qnone:
             ss << "pointer";
             break;
@@ -268,7 +275,7 @@ public:
           default:
             throw std::runtime_error{"invalid pointer specification"};
         }
-        ss << " to ";
+        ss << " to";
       }
       return ss.str();
     }
@@ -325,8 +332,11 @@ public:
   {
     if (iden_.size())
       out << iden_ << ": ";
-    for (const auto& spec : specs_)
-      out << std::visit(cdcl_dclr_spec::printer{}, spec);
+    for (auto it = specs_.begin(); it != specs_.end(); it++) {
+      if (std::distance(specs_.begin(), it))
+        out << " ";
+      out << std::visit(cdcl_dclr_spec::printer{}, *it);
+    }
     return out;
   }
 
@@ -420,6 +430,8 @@ public:
   {
     init_dclrs_.push_back(init_dclr);
   }
+
+  auto size() const noexcept { return init_dclrs_.size(); }
 
 private:
   container_type init_dclrs_;

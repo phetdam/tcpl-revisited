@@ -137,7 +137,7 @@ dcln:
   {
     parser.insert($1, $2);
     // for (const auto& init_dclr : $2)
-    //   std::cout << init_dclr << $1 << std::endl;
+    //   std::cout << init_dclr << " " << $1 << std::endl;
   }
 
 /* C declaration specifier rule. */
@@ -332,7 +332,10 @@ dclr:
   maybe_ptr_specs dir_dclr
   {
     $$ = std::move($2);
-    $$.append(std::move($1));
+    // only add pointer specifiers if non-empty, otherwise when written to a
+    // stream one will see an extra space being printed before the type spec
+    if ($1.size())
+      $$.append(std::move($1));
   }
 
 /* C optional pointer specifiers */
@@ -474,7 +477,10 @@ a_dclr:
 | maybe_ptr_specs a_dir_dclr
   {
     $$ = std::move($2);
-    $$.append(std::move($1));
+    // only add pointer specifiers if non-empty, otherwise when written to a
+    // stream one will see an extra space being printed before the type spec
+    if ($1.size())
+      $$.append(std::move($1));
   }
 
 /* C direct abstract declarator.
