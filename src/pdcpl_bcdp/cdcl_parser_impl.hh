@@ -10,8 +10,15 @@
 
 #include <filesystem>
 #include <string>
+#include <unordered_map>
+#include <variant>
+#include <vector>
 
+#include "pdcpl/cdcl_dcln_spec.hh"
+#include "pdcpl/cdcl_type_spec.hh"
 #include "pdcpl/warnings.h"
+
+// #include "dcl_parser_dcln.hh"
 
 /**
  * Forward declaration to satisfy the `yy::cdcl_parser` class definition.
@@ -27,6 +34,8 @@ namespace pdcpl { class cdcl_parser_impl; }  // namespace pdcpl
  *
  * MSVC always emits C4065 (switch with default but no case labels) when this
  * header is included in a translation unit, so we disable when including.
+ *
+ * Any required headers should be included before this Bison-generated header.
  */
 PDCPL_MSVC_WARNING_DISABLE(4065)
 #include "parser.yy.hh"
@@ -76,6 +85,13 @@ namespace pdcpl {
 class cdcl_parser_impl {
 public:
   /**
+   * Ctor.
+   *
+   * @param include_text `true` to include text results, which slows parsing.
+   */
+  cdcl_parser_impl(bool include_text = false) : include_text_{include_text} {}
+
+  /**
    * Parse the specified input file.
    *
    * @param input_file File to read input from, empty or "-" for `stdin`
@@ -105,9 +121,49 @@ public:
    */
   const auto& last_error() const noexcept { return last_error_; }
 
+  /**
+   * Return `true` if text results were parsed, `false` otherwise.
+   */
+  auto include_text() const noexcept { return include_text_; }
+
+  const auto& results() const noexcept { return results_; }
+
+  auto& results() noexcept { return results_; }
+
+  void insert(const cdcl_dcl_spec& dcl_spec, const cdcl_init_dclr& init_dclr)
+  {
+    // currently only support declarations
+    if (!std::holds_alternative<cdcl_dclr>(init_dclr)) {
+      last_error_ = "init_dclr only support C declarators";
+      throw yy::cdcl_parser::syntax_error{location_, last_error_};
+    }
+    // create cdcl_dcln C declaration from dcl_spec and dclr
+    cdcl_dcln dcln{dcl_spec, std::get<cdcl_dclr>(init_dclr)};
+    // must have identifer and must not be duplicate declaration
+    const auto& iden = dcln.dclr().iden();
+    if (iden.empty()) {
+      last_error_ = "dcln is missing identifier";
+      throw yy::cdcl_parser::syntax_error{location_, last_error_};
+    }
+    if (results_.find(iden) != results_.end()) {
+      last_error_ = "identifier " + iden + " redeclared";
+      throw yy::cdcl_parser::syntax_error{location_, last_error_};
+    }
+    // otherwise, we can insert the declaration
+    results_.emplace(iden, dcln);
+  }
+
+  void insert(const cdcl_dcl_spec& dcl_spec, const cdcl_init_dclrs& init_dclrs)
+  {
+    for (const auto& init_dclr : init_dclrs)
+      insert(dcl_spec, init_dclr);
+  }
+
 private:
   yy::location location_;
   std::string last_error_;
+  bool include_text_;
+  std::unordered_map<std::string, cdcl_dcln> results_;
 
   /**
    * Perform setup for the Flex lexer.
