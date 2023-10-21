@@ -140,8 +140,13 @@ private:
   container_type specs_;
 };
 
+// forward declaration for cdcl_dclr, the C declaration declarator, as it is
+// used via shared pointer in the cdcl_param_spec parameter specifier.
 class cdcl_dclr;
 
+/**
+ * C function parameter specifier.
+ */
 class PDCPL_BCDP_PUBLIC cdcl_param_spec {
 public:
   cdcl_param_spec() = default;
@@ -174,6 +179,9 @@ inline auto& operator<<(std::ostream& out, const cdcl_param_spec& spec)
   return spec.write(out);
 }
 
+/**
+ * C function parameters specifier.
+ */
 class cdcl_params_spec {
 public:
   cdcl_params_spec() = default;
@@ -225,13 +233,21 @@ private:
   bool variadic_;
 };
 
+/**
+ * `std::variant` specialization for a declarator specifier.
+ *
+ * The variant can hold an array specifier, pointers specifier, or the
+ * parameters specifier used to indicate a function.
+ */
 using cdcl_dclr_spec_variant = std::variant<
   cdcl_array_spec, cdcl_ptrs_spec, cdcl_params_spec
 >;
 
+// MSVC emits C4251 for cdcl_dclr_spec since STL types are technically not
+// marked for DLL export, but can be ignored when inheriting an STL type.
 PDCPL_MSVC_WARNING_DISABLE(4251)
 /**
- * Variant for a declarator specifier.
+ * C declarator specifier.
  */
 class PDCPL_BCDP_PUBLIC cdcl_dclr_spec : public cdcl_dclr_spec_variant {
 PDCPL_MSVC_WARNING_ENABLE()
@@ -285,10 +301,11 @@ public:
 };
 
 /**
- * C [direct] declarator.
+ * C [abstract] [direct] declarator.
  *
- * The same type is used to handle both the `dclr` and `dir_dclr` declarator
- * and direct-declarator structures specified in the C grammar.
+ * The same type is used to handle the `dclr` declarator, `dir_dclr`
+ * direct-declarator, `a_dclr` abstract declarator, and `a_dir_dclr` abstract
+ * direct-declarator structures specified in the C grammar.
  */
 class cdcl_dclr {
 public:

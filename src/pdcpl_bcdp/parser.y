@@ -129,7 +129,7 @@ stmt:
  *
  * We follow a modified version of the declaration specification in Appendix A,
  * section 8 of The C Programming Language, as we do not allow definitions.
- * That is, the init_declr (init-declarator) rule does not allow initializers.
+ * That is, the init_dclr (init-declarator) rule does not allow initializers.
  * The declaration rule alow only allows one declaration specifier.
  */
 dcln:
