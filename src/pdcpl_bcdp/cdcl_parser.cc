@@ -9,6 +9,12 @@
 
 #include "cdcl_parser_impl.hh"
 
+#include <filesystem>
+#include <string>
+#include <unordered_map>
+
+#include "pdcpl/cdcl_dcln_spec.hh"
+
 namespace pdcpl {
 
 /**
@@ -43,6 +49,14 @@ bool cdcl_parser::parse(
 const std::string& cdcl_parser::last_error() const noexcept
 {
   return impl_->last_error();
+}
+
+/**
+ * Return mapping of identifiers to declarations.
+ */
+const cdcl_parser::results_type& cdcl_parser::results() const noexcept
+{
+  return impl_->results();
 }
 
 }  // namespace pdcpl

@@ -85,13 +85,6 @@ namespace pdcpl {
 class cdcl_parser_impl {
 public:
   /**
-   * Ctor.
-   *
-   * @param include_text `true` to include text results, which slows parsing.
-   */
-  cdcl_parser_impl(bool include_text = false) : include_text_{include_text} {}
-
-  /**
    * Parse the specified input file.
    *
    * @param input_file File to read input from, empty or "-" for `stdin`
@@ -122,14 +115,16 @@ public:
   const auto& last_error() const noexcept { return last_error_; }
 
   /**
-   * Return `true` if text results were parsed, `false` otherwise.
+   * Return mapping of identifiers to declarations.
    */
-  auto include_text() const noexcept { return include_text_; }
-
   const auto& results() const noexcept { return results_; }
 
-  auto& results() noexcept { return results_; }
-
+  /**
+   * Insert a new declaration.
+   *
+   * @param dcl_spec Declaration specifier, e.g. storage and qualified type
+   * @param init_dclr Init declarator, currently only supports declarator
+   */
   void insert(const cdcl_dcl_spec& dcl_spec, const cdcl_init_dclr& init_dclr)
   {
     // currently only support declarations
@@ -153,6 +148,12 @@ public:
     results_.emplace(iden, dcln);
   }
 
+  /**
+   * Insert new declarations from multiple declarators.
+   *
+   * @param dcl_spec Declaration specifier, e.g. storage and qualified type
+   * @param init_dclrs Init declarators, currently only supports declarator
+   */
   void insert(const cdcl_dcl_spec& dcl_spec, const cdcl_init_dclrs& init_dclrs)
   {
     for (const auto& init_dclr : init_dclrs)
@@ -162,7 +163,6 @@ public:
 private:
   yy::location location_;
   std::string last_error_;
-  bool include_text_;
   std::unordered_map<std::string, cdcl_dcln> results_;
 
   /**

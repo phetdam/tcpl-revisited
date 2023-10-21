@@ -11,7 +11,9 @@
 #include <filesystem>
 #include <memory>
 #include <string>
+#include <unordered_map>
 
+#include "pdcpl/cdcl_dcln_spec.hh"
 #include "pdcpl/dllexport.h"
 #include "pdcpl/warnings.h"
 
@@ -28,6 +30,8 @@ class cdcl_parser_impl;
  */
 class PDCPL_BCDP_PUBLIC cdcl_parser {
 public:
+  using results_type = std::unordered_map<std::string, cdcl_dcln>;
+
   /**
    * Ctor.
    */
@@ -118,6 +122,11 @@ public:
    * Return last error encountered during parsing.
    */
   const std::string& last_error() const noexcept;
+
+  /**
+   * Return mapping of identifiers to declarations.
+   */
+  const results_type& results() const noexcept;
 
 private:
   // MSVC emits C4251 since STL types are not exported. not our problem however
