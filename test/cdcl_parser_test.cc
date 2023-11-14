@@ -32,7 +32,7 @@ protected:
    *
    * If there is a skip reason, the test is skipped and the reason printed.
    */
-  virtual void SetUp() override
+  void SetUp() override
   {
     if (skip_tests_reason_.size())
       GTEST_SKIP() << skip_tests_reason_;
