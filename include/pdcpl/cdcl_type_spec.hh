@@ -197,6 +197,11 @@ public:
    */
   const auto& iden() const noexcept { return iden_; }
 
+  /**
+   * Write the type specifier to an output stream.
+   *
+   * @param out Output stream
+   */
   auto& write(std::ostream& out) const
   {
     out << cdcl_type_printer(type_);
@@ -210,6 +215,12 @@ private:
   std::string iden_;
 };
 
+/**
+ * Write the C declaration type specifier to an output stream.
+ *
+ * @param out Output stream
+ * @param spec C declaration type specifier
+ */
 inline auto& operator<<(std::ostream& out, const cdcl_type_spec& spec)
 {
   return spec.write(out);
@@ -272,6 +283,11 @@ public:
    */
   const auto& spec() const noexcept { return spec_; }
 
+  /**
+   * Write the qualified type specifier to an output stream.
+   *
+   * @param out Output stream
+   */
   auto& write(std::ostream& out) const
   {
     auto qual = cdcl_qual_printer(qual_);
@@ -288,6 +304,12 @@ private:
   cdcl_type_spec spec_;
 };
 
+/**
+ * Write the C declaration qualified type specifier to an output stream.
+ *
+ * @param out Output stream
+ * @param spec C declaration qualified type specifier
+ */
 inline auto& operator<<(std::ostream& out, const cdcl_qtype_spec& spec)
 {
   return spec.write(out);
