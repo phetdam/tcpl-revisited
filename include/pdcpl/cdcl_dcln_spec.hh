@@ -234,20 +234,69 @@ public:
    */
   cdcl_param_spec() = default;
 
+  /**
+   * Ctor.
+   *
+   * Constructs by copy from a qualified type specifier with no declarator.
+   *
+   * @param spec Qualified type specifier
+   */
   cdcl_param_spec(const cdcl_qtype_spec& spec);
 
+  /**
+   * Ctor.
+   *
+   * Constructs by move from a qualified type specifier with no declarator.
+   *
+   * @param spec Qualified type specifier
+   */
   cdcl_param_spec(cdcl_qtype_spec&& spec);
 
+  /**
+   * Ctor.
+   *
+   * Constructs by copy from a qualified type specifier and a declarator.
+   *
+   * @param spec Qualified type specifier
+   * @param dclr C [abstract] [direct] declarator
+   */
   cdcl_param_spec(const cdcl_qtype_spec& spec, const cdcl_dclr& dclr);
 
+  /**
+   * Ctor.
+   *
+   * Constructs by move from a qualified type specifier and a declarator.
+   *
+   * @param spec Qualified type specifier
+   * @param dclr C [abstract] [direct] declarator
+   */
   cdcl_param_spec(cdcl_qtype_spec&& spec, cdcl_dclr&& dclr);
 
+  /**
+   * Ctor.
+   *
+   * Constructs by move from a qualified type specifier and a declarator.
+   *
+   * @param spec Qualified type specifier
+   * @param dclr C [abstract] [direct] declarator
+   */
   cdcl_param_spec(cdcl_qtype_spec&& spec, std::unique_ptr<cdcl_dclr>&& dclr);
 
+  /**
+   * Return the parameter specifier's qualified type specifier.
+   */
   auto spec() const noexcept { return spec_; }
 
+  /**
+   * Return a const reference to C declarator shared pointer.
+   */
   const std::shared_ptr<cdcl_dclr>& dclr() const noexcept;
 
+  /**
+   * Write the function parameter specifier to an output stream.
+   *
+   * @param out Output stream
+   */
   std::ostream& write(std::ostream& out) const;
 
 private:
@@ -257,6 +306,12 @@ private:
   PDCPL_MSVC_WARNING_ENABLE()
 };
 
+/**
+ * Write the C declaration function parameter specifier to an output stream.
+ *
+ * @param out Output stream
+ * @param spec C declaration function parameter specifier
+ */
 inline auto& operator<<(std::ostream& out, const cdcl_param_spec& spec)
 {
   return spec.write(out);
