@@ -32,6 +32,11 @@ namespace pdcpl {
  */
 class cdcl_dcl_spec {
 public:
+  /**
+   * Default ctor.
+   *
+   * Required for use in Bison semantic actions.
+   */
   cdcl_dcl_spec() : storage_{cdcl_storage::invalid}, spec_{} {}
 
   cdcl_dcl_spec(const cdcl_qtype_spec& spec)
@@ -112,6 +117,11 @@ public:
   using iterator = container_type::iterator;
   using const_iterator = container_type::const_iterator;
 
+  /**
+   * Default ctor.
+   *
+   * Required for use in Bison semantic actions.
+   */
   cdcl_ptrs_spec() : specs_{} {}
 
   cdcl_ptrs_spec(const std::initializer_list<cdcl_qual>& specs) : specs_{specs} {}
@@ -149,6 +159,11 @@ class cdcl_dclr;
  */
 class PDCPL_BCDP_PUBLIC cdcl_param_spec {
 public:
+  /**
+   * Default ctor.
+   *
+   * Required for use in Bison semantic actions.
+   */
   cdcl_param_spec() = default;
 
   cdcl_param_spec(const cdcl_qtype_spec& spec);
@@ -184,6 +199,11 @@ inline auto& operator<<(std::ostream& out, const cdcl_param_spec& spec)
  */
 class cdcl_params_spec {
 public:
+  /**
+   * Default ctor.
+   *
+   * Required for use in Bison semantic actions.
+   */
   cdcl_params_spec() = default;
 
   cdcl_params_spec(
@@ -313,6 +333,11 @@ public:
   using iterator = container_type::iterator;
   using const_iterator = container_type::const_iterator;
 
+  /**
+   * Default ctor.
+   *
+   * Required for use in Bison semantic actions.
+   */
   cdcl_dclr() : iden_{}, specs_{} {}
 
   cdcl_dclr(const std::string& iden) : iden_{iden}, specs_{} {}
@@ -411,6 +436,11 @@ public:
   using iterator = container_type::iterator;
   using const_iterator = container_type::const_iterator;
 
+  /**
+   * Default ctor.
+   *
+   * Required for use in Bison semantic actions.
+   */
   cdcl_init_dclrs() : init_dclrs_{} {}
 
   cdcl_init_dclrs(const std::initializer_list<cdcl_init_dclr>& init_dclrs)
@@ -459,6 +489,11 @@ private:
  */
 class cdcl_dcln {
 public:
+  /**
+   * Default ctor.
+   *
+   * Required for use in Bison semantic actions.
+   */
   cdcl_dcln() : dcl_spec_{}, dclr_{} {}
 
   cdcl_dcln(const cdcl_dcl_spec& dcl_spec, const cdcl_dclr& dclr)
