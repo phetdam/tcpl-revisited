@@ -39,26 +39,69 @@ public:
    */
   cdcl_dcl_spec() : storage_{cdcl_storage::invalid}, spec_{} {}
 
+  /**
+   * Ctor.
+   *
+   * Constructs a declaration specifier with automatic storage from the
+   * qualified type specifier, copying the qualified type specifier.
+   *
+   * @param spec Qualified type specifier
+   */
   cdcl_dcl_spec(const cdcl_qtype_spec& spec)
     : cdcl_dcl_spec{cdcl_storage::st_auto, spec}
   {}
 
+  /**
+   * Ctor.
+   *
+   * Constructs a declaration specifier with automatic storage from the
+   * qualified type specifier, moving from the qualified type specifier.
+   *
+   * @param spec Qualified type specifier
+   */
   cdcl_dcl_spec(cdcl_qtype_spec&& spec)
     : cdcl_dcl_spec{cdcl_storage::st_auto, spec}
   {}
 
+  /**
+   * Ctor.
+   *
+   * Constructs by copying the qualified type specifier.
+   *
+   * @param storage Storage type
+   * @param spec Qualified type specifier
+   */
   cdcl_dcl_spec(cdcl_storage storage, const cdcl_qtype_spec& spec)
     : storage_{storage}, spec_{spec}
   {}
 
+  /**
+   * Ctor.
+   *
+   * Constructs by moving from the qualified type specifier.
+   *
+   * @param storage Storage type
+   * @param spec Qualified type specifier
+   */
   cdcl_dcl_spec(cdcl_storage storage, cdcl_qtype_spec&& spec)
     : storage_{storage}, spec_{std::move(spec)}
   {}
 
+  /**
+   * Return the storage type of the declaration specifier.
+   */
   auto storage() const noexcept { return storage_; }
 
+  /**
+   * Return const reference to the qualified type specifier.
+   */
   const auto& spec() const noexcept { return spec_; }
 
+  /**
+   * Write the C declaration specifier to an output stream.
+   *
+   * @param out Output stream
+   */
   auto& write(std::ostream& out) const
   {
     auto storage = cdcl_storage_printer(storage_);
@@ -74,6 +117,12 @@ private:
   cdcl_qtype_spec spec_;
 };
 
+/**
+ * Write the C declaration specifier to an output stream.
+ *
+ * @param out Output stream
+ * @param spec C declaration specifier to write
+ */
 inline auto& operator<<(std::ostream& out, const cdcl_dcl_spec& spec)
 {
   return spec.write(out);
@@ -84,10 +133,23 @@ inline auto& operator<<(std::ostream& out, const cdcl_dcl_spec& spec)
  */
 class cdcl_array_spec {
 public:
+  /**
+   * Default ctor.
+   *
+   * Required for use in Bison semantic actions.
+   */
   cdcl_array_spec(std::size_t size = 0U) : size_{size} {}
 
+  /**
+   * Return specified array size.
+   */
   auto size() const noexcept { return size_; }
 
+  /**
+   * Write the array specifier to an output stream.
+   *
+   * @param out Output stream
+   */
   auto& write(std::ostream& out) const
   {
     out << "array[";
