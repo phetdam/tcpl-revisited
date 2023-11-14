@@ -31,7 +31,7 @@ cdcl_param_spec::cdcl_param_spec(
 {}
 
 cdcl_param_spec::cdcl_param_spec(cdcl_qtype_spec&& spec, cdcl_dclr&& dclr)
-  : spec_{spec}, dclr_{std::make_unique<cdcl_dclr>(dclr)}
+  : spec_{spec}, dclr_{std::make_unique<cdcl_dclr>(std::move(dclr))}
 {}
 
 cdcl_param_spec::cdcl_param_spec(
