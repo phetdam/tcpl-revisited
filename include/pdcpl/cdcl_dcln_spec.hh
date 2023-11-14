@@ -163,6 +163,12 @@ private:
   std::size_t size_;
 };
 
+/**
+ * Write the C declaration array specifier to an output stream.
+ *
+ * @param out Output stream
+ * @param spec C declaration array specifier
+ */
 inline auto& operator<<(std::ostream& out, const cdcl_array_spec& spec)
 {
   return spec.write(out);
