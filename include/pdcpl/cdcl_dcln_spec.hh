@@ -758,6 +758,11 @@ public:
 
   const auto& dclr() const noexcept { return dclr_; }
 
+  /**
+   * Write the C declaration to an output stream.
+   *
+   * @param out Output stream
+   */
   auto& write(std::ostream& out) const
   {
     out << dclr_ << " " << dcl_spec_;
@@ -769,6 +774,12 @@ private:
   cdcl_dclr dclr_;
 };
 
+/**
+ * Write the C declaration to an output stream.
+ *
+ * @param out Output stream
+ * @param dcln C declaration
+ */
 inline auto& operator<<(std::ostream& out, const cdcl_dcln& dcln)
 {
   return dcln.write(out);
