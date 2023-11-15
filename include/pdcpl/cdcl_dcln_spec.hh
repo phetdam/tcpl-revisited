@@ -177,7 +177,8 @@ inline auto& operator<<(std::ostream& out, const cdcl_array_spec& spec)
 /**
  * C pointers specifier.
  *
- * Serves as a thin wrapper around a vector of `cdcl_qual` values.
+ * Serves as a thin wrapper around a vector of `cdcl_qual` values, each one
+ * corresponding to an implied additional pointer in the specifier.
  */
 class cdcl_ptrs_spec {
 public:
@@ -192,26 +193,73 @@ public:
    */
   cdcl_ptrs_spec() : specs_{} {}
 
+  /**
+   * Ctor.
+   *
+   * Constructs from an initializer list of cv-qualifiers.
+   *
+   * @param specs Pointer cv-qualifiers
+   */
   cdcl_ptrs_spec(const std::initializer_list<cdcl_qual>& specs) : specs_{specs} {}
 
+  /**
+   * Ctor.
+   *
+   * Constructs by copy from a vector of cv-qualifiers.
+   *
+   * @param specs Pointer cv-qualifiers
+   */
   cdcl_ptrs_spec(const container_type& specs) : specs_{specs} {}
 
+  /**
+   * Ctor.
+   *
+   * Constructs by move from a vector of cv-qualifiers.
+   *
+   * @param specs Pointer cv-qualifiers
+   */
   cdcl_ptrs_spec(container_type&& specs) : specs_{std::move(specs)} {}
 
+  /**
+   * Return const reference to vector of pointer cv-qualifiers.
+   */
   const auto& specs() const noexcept { return specs_; }
 
+  /**
+   * Return iterator to the beginning of the vector.
+   */
   auto begin() noexcept { return specs_.begin(); }
 
+  /**
+   * Return const iterator to the beginning of the vector.
+   */
   auto begin() const noexcept { return specs_.begin(); }
 
+  /**
+   * Return iterator to the end of the vector.
+   */
   auto end() noexcept { return specs_.end(); }
 
+  /**
+   * Return const iterator to the end of the vector.
+   */
   auto end() const noexcept { return specs_.end(); }
 
+  /**
+   * Append a pointer's cv-qualifier to the vector.
+   *
+   * @param qual Pointer cv-qualifier
+   */
   void append(cdcl_qual qual) { specs_.push_back(qual); }
 
+  /**
+   * Return the `i`th pointer cv-qualifier.
+   */
   auto operator[](std::size_t i) const noexcept { return specs_[i]; };
 
+  /**
+   * Return the number of points in the specifier.
+   */
   auto size() const noexcept { return specs_.size(); }
 
 private:
@@ -319,6 +367,9 @@ inline auto& operator<<(std::ostream& out, const cdcl_param_spec& spec)
 
 /**
  * C function parameters specifier.
+ *
+ * Thin wrapper around a vector of `cdcl_param_spec` values and indicates
+ * if the function being described is a variadic function.
  */
 class cdcl_params_spec {
 public:
@@ -329,25 +380,61 @@ public:
    */
   cdcl_params_spec() = default;
 
-  cdcl_params_spec(
-    const std::vector<cdcl_param_spec>& specs, bool variadic = false)
-    : specs_{specs}, variadic_{variadic}
-  {}
-
+  /**
+   * Ctor.
+   *
+   * Constructs from an initializer list of function parameter specifiers.
+   *
+   * @param specs Function parameter specifiers
+   * @param variadic `true` if function accepts varags, `false` otherwise
+   */
   cdcl_params_spec(
     const std::initializer_list<cdcl_param_spec>& specs, bool variadic = false)
     : specs_{specs}, variadic_{variadic}
   {}
 
+  /**
+   * Ctor.
+   *
+   * Constructs by copy from a vector function parameter specifiers.
+   *
+   * @param specs Function parameter specifiers
+   * @param variadic `true` if function accepts varags, `false` otherwise
+   */
+  cdcl_params_spec(
+    const std::vector<cdcl_param_spec>& specs, bool variadic = false)
+    : specs_{specs}, variadic_{variadic}
+  {}
+
+  /**
+   * Ctor.
+   *
+   * Constructs by move from a vector function parameter specifiers.
+   *
+   * @param specs Function parameter specifiers
+   * @param variadic `true` if function accepts varags, `false` otherwise
+   */
   cdcl_params_spec(
     std::vector<cdcl_param_spec>&& specs, bool variadic = false)
     : specs_{std::move(specs)}, variadic_{variadic}
   {}
 
+  /**
+   * Return const reference to the vector of function parameter specifiers.
+   */
   const auto& specs() const noexcept { return specs_; }
 
+  /**
+   * Return `true` if function is variadic, `false` otherwise.
+   */
   auto variadic() const noexcept { return variadic_; }
 
+  /**
+   * Mark the function as being variadic or not being variadic.
+   *
+   * @param value Truth value
+   * @returns Previous value of `variadic()`
+   */
   auto variadic(bool value) noexcept
   {
     auto old_value = variadic_;
@@ -355,20 +442,48 @@ public:
     return old_value;
   }
 
+  /**
+   * Return iterator to the beginning of the vector.
+   */
   auto begin() noexcept { return specs_.begin(); }
 
+  /**
+   * Return const iterator to the beginning of the vector.
+   */
   auto begin() const noexcept { return specs_.begin(); }
 
+  /**
+   * Return iterator to the end of the vector.
+   */
   auto end() noexcept { return specs_.end(); }
 
+  /**
+   * Return const iterator to the end of the vector.
+   */
   auto end() const noexcept { return specs_.end(); }
 
+  /**
+   * Return const reference to the `i`th function parameter specifier.
+   */
   const auto& operator[](std::size_t i) const noexcept { return specs_[i]; }
 
+  /**
+   * Append a function parameter specifier by copy to the vector.
+   *
+   * @param spec Function parameter specifier
+   */
   void append(const cdcl_param_spec& spec) { specs_.push_back(spec); }
 
+  /**
+   * Append a function parameter specifier by move to the vector.
+   *
+   * @param spec Function parameter specifier
+   */
   void append(cdcl_param_spec&& spec) { specs_.push_back(std::move(spec)); }
 
+  /**
+   * Return number of function parameter specifiers.
+   */
   auto size() const noexcept { return specs_.size(); }
 
 private:
@@ -377,7 +492,7 @@ private:
 };
 
 /**
- * `std::variant` specialization for a declarator specifier.
+ * `std::variant` specialization for a C declarator specifier.
  *
  * The variant can hold an array specifier, pointers specifier, or the
  * parameters specifier used to indicate a function.
@@ -391,6 +506,10 @@ using cdcl_dclr_spec_variant = std::variant<
 PDCPL_MSVC_WARNING_DISABLE(4251)
 /**
  * C declarator specifier.
+ *
+ * Thin wrapper over the `cdcl_dclr_spec_variant` variant specialization used
+ * to represent a specifier for a C declarator, e.g. an array specifier,
+ * pointers specifier, or function parameters specifier.
  */
 class PDCPL_BCDP_PUBLIC cdcl_dclr_spec : public cdcl_dclr_spec_variant {
 PDCPL_MSVC_WARNING_ENABLE()
@@ -404,6 +523,9 @@ public:
    * Each `operator()` overload returns a string representation for each type.
    */
   struct printer {
+    /**
+     * Return string representation for an array specifier.
+     */
     auto operator()(const cdcl_array_spec& spec) const
     {
       std::stringstream ss;
@@ -411,10 +533,12 @@ public:
       return ss.str();
     }
 
+    /**
+     * Return string representation for a pointers specifier.
+     */
     auto operator()(const cdcl_ptrs_spec& specs) const
     {
       std::stringstream ss;
-      // for (const auto spec : specs) {
       for (auto it = specs.begin(); it != specs.end(); it++) {
         if (std::distance(specs.begin(), it))
           ss << " ";
@@ -439,6 +563,9 @@ public:
       return ss.str();
     }
 
+    /**
+     * Return string representation for a function parameters specifier.
+     */
     std::string operator()(const cdcl_params_spec& specs) const;
   };
 };

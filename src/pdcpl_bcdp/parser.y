@@ -136,8 +136,6 @@ dcln:
   dcl_spec init_dclrs ";"
   {
     parser.insert($1, $2);
-    // for (const auto& init_dclr : $2)
-    //   std::cout << init_dclr << " " << $1 << std::endl;
   }
 
 /* C declaration specifier rule. */
