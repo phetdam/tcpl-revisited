@@ -525,6 +525,8 @@ public:
   struct printer {
     /**
      * Return string representation for an array specifier.
+     *
+     * @param spec Array specifier
      */
     auto operator()(const cdcl_array_spec& spec) const
     {
@@ -535,6 +537,8 @@ public:
 
     /**
      * Return string representation for a pointers specifier.
+     *
+     * @param specs Pointers specifier
      */
     auto operator()(const cdcl_ptrs_spec& specs) const
     {
@@ -565,6 +569,8 @@ public:
 
     /**
      * Return string representation for a function parameters specifier.
+     *
+     * @param specs Function parameters specifier
      */
     std::string operator()(const cdcl_params_spec& specs) const;
   };
@@ -586,40 +592,94 @@ public:
   /**
    * Default ctor.
    *
-   * Required for use in Bison semantic actions.
+   * Required for use in Bison semantic actions. Can also be used to represent
+   * one of the abstract declarators that do not have an identifier.
    */
   cdcl_dclr() : iden_{}, specs_{} {}
 
+  /**
+   * Ctor.
+   *
+   * @param iden Declarator identifier, can be empty for abstract declarators
+   */
   cdcl_dclr(const std::string& iden) : iden_{iden}, specs_{} {}
 
+  /**
+   * Return const reference to the identifier.
+   *
+   * This is empty for abstract [direct] declarators.
+   */
   const auto& iden() const noexcept { return iden_; }
 
+  /**
+   * Return const reference to the vector of declarator specifiers.
+   */
   const auto& specs() const noexcept { return specs_; }
 
+  /**
+   * Return iterator to the beginning of the declarator specifier vector.
+   */
   auto begin() noexcept { return specs_.begin(); }
 
+  /**
+   * Return const iterator to the beginning of the declarator specifier vector.
+   */
   auto begin() const noexcept { return specs_.begin(); }
 
+  /**
+   * Return iterator to the end of the declarator specifier vector.
+   */
   auto end() noexcept { return specs_.end(); }
 
+  /**
+   * Return const iterator to the end of the declarator specifier vector.
+   */
   auto end() const noexcept { return specs_.end(); }
 
+  /**
+   * Return const reference to the `i`th declarator specifier.
+   */
   const auto& operator[](std::size_t i) const noexcept { return specs_[i]; }
 
+  /**
+   * Append declarator specifier by copy to the vector of specifiers.
+   *
+   * @param spec C declarator specifier
+   */
   void append(const cdcl_dclr_spec& spec) { specs_.push_back(spec); }
 
+  /**
+   * Append declarator specifier by move to the vector of specifiers.
+   *
+   * @param spec C declarator specifier
+   */
   void append(cdcl_dclr_spec&& spec) { specs_.push_back(std::move(spec)); }
 
+  /**
+   * Prepend declarator specifier by copy to the vector of specifiers.
+   *
+   * @param spec C declarator specifier
+   */
   void prepend(const cdcl_dclr_spec& spec)
   {
     specs_.insert(specs_.begin(), spec);
   }
 
+  /**
+   * Prepend declarator specifier by move to the vector of specifiers.
+   *
+   * @param spec C declarator specifier
+   */
   void prepend(cdcl_dclr_spec&& spec)
   {
     specs_.insert(specs_.begin(), std::move(spec));
   }
 
+  /**
+   * Write the declarator to an output stream.
+   *
+   * @param out Output stream
+   */
   auto& write(std::ostream& out) const
   {
     if (iden_.size())
@@ -632,6 +692,11 @@ public:
     return out;
   }
 
+  /**
+   * Return the declarator's string representation.
+   *
+   * Contains what would be written into an output stream using `write`.
+   */
   operator std::string() const
   {
     std::stringstream ss;
@@ -645,7 +710,10 @@ private:
 };
 
 /**
- * `operator<<` overload for `cdcl_dclr` to enable streaming.
+ * Write the C declarator to an output stream.
+ *
+ * @param out Output stream
+ * @param dclr C declarator
  */
 inline auto& operator<<(std::ostream& out, const cdcl_dclr& dclr)
 {
@@ -654,13 +722,25 @@ inline auto& operator<<(std::ostream& out, const cdcl_dclr& dclr)
 
 /**
  * C init declarator.
+ *
+ * @note In actual C programs, the init declarator includes initializers.
  */
 class cdcl_init_dclr : public std::variant<cdcl_dclr> {
 public:
   using variant_type = std::variant<cdcl_dclr>;
   using variant_type::variant_type;
 
+  /**
+   * Variant printer.
+   *
+   * Each `operator()` overload returns a string representation for each type.
+   */
   struct printer {
+    /**
+     * Return string representation for a declarator.
+     *
+     * @param dclr Declarator
+     */
     auto operator()(const cdcl_dclr& dclr) const
     {
       return static_cast<std::string>(dclr);
@@ -669,7 +749,10 @@ public:
 };
 
 /**
- * `operator<<` overload for `cdcl_init_dclr` to enable streaming.
+ * Write the C declaration init declarator to an output stream.
+ *
+ * @param out Output stream
+ * @param init_dclr C declaration init declarator
  */
 inline auto& operator<<(std::ostream& out, const cdcl_init_dclr& init_dclr)
 {
