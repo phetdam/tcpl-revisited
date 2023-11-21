@@ -873,6 +873,8 @@ private:
 
 /**
  * C declaration.
+ *
+ * This consists of a declaration specifier and a declarator.
  */
 class cdcl_dcln {
 public:
@@ -883,16 +885,38 @@ public:
    */
   cdcl_dcln() : dcl_spec_{}, dclr_{} {}
 
+  /**
+   * Ctor.
+   *
+   * Constructs by copy from a declaration specifier and a declarator.
+   *
+   * @param dcl_spec Declaration specifier
+   * @param dclr [Abstract] [direct] declarator
+   */
   cdcl_dcln(const cdcl_dcl_spec& dcl_spec, const cdcl_dclr& dclr)
     : dcl_spec_{dcl_spec}, dclr_{dclr}
   {}
 
+  /**
+   * Ctor.
+   *
+   * Constructs by move from a declaration specifier and a declarator.
+   *
+   * @param dcl_spec Declaration specifier
+   * @param dclr [Abstract] [direct] declarator
+   */
   cdcl_dcln(cdcl_dcl_spec&& dcl_spec, cdcl_dclr&& dclr)
     : dcl_spec_{std::move(dcl_spec)}, dclr_{std::move(dclr)}
   {}
 
+  /**
+   * Return const reference to the declaration specifier.
+   */
   const auto& dcl_spec() const noexcept { return dcl_spec_; }
 
+  /**
+   * Return const reference to the declarator.
+   */
   const auto& dclr() const noexcept { return dclr_; }
 
   /**
