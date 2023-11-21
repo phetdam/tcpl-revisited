@@ -762,6 +762,8 @@ inline auto& operator<<(std::ostream& out, const cdcl_init_dclr& init_dclr)
 
 /**
  * C init declarators.
+ *
+ * Thin wrapper around a `cdcl_init_dclr` vector.
  */
 class cdcl_init_dclrs {
 public:
@@ -776,41 +778,93 @@ public:
    */
   cdcl_init_dclrs() : init_dclrs_{} {}
 
+  /**
+   * Ctor.
+   *
+   * Constructs from an initializer list of init declarators.
+   *
+   * @param init_dclrs Init declarators
+   */
   cdcl_init_dclrs(const std::initializer_list<cdcl_init_dclr>& init_dclrs)
     : init_dclrs_{init_dclrs}
   {}
 
+  /**
+   * Ctor.
+   *
+   * Constructs by copy from another vector of init declarators.
+   *
+   * @param init_dclrs Init declarators
+   */
   cdcl_init_dclrs(const container_type& init_dclrs) : init_dclrs_{init_dclrs} {}
 
+  /**
+   * Ctor.
+   *
+   * Constructs by move from another vector of init declarators.
+   *
+   * @param init_dclrs Init declarators
+   */
   cdcl_init_dclrs(container_type&& init_dclrs)
     : init_dclrs_{std::move(init_dclrs)}
   {}
 
+  /**
+   * Return const reference to the vector of init declarators.
+   */
   const auto& init_dclrs() const noexcept { return init_dclrs_; }
 
+  /**
+   * Return iterator to the beginning of the init declarators vector.
+   */
   auto begin() noexcept { return init_dclrs_.begin(); }
 
+  /**
+   * Return const iterator to the beginning of the init declarators vector.
+   */
   auto begin() const noexcept { return init_dclrs_.begin(); }
 
+  /**
+   * Return iterator to the end of the init declarators vector.
+   */
   auto end() noexcept { return init_dclrs_.end(); }
 
+  /**
+   * Return const iterator to the end of the init declarators vector.
+   */
   auto end() const noexcept { return init_dclrs_.end(); }
 
+  /**
+   * Return const reference to the `i`th init declarators vector.
+   */
   const auto& operator[](std::size_t i) const noexcept
   {
     return init_dclrs_[i];
   }
 
+  /**
+   * Append init declarator by copy to the init declarators vectors.
+   *
+   * @param init_dclr Init declarator to append
+   */
   void append(const cdcl_init_dclr& init_dclr)
   {
     init_dclrs_.push_back(init_dclr);
   }
 
+  /**
+   * Append init declarator by move to the init declarators vectors.
+   *
+   * @param init_dclr Init declarator to append
+   */
   void append(cdcl_init_dclr&& init_dclr)
   {
-    init_dclrs_.push_back(init_dclr);
+    init_dclrs_.push_back(std::move(init_dclr));
   }
 
+  /**
+   * Return size of the init declarators vector.
+   */
   auto size() const noexcept { return init_dclrs_.size(); }
 
 private:
