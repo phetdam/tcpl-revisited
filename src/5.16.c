@@ -5,9 +5,10 @@
  * @copyright MIT License
  */
 
-// MSVC does not define __STDC_WANT_SECURE_LIB__ in limits.h
+// on Windows, if including limits.h, first need to include corecrt.h so that
+// __STDC_WANT_SECURE_LIB__ is properly defined. otherwise, MSVC will warn
 #ifdef _MSC_VER
-#define __STDC_WANT_SECURE_LIB__ 0
+#include <corecrt.h>
 #endif  // _MSC_VER
 
 #include <ctype.h>
