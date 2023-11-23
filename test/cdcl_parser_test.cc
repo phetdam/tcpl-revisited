@@ -28,6 +28,29 @@ namespace {
 class DclParserTest : public ::testing::Test {
 protected:
   /**
+   * Return the test data directory path given by `PDCPL_BCDP_TEST_DIR`.
+   *
+   * This is provided as a convenience to test subclasses.
+   */
+  static const auto& test_data_dir()
+  {
+    static auto test_data_dir_{
+      []
+      {
+        // first try to get from environment
+        auto dir_path = std::getenv("PDCPL_BCDP_TEST_DIR");
+        if (dir_path)
+          return std::filesystem::path{dir_path};
+        // otherwise, try the macro, else return empty path
+        if (std::strlen(PDCPL_BCDP_TEST_DIR))
+          return std::filesystem::path{PDCPL_BCDP_TEST_DIR};
+        return std::filesystem::path{};
+      }()
+    };
+    return test_data_dir_;
+  }
+
+  /**
    * Test setup function.
    *
    * If there is a skip reason, the test is skipped and the reason printed.
@@ -46,37 +69,15 @@ protected:
    */
   static void SetUpTestSuite()
   {
-    if (test_data_dir_.empty())
+    if (test_data_dir().empty())
       skip_tests_reason_ = "PDCPL_BCDP_TEST_DIR not defined";
-    else if (!std::filesystem::exists(test_data_dir_))
-      skip_tests_reason_ = "PDCPL_BCDP_TEST_DIR " + test_data_dir_.string() +
+    else if (!std::filesystem::exists(test_data_dir()))
+      skip_tests_reason_ = "PDCPL_BCDP_TEST_DIR " + test_data_dir().string() +
         " does not exist";
-    else if (!std::filesystem::is_directory(test_data_dir_))
-      skip_tests_reason_ = "PDCPL_BCDP_TEST_DIR " + test_data_dir_.string() +
+    else if (!std::filesystem::is_directory(test_data_dir()))
+      skip_tests_reason_ = "PDCPL_BCDP_TEST_DIR " + test_data_dir().string() +
         " is not a directory";
   }
-
-  /**
-   * Return the test data directory path given by `PDCPL_BCDP_TEST_DIR`.
-   *
-   * This is provided as a convenience to test subclasses.
-   */
-  const auto& test_data_dir() const noexcept { return test_data_dir_; }
-
-  // test data directory path
-  static inline const auto test_data_dir_{
-    []
-    {
-      // first try to get from environment
-      auto dir_path = std::getenv("PDCPL_BCDP_TEST_DIR");
-      if (dir_path)
-        return std::filesystem::path{dir_path};
-      // otherwise, try the macro, else return empty path
-      if (std::strlen(PDCPL_BCDP_TEST_DIR))
-        return std::filesystem::path{PDCPL_BCDP_TEST_DIR};
-      return std::filesystem::path{};
-    }()
-  };
 
 private:
   static inline std::string skip_tests_reason_;
