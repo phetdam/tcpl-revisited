@@ -1,0 +1,31 @@
+/*
+ * bdcl.in.4
+ *
+ * Author: Derek Huang
+ * Copyright: MIT License
+ */
+
+/*
+ * Example declarations testing usage of user-defined enum and struct types as
+ * well as different storage class types, e.g. register, auto, static.
+ */
+
+// a is pointer to static const struct my_struct_0
+static struct my_struct_0 const *a;
+// b is register enum my_enum_0
+// note: this is technically against C rules, as register can only be used in
+// block scope, not at global scope as we see in this case
+register enum my_enum_0 b;
+// c is pointer to extern const my_type_0
+// note: my_type_0 does not have to be defined
+extern const my_type_0 c;
+// d is pointer to function returning pointer to my_type_1 taking pointer to
+// const struct my_struct_1 a and pointer to struct my_struct_2 b and short c
+my_type_1 *(*d)(const struct my_struct_1 *a, struct my_struct_2 *b, short c);
+// e is function returning pointer to const struct my_struct_2 taking pointer
+// to array[] of array[] of const enum my_enum_1 and consg unsigned int and
+// const pointer to const pointer to const volatile my_type_3
+const struct my_struct_2 *e(
+    const enum my_enum_1 (*)[][],
+    const unsigned,
+    my_type_3 const volatile * const * const);
