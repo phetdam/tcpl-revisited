@@ -501,9 +501,6 @@ using cdcl_dclr_spec_variant = std::variant<
   cdcl_array_spec, cdcl_ptrs_spec, cdcl_params_spec
 >;
 
-// MSVC emits C4251 for cdcl_dclr_spec since STL types are technically not
-// marked for DLL export, but can be ignored when inheriting an STL type.
-PDCPL_MSVC_WARNING_DISABLE(4251)
 /**
  * C declarator specifier.
  *
@@ -511,8 +508,7 @@ PDCPL_MSVC_WARNING_DISABLE(4251)
  * to represent a specifier for a C declarator, e.g. an array specifier,
  * pointers specifier, or function parameters specifier.
  */
-class PDCPL_BCDP_PUBLIC cdcl_dclr_spec : public cdcl_dclr_spec_variant {
-PDCPL_MSVC_WARNING_ENABLE()
+class cdcl_dclr_spec : public cdcl_dclr_spec_variant {
 public:
   using variant_type = cdcl_dclr_spec_variant;
   using variant_type::variant_type;
@@ -570,8 +566,12 @@ public:
     /**
      * Return string representation for a function parameters specifier.
      *
+     * @note Only member that is exported from a DLL when compiling on Windows
+     *  since it is the only non-inline `cdcl_dclr_spec::printer` member.
+     *
      * @param specs Function parameters specifier
      */
+    PDCPL_BCDP_PUBLIC
     std::string operator()(const cdcl_params_spec& specs) const;
   };
 };
