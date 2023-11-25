@@ -682,8 +682,14 @@ public:
    */
   auto& write(std::ostream& out) const
   {
-    if (iden_.size())
-      out << iden_ << ": ";
+    // only print identifier + colon if provided
+    if (iden_.size()) {
+      out << iden_ << ":";
+      // separating space only then printed if there are specifiers
+      if (specs_.size())
+        out << " ";
+    }
+    // visit each specifier
     for (auto it = specs_.begin(); it != specs_.end(); it++) {
       if (std::distance(specs_.begin(), it))
         out << " ";
