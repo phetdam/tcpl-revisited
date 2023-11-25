@@ -9,6 +9,7 @@
 #define PDCPL_CDCL_TYPE_SPEC_HH_
 
 #include <ostream>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 #include <utility>
@@ -210,6 +211,18 @@ public:
     return out;
   }
 
+  /**
+   * Return the type specifier'sstring representation.
+   *
+   * Contains what would be written into an output stream using `write`.
+   */
+  operator std::string() const
+  {
+    std::stringstream ss;
+    write(ss);
+    return ss.str();
+  }
+
 private:
   cdcl_type type_;
   std::string iden_;
@@ -297,6 +310,18 @@ public:
     // write type specifier
     out << spec_;
     return out;
+  }
+
+  /**
+   * Return the qualified type specifier's string representation.
+   *
+   * Contains what would be written into an output stream using `write`.
+   */
+  operator std::string() const
+  {
+    std::stringstream ss;
+    write(ss);
+    return ss.str();
   }
 
 private:
