@@ -129,3 +129,31 @@ VC++ runtime, as unlike on \*nix systems, the article notes that
 .. _CMake: https://cmake.org/cmake/help/latest/
 
 .. _Google Test: http://google.github.io/googletest/
+
+Building ``pdcpl_bcdp``
+-----------------------
+
+The ``pdcpl_bcdp`` C++ library implements a rudimentary parser for ANSI C
+declarations using Flex_ 2.6.4 to generate its lexer and Bison_ 3.8.2 to
+generate the underlying parser implementation. ``pdcpl_bcdp`` follows the basic
+framework of using a user-defined driver class to wrap the Bison parser as
+described in the `complete C++ example section`__ in the Bison documentation
+but goes a step further to use PIMPL as a way of isolating the Bison types from
+user code. Besides providing ABI stability, PIMPL also enables appropriate use
+of ``__declspec(dllexport)`` and ``__declspec(dllimport)`` on Windows or
+exporting symbols when ``-fvisibility=hidden`` is specified during compilation.
+
+When building via CMake using the ``build.sh`` or ``build.bat`` scripts, this
+library is built only if both Flex and Bison are detected on the system. Like
+the main ``pdcpl`` support library, it is built shared by default unless
+``-DBUILD_SHARED_LIBS=0`` is specified to the build script, and when built as
+shared, requires ``PDCPL_DLL`` to be defined during compilation of user code.
+
+WIP
+
+.. __: https://www.gnu.org/software/bison/manual/html_node/
+   A-Complete-C_002b_002b-Example.html
+
+.. _Flex: https://westes.github.io/flex/manual/
+
+.. _Bison: https://www.gnu.org/software/bison/manual/html_node/index.html
