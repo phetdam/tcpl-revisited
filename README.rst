@@ -138,12 +138,12 @@ declarations using Flex_ 2.6.4 to generate its lexer and Bison_ 3.8.2 to
 generate the underlying parser implementation. ``pdcpl_bcdp`` follows the basic
 framework of using a user-defined driver class to wrap the Bison parser as
 described in the `complete C++ example section`__ in the Bison documentation
-but goes a step further to use PIMPL as a way of isolating the Bison types from
+but goes a step further to use PIMPL as a way of isolating Bison symbols from
 user code. Besides providing ABI stability, PIMPL also facilitates correct
 symbol import/export from DLLs on Windows, as the Bison-generated parser source
 is suitable only for compilation as part of an executable or static library on
-Windows or if compiling with symbol visibility defaulted to hidden on \*nix,
-e.g. compiling with ``-fvisibility=hidden`` using GCC.
+Windows since DLL symbol visibility is hidden by default, so the generated
+Bison source's symbols would be inaccessible to users.
 
 When building via CMake using the ``build.sh`` or ``build.bat`` scripts, this
 library is built only if both Flex and Bison are detected on the system. Like
