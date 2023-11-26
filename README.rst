@@ -143,13 +143,14 @@ user code. Besides providing ABI stability, PIMPL also facilitates correct
 symbol import/export from DLLs on Windows, as the Bison-generated parser source
 is suitable only for compilation as part of an executable or static library on
 Windows since DLL symbol visibility is hidden by default, so the generated
-Bison source's symbols would be inaccessible to users.
+Bison source's symbols would be inaccessible.
 
-When building via CMake using the ``build.sh`` or ``build.bat`` scripts, this
-library is built only if both Flex and Bison are detected on the system. Like
-the main ``pdcpl`` support library, it is built shared by default unless
-``-DBUILD_SHARED_LIBS=0`` is specified to the build script, and when built as
-shared, requires ``PDCPL_DLL`` to be defined during compilation of user code.
+When building via CMake using the ``build.sh`` or ``build.bat`` scripts,
+``pdcpl_bcdp``is built only if both Flex and Bison are detected on the system.
+Like the main ``pdcpl`` support library, ``pdcpl_bcdp`` is built shared by
+default unless ``-DBUILD_SHARED_LIBS=0`` is passed to the build script, and
+when built as shared, requires ``PDCPL_DLL`` to be defined during compilation
+of user code.
 
 WIP
 
