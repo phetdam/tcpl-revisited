@@ -148,9 +148,9 @@ Bison source's symbols would be inaccessible.
 When building via CMake using the ``build.sh`` or ``build.bat`` scripts,
 ``pdcpl_bcdp`` is built only if both Flex and Bison are detected on the system.
 Like the main ``pdcpl`` support library, ``pdcpl_bcdp`` is built shared by
-default unless ``-DBUILD_SHARED_LIBS=0`` is passed to the build script, and
-when built as shared, requires ``PDCPL_DLL`` to be defined during compilation
-of user code.
+default, which requires ``PDCPL_DLL`` to be defined during compilation of user
+code as usual. Again, building as a static library can be requested by passing
+``-DBUILD_SHARED_LIBS=0`` to the build script.
 
 WIP
 
