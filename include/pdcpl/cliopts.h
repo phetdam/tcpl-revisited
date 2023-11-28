@@ -41,6 +41,9 @@ typedef enum {
   PDCPL_CLIOPT_ERROR_EXPECTED_NEGATIVE,
   PDCPL_CLIOPT_ERROR_EXPECTED_POSITIVE,
   PDCPL_CLIOPT_ERROR_CANT_CONVERT,
+  PDCPL_CLIOPT_ERROR_INVALID_PATH,
+  PDCPL_CLIOPT_ERROR_NO_PATH_EXISTS,
+  PDCPL_CLIOPT_ERROR_NOT_REGULAR_FILE,
   PDCPL_CLIOPT_ERROR_INVALID_VALUE,
   PDCPL_CLIOPT_STATUS_MAX
 } pdcpl_cliopt_status;
@@ -57,6 +60,9 @@ static const char *pdcpl_cliopt_status_message[] = {
   "expected negative value",
   "expected positive value",
   "argument conversion failed",
+  "invalid file path",
+  "specified path does not exist",
+  "specified path is not a regular file",
   "invalid argument value",
 };
 
