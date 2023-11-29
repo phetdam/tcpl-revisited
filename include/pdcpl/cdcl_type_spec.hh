@@ -212,7 +212,7 @@ public:
   }
 
   /**
-   * Return the type specifier'sstring representation.
+   * Return the type specifier's string representation.
    *
    * Contains what would be written into an output stream using `write`.
    */

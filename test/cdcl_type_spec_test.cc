@@ -38,8 +38,7 @@ class CdclTypeSpecParamTest
  */
 TEST_P(CdclTypeSpecParamTest, ReprTest)
 {
-  std::string repr = GetParam().first;
-  EXPECT_EQ(GetParam().second, repr);
+  EXPECT_EQ(GetParam().second, static_cast<std::string>(GetParam().first));
 }
 
 INSTANTIATE_TEST_SUITE_P(
