@@ -60,7 +60,7 @@ public:
    * @param spec Qualified type specifier
    */
   cdcl_dcl_spec(cdcl_qtype_spec&& spec)
-    : cdcl_dcl_spec{cdcl_storage::st_auto, spec}
+    : cdcl_dcl_spec{cdcl_storage::st_auto, std::move(spec)}
   {}
 
   /**
