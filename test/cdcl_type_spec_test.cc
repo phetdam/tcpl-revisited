@@ -42,7 +42,7 @@ TEST_P(CdclTypeSpecParamTest, ReprTest)
 }
 
 INSTANTIATE_TEST_SUITE_P(
-  BaseInstance,
+  Base,
   CdclTypeSpecParamTest,
   ::testing::Values(
     // unsigned long
@@ -69,20 +69,18 @@ INSTANTIATE_TEST_SUITE_P(
 class CdclQualTypeSpecParamTest
   : public DclTypeSpecTest,
     public ::testing::WithParamInterface<
-      std::pair<pdcpl::cdcl_qtype_spec, std::string>>
-{};
+      std::pair<pdcpl::cdcl_qtype_spec, std::string> > {};
 
 /**
  * Test that the `cdcl_qtype_spec` string representation is as expected.
  */
 TEST_P(CdclQualTypeSpecParamTest, ReprTest)
 {
-  std::string repr = GetParam().first;
-  EXPECT_EQ(GetParam().second, repr);
+  EXPECT_EQ(GetParam().second, static_cast<std::string>(GetParam().first));
 }
 
 INSTANTIATE_TEST_SUITE_P(
-  BaseInstance,
+  Base,
   CdclQualTypeSpecParamTest,
   ::testing::Values(
     // struct my_struct
