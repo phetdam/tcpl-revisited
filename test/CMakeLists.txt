@@ -18,7 +18,8 @@ target_link_libraries(pdcpl_test PRIVATE GTest::gtest_main pdcpl)
 if(PDCPL_FLEX_FOUND AND PDCPL_BISON_FOUND)
     target_sources(
         pdcpl_test
-        PRIVATE cdcl_parser_test.cc cdcl_type_spec_test.cc
+        PRIVATE
+            cdcl_dcln_spec_test.cc cdcl_parser_test.cc cdcl_type_spec_test.cc
     )
     target_compile_definitions(
         pdcpl_test

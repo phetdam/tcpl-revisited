@@ -112,6 +112,18 @@ public:
     return out;
   }
 
+  /**
+   * Return the declaration specifier's string representation.
+   *
+   * Contains what would be written into an output stream using `write`.
+   */
+  operator std::string() const
+  {
+    std::stringstream ss;
+    write(ss);
+    return ss.str();
+  }
+
 private:
   cdcl_storage storage_;
   cdcl_qtype_spec spec_;
