@@ -32,7 +32,6 @@ class cdcl_parser_impl;
 class PDCPL_BCDP_PUBLIC cdcl_parser {
 public:
   using results_type = std::vector<cdcl_dcln>;
-  using result_indices_type = std::unordered_map<std::string, std::size_t>;
 
   /**
    * Ctor.
@@ -143,6 +142,25 @@ public:
    * @param iden Identifier to find matching C declaration for
    */
   bool results_contain(const std::string& iden) const;
+
+  /**
+   * Look up a declaration object with the given identifier.
+   *
+   * An exception will be thrown if no matching declaration is found. Use the
+   * `results_contain()` member to check if a matching declaration exists.
+   *
+   * @param iden Identifier to find matching C declaration for
+   */
+  const cdcl_dcln& result(const std::string& iden) const;
+
+  /**
+   * Look up a declaration object via its position in the results vector.
+   *
+   * An exception will be thrown by the vector if `idx` is out of bounds.
+   *
+   * @param idx Index of a C declaration object in `results()`
+   */
+  const cdcl_dcln& result(std::size_t idx) const;
 
 private:
   // MSVC emits C4251 since STL types are not exported. not our problem however

@@ -185,6 +185,31 @@ public:
     return result_indicies_.find(iden) != result_indicies_.end();
   }
 
+  /**
+   * Look up a declaration object with the given identifier.
+   *
+   * An exception will be thrown if no matching declaration is found. Use the
+   * `results_contain()` member to check if a matching declaration exists.
+   *
+   * @param iden Identifier to find matching C declaration for
+   */
+  const auto& result(const std::string& iden) const
+  {
+    return results_[result_indicies_.at(iden)];
+  }
+
+  /**
+   * Look up a declaration object via its position in the results vector.
+   *
+   * An exception will be thrown by the vector if `idx` is out of bounds.
+   *
+   * @param idx Index of a C declaration object in `results()`
+   */
+  const cdcl_dcln& result(std::size_t idx) const
+  {
+    return results_.at(idx);
+  }
+
 private:
   yy::location location_;
   std::string last_error_;
