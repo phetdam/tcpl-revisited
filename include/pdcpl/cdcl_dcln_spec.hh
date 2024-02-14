@@ -938,6 +938,11 @@ public:
   const auto& dclr() const noexcept { return dclr_; }
 
   /**
+   * Return the main identifier of the declaration.
+   */
+  const auto& iden() const noexcept { return dclr_.iden(); }
+
+  /**
    * Write the C declaration to an output stream.
    *
    * @param out Output stream

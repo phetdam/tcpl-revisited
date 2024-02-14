@@ -136,8 +136,7 @@ PDCPL_ARG_MAIN
     return EXIT_FAILURE;
   }
   // loop through parsed declarations and print them to the screen
-  // TODO: may want to ensure that parser prints these in parse order
-  for ([[maybe_unused]] const auto& [iden, dcln] : parser.results())
+  for (const auto& dcln : parser.results())
     std::cout << dcln << std::endl;
   return EXIT_SUCCESS;
 }

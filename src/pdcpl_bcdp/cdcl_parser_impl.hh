@@ -115,9 +115,18 @@ public:
   const auto& last_error() const noexcept { return last_error_; }
 
   /**
-   * Return mapping of identifiers to declarations.
+   * Return ordered vector of declarations.
+   *
+   * The declarations are ordered by the order in which they were parsed.
    */
   const auto& results() const noexcept { return results_; }
+
+  /**
+   * Return map for looking up a declaration given its identifier.
+   *
+   * The returned index can be used with `results()` to get the declaration.
+   */
+  const auto& result_indices() const noexcept { return result_indicies_; }
 
   /**
    * Insert a new declaration.
@@ -135,17 +144,18 @@ public:
     // create cdcl_dcln C declaration from dcl_spec and dclr
     cdcl_dcln dcln{dcl_spec, std::get<cdcl_dclr>(init_dclr)};
     // must have identifer and must not be duplicate declaration
-    const auto& iden = dcln.dclr().iden();
+    const auto& iden = dcln.iden();
     if (iden.empty()) {
       last_error_ = "dcln is missing identifier";
       throw yy::cdcl_parser::syntax_error{location_, last_error_};
     }
-    if (results_.find(iden) != results_.end()) {
+    if (result_indicies_.find(iden) != result_indicies_.end()) {
       last_error_ = "identifier " + iden + " redeclared";
       throw yy::cdcl_parser::syntax_error{location_, last_error_};
     }
-    // otherwise, we can insert the declaration
-    results_.emplace(iden, dcln);
+    // otherwise, we can insert the declaration + update iden -> index map
+    results_.push_back(std::move(dcln));
+    result_indicies_[iden] = results_.size() - 1;
   }
 
   /**
@@ -160,10 +170,26 @@ public:
       insert(dcl_spec, init_dclr);
   }
 
+  /**
+   * Return number of parsed declarations.
+   */
+  auto n_results() const noexcept { return results_.size(); }
+
+  /**
+   * Return `true` if the results have a declaration with the given identifier.
+   *
+   * @param iden Identifier to find matching C declaration for
+   */
+  auto results_contain(const std::string& iden) const
+  {
+    return result_indicies_.find(iden) != result_indicies_.end();
+  }
+
 private:
   yy::location location_;
   std::string last_error_;
-  std::unordered_map<std::string, cdcl_dcln> results_;
+  std::vector<cdcl_dcln> results_;
+  std::unordered_map<std::string, std::size_t> result_indicies_;
 
   /**
    * Perform setup for the Flex lexer.

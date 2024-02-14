@@ -8,6 +8,7 @@
 #ifndef PDCPL_CDCL_PARSER_H_
 #define PDCPL_CDCL_PARSER_H_
 
+#include <cstddef>
 #include <filesystem>
 #include <memory>
 #include <string>
@@ -30,7 +31,8 @@ class cdcl_parser_impl;
  */
 class PDCPL_BCDP_PUBLIC cdcl_parser {
 public:
-  using results_type = std::unordered_map<std::string, cdcl_dcln>;
+  using results_type = std::vector<cdcl_dcln>;
+  using result_indices_type = std::unordered_map<std::string, std::size_t>;
 
   /**
    * Ctor.
@@ -124,9 +126,23 @@ public:
   const std::string& last_error() const noexcept;
 
   /**
-   * Return mapping of identifiers to declarations.
+   * Return ordered vector of declarations.
+   *
+   * The declarations are ordered by the order in which they were parsed.
    */
   const results_type& results() const noexcept;
+
+  /**
+   * Return number of parsed declarations.
+   */
+  std::size_t n_results() const noexcept;
+
+  /**
+   * Return `true` if the results have a declaration with the given identifier.
+   *
+   * @param iden Identifier to find matching C declaration for
+   */
+  bool results_contain(const std::string& iden) const;
 
 private:
   // MSVC emits C4251 since STL types are not exported. not our problem however

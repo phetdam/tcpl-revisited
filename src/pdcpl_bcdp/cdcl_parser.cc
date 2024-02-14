@@ -7,13 +7,11 @@
 
 #include "pdcpl/cdcl_parser.hh"
 
-#include "cdcl_parser_impl.hh"
-
+#include <cstddef>
 #include <filesystem>
 #include <string>
-#include <unordered_map>
 
-#include "pdcpl/cdcl_dcln_spec.hh"
+#include "cdcl_parser_impl.hh"
 
 namespace pdcpl {
 
@@ -52,11 +50,31 @@ const std::string& cdcl_parser::last_error() const noexcept
 }
 
 /**
- * Return mapping of identifiers to declarations.
+ * Return ordered vector of declarations.
+ *
+ * The declarations are ordered by the order in which they were parsed.
  */
 const cdcl_parser::results_type& cdcl_parser::results() const noexcept
 {
   return impl_->results();
+}
+
+/**
+ * Return number of parsed declarations.
+ */
+std::size_t cdcl_parser::n_results() const noexcept
+{
+  return impl_->n_results();
+}
+
+/**
+ * Return `true` if the results have a declaration with the given identifier.
+ *
+ * @param iden Identifier to find matching C declaration for
+ */
+bool cdcl_parser::results_contain(const std::string& iden) const
+{
+  return impl_->results_contain(iden);
 }
 
 }  // namespace pdcpl
