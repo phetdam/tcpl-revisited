@@ -25,6 +25,8 @@ function(pdcpl_add_standalone target)
         target_link_libraries(${target} PRIVATE ${TARGET_REQUIRES})
         # on Windows, copy DLLs to the executable location so they can be found
         # during runtime. do this only if TARGET_REQUIRES is non-empty
+        # TODO: this could error if the target only depends on static libraries
+        # but this is not a problem for this project currently.
         if(WIN32 AND TARGET_REQUIRES)
             add_custom_command(
                 TARGET ${target} POST_BUILD
