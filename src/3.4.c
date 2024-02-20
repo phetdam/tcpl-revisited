@@ -71,7 +71,11 @@ PDCPL_PROGRAM_USAGE_DEF
   "largest positive int is pow(2, CHAR_BIT * sizeof(int)) - 1.\n"
   "\n"
   "The pdcpl jtoa and itoa implementations do not have this shortcoming as\n"
-  "they multiply each digit by the input value's sign."
+  "they multiply each digit by the input value's sign.\n"
+  "\n"
+  "Note that on Windows this program may be erroneously flagged as being a\n"
+  "virus. Therfore, to run the program correctly, please add the program or\n"
+  "the directory it resides in to the antivirus scan exclusion list."
 )
 
 PDCPL_ARG_MAIN
