@@ -35,6 +35,12 @@ project(
 
 # build shared libraries by default
 option(BUILD_SHARED_LIBS "Build pdcpl libraries as shared" ON)
+# provide an extra $<CONFIG> subdirectory for lib and bin on Windows. this is
+# on by default; we don't support flat install with "d" suffix on Windows yet
+option(
+    PDCPL_INSTALL_MULTI_CONFIG
+    "Add per-config lib + bin subdirectories for Windows installations" ON
+)
 
 # set some system information variables used for the version info. note the
 # relevant CMake variables used will be empty if used before project()
@@ -100,7 +106,9 @@ include(AddStandalone)
 # set to either true or false depending on if they are found or not
 include(FindFlexBison)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+# add local include dir
+set(PDCPL_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
+include_directories(${PDCPL_INCLUDE_DIR})
 
 # Google Test [minimum] version to use. allow user override
 if(NOT PDCPL_GTEST_VERSION)
@@ -164,5 +172,41 @@ else()
     message(
         WARNING
         "Google Test >=${PDCPL_GTEST_VERSION} not found. No tests will be built."
+    )
+endif()
+
+# list of install targets
+set(PDCPL_INSTALL_TARGETS pdcpl)
+# if Flex/Bison was found, then pdcpl_bcdp is built, so add as well
+if(PDCPL_FLEX_FOUND AND PDCPL_BISON_FOUND)
+    set(PDCPL_INSTALL_TARGETS ${PDCPL_INSTALL_TARGETS} pdcpl_bcdp)
+endif()
+
+# install rule on Windows
+if(WIN32)
+    # multi-config installation
+    if(PDCPL_INSTALL_MULTI_CONFIG)
+        install(
+            TARGETS ${PDCPL_INSTALL_TARGETS}
+            ARCHIVE DESTINATION lib/$<CONFIG>
+            LIBRARY DESTINATION lib/$<CONFIG>
+            RUNTIME DESTINATION bin/$<CONFIG>
+            PUBLIC_HEADER DESTINATION include
+        )
+    # flat installation. TODO: add "d" suffix to targets if doing flat install
+    else()
+        message(
+            FATAL_ERROR
+            "Flat installation with \"d\"-suffixed artifacts not supported yet"
+        )
+    endif()
+# typical flat *nix install
+else()
+    install(
+        TARGETS ${PDCPL_INSTALL_TARGETS}
+        ARCHIVE DESTINATION lib
+        LIBRARY DESTINATION lib
+        RUNTIME DESTINATION bin
+        PUBLIC_HEADER DESTINATION include
     )
 endif()

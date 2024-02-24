@@ -62,8 +62,20 @@ if(PDCPL_FLEX_FOUND AND PDCPL_BISON_FOUND)
             cdcl_parser_impl.cc
     )
     set_target_properties(
-        pdcpl_bcdp
-        PROPERTIES DEFINE_SYMBOL PDCPL_BCDP_BUILD_DLL
+        pdcpl_bcdp PROPERTIES
+        DEFINE_SYMBOL PDCPL_BCDP_BUILD_DLL
+    )
+    # public headers to install
+    set(
+        PDCPL_BCDP_PUBLIC_HEADERS
+        ${PDCPL_INCLUDE_DIR}/pdcpl/cdcl_dcln_spec.hh
+        ${PDCPL_INCLUDE_DIR}/pdcpl/cdcl_parser.hh
+        ${PDCPL_INCLUDE_DIR}/pdcpl/cdcl_type_spec.hh
+    )
+    # note: must quote the list of headers
+    set_target_properties(
+        pdcpl_bcdp PROPERTIES
+        PUBLIC_HEADER "${PDCPL_BCDP_PUBLIC_HEADERS}"
     )
 else()
     # for formatted warning message, need leading spaces
@@ -74,5 +86,3 @@ else()
         "    Found Bison: ${PDCPL_BISON_FOUND}"
     )
 endif()
-# add main
-# add_executable(bdcl main.cc ${PDCPL_BCDP_LEXER_SOURCE} ${PDCPL_BCDP_PARSER_SOURCE})
