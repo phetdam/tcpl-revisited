@@ -42,7 +42,7 @@ exit /b !ERRORLEVEL!
     echo   -o,  --output-prefix OUTPUT_PREFIX
     echo                             Build output directory prefix, default
     echo                             %BUILD_OUTPUT_PREFIX%. The actual build
-    echo                             output directory will have _ARCH appended
+    echo                             output directory will have ARCH appended
     echo                             to the specified directory prefix.
     echo.
     echo   -a,  --arch ARCH          Target machine architecture, default ^
