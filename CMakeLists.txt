@@ -191,7 +191,7 @@ if(WIN32)
             ARCHIVE DESTINATION lib/$<CONFIG>
             LIBRARY DESTINATION lib/$<CONFIG>
             RUNTIME DESTINATION bin/$<CONFIG>
-            PUBLIC_HEADER DESTINATION include
+            PUBLIC_HEADER DESTINATION include/pdcpl
         )
     # flat installation. TODO: add "d" suffix to targets if doing flat install
     else()
@@ -207,6 +207,6 @@ else()
         ARCHIVE DESTINATION lib
         LIBRARY DESTINATION lib
         RUNTIME DESTINATION bin
-        PUBLIC_HEADER DESTINATION include
+        PUBLIC_HEADER DESTINATION include/pdcpl
     )
 endif()
