@@ -41,12 +41,12 @@ Simply typing ``./build.sh`` will build unoptimized binaries with debug symbols.
 By default, the ``pdcpl`` support library is built as a shared library,
 requiring that ``PDCPL_DLL`` be defined during compilation. To explicitly
 request that ``pdcpl`` be built as a static library, one should specify
-``-DBUILD_SHARED_LIBS=0``. E.g. to build release binaries with ``pdcpl`` built
+``-DBUILD_SHARED_LIBS=OFF``. E.g. to build release binaries with ``pdcpl`` built
 as a static library, one can use the command
 
 .. code:: bash
 
-   ./build.sh -c Release -Ca -DBUILD_SHARED_LIBS=0
+   ./build.sh -c Release -Ca -DBUILD_SHARED_LIBS=OFF
 
 Windows
 ~~~~~~~
@@ -77,12 +77,12 @@ Currently, the Visual Studio toolset used will be whichever is the default.
 By default, the ``pdcpl`` support library is built as a shared library,
 requiring that ``PDCPL_DLL`` be defined during compilation. To explicitly
 request that ``pdcpl`` be built as a static library, one should specify
-``-DBUILD_SHARED_LIBS=0``. E.g. to build 32-bit release binaries with ``pdcpl``
-built as a static library, one can use the command
+``-DBUILD_SHARED_LIBS=OFF``. E.g. to build 32-bit release binaries with
+``pdcpl`` built as a static library, one can use the command
 
 .. code:: shell
 
-   build -c Release -Ca "-DBUILD_SHARED_LIBS=0"
+   build -c Release -Ca "-DBUILD_SHARED_LIBS=OFF"
 
 The extra double quotes are needed to prevent the ``=`` from confusing CMD.
 
@@ -150,7 +150,7 @@ When building via CMake using the ``build.sh`` or ``build.bat`` scripts,
 Like the main ``pdcpl`` support library, ``pdcpl_bcdp`` is built shared by
 default, which requires ``PDCPL_DLL`` to be defined during compilation of user
 code as usual. Again, building as a static library can be requested by passing
-``-DBUILD_SHARED_LIBS=0`` to the build script.
+``-DBUILD_SHARED_LIBS=OFF`` to the build script.
 
 WIP
 
