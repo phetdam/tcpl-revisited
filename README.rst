@@ -26,13 +26,13 @@ CMake_ >=3.21 is required to build from source on all platforms.
 
 Building is easy with the provided ``build.sh`` build script. For usage, type
 
-.. code:: bash
+.. code:: shell
 
    ./build.sh --help
 
 To build release binaries for this project, simply use the command
 
-.. code:: bash
+.. code:: shell
 
    ./build.sh -c Release
 
@@ -44,7 +44,7 @@ request that ``pdcpl`` be built as a static library, one should specify
 ``-DBUILD_SHARED_LIBS=OFF``. E.g. to build release binaries with ``pdcpl`` built
 as a static library, one can use the command
 
-.. code:: bash
+.. code:: shell
 
    ./build.sh -c Release -Ca -DBUILD_SHARED_LIBS=OFF
 
@@ -95,7 +95,7 @@ Test installation, and if not found, will print a message and skip building
 tests. You can build Google Test yourself and then add to the CMake configure
 command
 
-.. code:: bash
+.. code:: shell
 
    -DGTEST_ROOT=/path/to/googletest
 
