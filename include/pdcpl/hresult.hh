@@ -45,7 +45,4 @@ inline auto hresult_message(const std::string& prefix)
 
 }  // namespace pdcpl
 
-// don't pollute translation units
-#undef WIN32_LEAN_AND_MEAN
-
 #endif  // PDCPL_HRESULT_HH_

@@ -172,9 +172,4 @@ private:
 
 }  // namespace pdcpl
 
-// don't pollute translation units
-#ifdef _WIN32
-#undef WIN32_LEAN_AND_MEAN
-#endif  // _WIN32
-
 #endif  // PDCPL_MEMORY_HH_
