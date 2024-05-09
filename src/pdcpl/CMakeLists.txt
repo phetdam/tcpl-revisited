@@ -21,6 +21,8 @@ if(UNIX)
     target_link_libraries(pdcpl PRIVATE m)
 endif()
 # public headers to install
+# note: core.h is mostly only needed by cliopts.h and both headers are mostly
+# intended only for use within translation units that contain a main().
 set(
     PDCPL_PUBLIC_HEADERS
     ${PDCPL_INCLUDE_DIR}/pdcpl/bitwise.h

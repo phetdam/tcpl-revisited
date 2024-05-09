@@ -11,6 +11,8 @@
 #include <string.h>
 
 #include "pdcpl/common.h"
+#include "pdcpl/platform.h"
+#include "pdcpl/version.h"
 
 PDCPL_EXTERN_C_BEGIN
 
@@ -112,6 +114,22 @@ static const char *PDCPL_PROGRAM_NAME = "";
     } \
   } \
   while (0)
+
+/**
+ * Print version information from within a `PDCPL_ARG_MAIN`.
+ *
+ * If `PDCPL_SET_PROGRAM_NAME()` has not been called, program name is empty.
+ */
+#define PDCPL_PRINT_VERSION_INFO() \
+  printf( \
+    "%s %s (%s, %s %s %s)\n", \
+    PDCPL_PROGRAM_NAME, \
+    PDCPL_VERSION_STRING, \
+    PDCPL_BUILD_TYPE, \
+    PDCPL_SYSTEM_ARCH, \
+    PDCPL_SYSTEM_NAME, \
+    PDCPL_SYSTEM_VERSION \
+  )
 
 PDCPL_EXTERN_C_END
 
