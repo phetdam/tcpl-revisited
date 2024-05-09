@@ -38,10 +38,10 @@
   )
 #define PDCPL_VERSION_STRING PDCPL_STRINGIFY(PDCPL_VERSION)
 
-// build type, real build defines as lowercase CMake CMAKE_BUILD_TYPE
+// build type, real build defines as CMake CMAKE_BUILD_TYPE
 #ifndef PDCPL_BUILD_TYPE
-#define PDCPL_BUILD_TYPE "debug"
-#endif  // PDXKA_BUILD_TYPE
+#define PDCPL_BUILD_TYPE "Debug"
+#endif  // PDCPL_BUILD_TYPE
 
 /**
  * Print version information from within a `PDCPL_ARG_MAIN`.
