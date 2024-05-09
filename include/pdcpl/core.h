@@ -12,7 +12,6 @@
 #include <string.h>
 
 #include "pdcpl/common.h"
-#include "pdcpl/platform.h"
 #include "pdcpl/version.h"
 
 PDCPL_EXTERN_C_BEGIN

@@ -7,3 +7,5 @@
 /callgrind.out.*
 # ignore Flex/Bison generated C/C++ files
 *.yy.*
+# ignore version.h generated from version.h.in
+/include/pdcpl/version.h

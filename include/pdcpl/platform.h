@@ -3,6 +3,9 @@
  * @author Derek Huang
  * @brief C/C++ header for platform identification
  * @copyright MIT License
+ *
+ * @note Do not use this header as `version.h` correctly defines the macros for
+ *  the target system. Including this header will cause macro redefinition.
  */
 
 #ifndef PDCPL_PLATFORM_H_

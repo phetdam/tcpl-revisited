@@ -36,7 +36,6 @@ set(
     ${PDCPL_INCLUDE_DIR}/pdcpl/math.h
     ${PDCPL_INCLUDE_DIR}/pdcpl/memory.h
     ${PDCPL_INCLUDE_DIR}/pdcpl/misc.h
-    ${PDCPL_INCLUDE_DIR}/pdcpl/platform.h
     ${PDCPL_INCLUDE_DIR}/pdcpl/sa.h
     ${PDCPL_INCLUDE_DIR}/pdcpl/string.h
     ${PDCPL_INCLUDE_DIR}/pdcpl/termcolors.h

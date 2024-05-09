@@ -1,0 +1,53 @@
+/**
+ * @file version.h
+ * @author Derek Huang
+ * @brief C/C++ header for project version macros
+ */
+
+#ifndef PDCPL_VERSION_H_
+#define PDCPL_VERSION_H_
+
+/**
+ * Project major version.
+ */
+#define PDCPL_VERSION_MAJOR @PDCPL_VERSION_MAJOR@
+
+/**
+ * Project minor version.
+ */
+#define PDCPL_VERSION_MINOR @PDCPL_VERSION_MINOR@
+
+/**
+ * Project patch version.
+ */
+#define PDCPL_VERSION_PATCH @PDCPL_VERSION_PATCH@
+
+/**
+ * Project version string.
+ *
+ * @note Could be constructed by concatenating the major, minor, patch versions
+ *  and then stringifying. The requisite macros are in `common.h`.
+ */
+#define PDCPL_VERSION_STRING "@PDCPL_VERSION@"
+
+/**
+ * Project build type.
+ */
+#define PDCPL_BUILD_TYPE "@CMAKE_BUILD_TYPE@"
+
+/**
+ * Project target OS name.
+ */
+#define PDCPL_SYSTEM_NAME "@PDCPL_SYSTEM_NAME@"
+
+/**
+ * Project target system version.
+ */
+#define PDCPL_SYSTEM_VERSION "@PDCPL_SYSTEM_VERSION@"
+
+/**
+ * Project target system architecture.
+ */
+#define PDCPL_SYSTEM_ARCH "@PDCPL_SYSTEM_ARCH@"
+
+#endif  // PDCPL_VERSION_H_

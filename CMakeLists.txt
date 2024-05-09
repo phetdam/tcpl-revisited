@@ -69,18 +69,6 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# add version definitions as macro definitions
-add_compile_definitions(
-    PDCPL_VERSION_MAJOR=${PDCPL_VERSION_MAJOR}
-    PDCPL_VERSION_MINOR=${PDCPL_VERSION_MINOR}
-    PDCPL_VERSION_PATCH=${PDCPL_VERSION_PATCH}
-    # need double quotes for CMake to pass as a string
-    PDCPL_BUILD_TYPE="${CMAKE_BUILD_TYPE}"
-    PDCPL_SYSTEM_NAME="${PDCPL_SYSTEM_NAME}"
-    PDCPL_SYSTEM_VERSION="${PDCPL_SYSTEM_VERSION}"
-    PDCPL_SYSTEM_ARCH="${PDCPL_SYSTEM_ARCH}"
-)
-
 # put all build artifacts in top-level build dir. for multi-config generators
 # like Visual Studio, each config's artifacts go into a subdirectory. it's not
 # a good idea for multi-config generators to have different configs putting
@@ -155,6 +143,12 @@ else()
     # for consistency when using FetchContent
     set(PDCPL_GTEST_FOUND ${GTest_FOUND})
 endif()
+
+# create version.h header from version.h.in
+configure_file(
+    ${PDCPL_INCLUDE_DIR}/pdcpl/version.h.in
+    ${PDCPL_INCLUDE_DIR}/pdcpl/version.h
+)
 
 add_subdirectory(src)
 
