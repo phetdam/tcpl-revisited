@@ -7,10 +7,6 @@
 #ifndef PDCPL_VERSION_H_
 #define PDCPL_VERSION_H_
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
 #include "pdcpl/common.h"
 
 // major, minor, patch versions

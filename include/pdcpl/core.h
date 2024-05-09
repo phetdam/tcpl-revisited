@@ -8,6 +8,7 @@
 #ifndef PDCPL_CORE_H_
 #define PDCPL_CORE_H_
 
+#include <stdio.h>
 #include <string.h>
 
 #include "pdcpl/common.h"
