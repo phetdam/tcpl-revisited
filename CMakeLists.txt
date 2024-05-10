@@ -144,10 +144,16 @@ else()
     set(PDCPL_GTEST_FOUND ${GTest_FOUND})
 endif()
 
-# create version.h header from version.h.in
+# create version.h header from version.h.in. note that we want the output file
+# to have the same LF newlines as the source files, as otherwise on Windows the
+# output file is automatically configured with CRLF newlines. do also note that
+# since WSL Ubuntu and native Windows builds both use this file, running the
+# WSL build and then the Windows one or vice versa causes the other to think
+# version.h has been changed and retrigger mass recompilation of anything that
+# uses version.h (almost all the programs as cliopts.h uses version.h).
 configure_file(
-    ${PDCPL_INCLUDE_DIR}/pdcpl/version.h.in
-    ${PDCPL_INCLUDE_DIR}/pdcpl/version.h
+    ${PDCPL_INCLUDE_DIR}/pdcpl/version.h.in ${PDCPL_INCLUDE_DIR}/pdcpl/version.h
+    @ONLY NEWLINE_STYLE LF
 )
 
 add_subdirectory(src)
