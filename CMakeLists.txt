@@ -151,10 +151,17 @@ endif()
 # WSL build and then the Windows one or vice versa causes the other to think
 # version.h has been changed and retrigger mass recompilation of anything that
 # uses version.h (almost all the programs as cliopts.h uses version.h).
+set(PDCPL_VERSION_HEADER ${PDCPL_INCLUDE_DIR}/pdcpl/version.h)
 configure_file(
-    ${PDCPL_INCLUDE_DIR}/pdcpl/version.h.in ${PDCPL_INCLUDE_DIR}/pdcpl/version.h
+    ${PDCPL_VERSION_HEADER}.in ${PDCPL_VERSION_HEADER}
     @ONLY NEWLINE_STYLE LF
 )
+cmake_path(
+    RELATIVE_PATH PDCPL_VERSION_HEADER
+    BASE_DIRECTORY ${PDCPL_INCLUDE_DIR}
+    OUTPUT_VARIABLE PDCPL_VERSION_HEADER_RELATIVE
+)
+message(STATUS "Generated ${PDCPL_VERSION_HEADER_RELATIVE}")
 
 add_subdirectory(src)
 
